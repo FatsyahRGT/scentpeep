@@ -207,6 +207,44 @@
                             @enderror
                         </div>
 
+                        <!-- 3. Pilihan Varian Parfum (Master Data) untuk Mode Kas -->
+                        <div class="p-3 mb-3 bg-light rounded-3 border" id="cashProductSection">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-tag-fill text-primary"></i>
+                                <span class="fw-bold text-dark small text-uppercase">Varian Parfum Terkait (Master Data)</span>
+                                <span class="badge bg-light text-muted border">Opsional</span>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-7">
+                                    <label for="product_id" class="form-label small text-muted">Pilih Varian Parfum</label>
+                                    <select class="form-select @error('product_id') is-invalid @enderror" id="product_id" name="product_id" onchange="onCashProductChange()">
+                                        <option value="">-- Tanpa Varian Parfum (Arus Kas Umum) --</option>
+                                        @foreach($products as $prod)
+                                            <option value="{{ $prod->id }}" data-cost="{{ $prod->cost_price }}" data-sell="{{ $prod->sell_price }}" {{ old('product_id') == $prod->id ? 'selected' : '' }}>
+                                                {{ $prod->name }} {{ $prod->code ? "({$prod->code})" : '' }} (Rp {{ number_format($prod->sell_price, 0, ',', '.') }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('product_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="qty" class="form-label small text-muted">Jumlah Unit (Qty)</label>
+                                    <div class="input-group">
+                                        <input type="number" min="1" class="form-control @error('qty') is-invalid @enderror" id="qty" name="qty" value="{{ old('qty', 1) }}" oninput="onCashProductChange()">
+                                        <span class="input-group-text bg-white text-muted">pcs</span>
+                                    </div>
+                                    @error('qty')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="bi bi-info-circle me-1"></i>Pilih varian parfum jika transaksi ini merupakan penjualan produk agar terdata di segmen Varian Terlaris tanpa memotong stok gudang.
+                            </small>
+                        </div>
+
                         <!-- Optional Stock Effect for Cash mode (default NONE) -->
                         <input type="hidden" name="stock_effect" id="stock_effect" value="{{ old('stock_effect', 'NONE') }}">
                     @endif
@@ -491,7 +529,45 @@
             if (helper) helper.classList.add('d-none');
         } else {
             amountInput.readOnly = false;
-            recalculateAmountFromProduct();
+            if (MODE === 'stock') {
+                recalculateAmountFromProduct();
+            } else {
+                onCashProductChange();
+            }
+        }
+    }
+
+    function onCashProductChange() {
+        if (MODE === 'stock') return;
+
+        const prodSelect = document.getElementById('product_id');
+        const qtyInput = document.getElementById('qty');
+        const amountInput = document.getElementById('amount');
+        const helper = document.getElementById('priceCalcHelper');
+        const helperText = document.getElementById('priceCalcText');
+        const isFreeCheckbox = document.getElementById('is_free');
+
+        if (!prodSelect || !qtyInput || !amountInput) return;
+        if (isFreeCheckbox && isFreeCheckbox.checked) return;
+
+        const selectedOpt = prodSelect.options[prodSelect.selectedIndex];
+        if (!selectedOpt || !selectedOpt.value) {
+            if (helper) helper.classList.add('d-none');
+            return;
+        }
+
+        const qty = parseInt(qtyInput.value, 10) || 1;
+        const sellPrice = parseFloat(selectedOpt.getAttribute('data-sell')) || 0;
+
+        if (sellPrice > 0) {
+            const calculatedTotal = sellPrice * qty;
+            amountInput.value = calculatedTotal;
+            if (helper && helperText) {
+                helper.classList.remove('d-none');
+                helperText.textContent = `Auto-kalkulasi: Harga Jual Rp ${sellPrice.toLocaleString('id-ID')} × ${qty} unit = Rp ${calculatedTotal.toLocaleString('id-ID')}`;
+            }
+        } else {
+            if (helper) helper.classList.add('d-none');
         }
     }
 

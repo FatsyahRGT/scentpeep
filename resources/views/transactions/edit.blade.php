@@ -144,12 +144,12 @@
                         </div>
                     </div>
 
-                    <!-- 3. Dynamic Stock Section -->
+                    <!-- 3. Detail Varian Parfum (Master Data) & Pengaruh Stok -->
                     <div id="stockSectionContainer" class="p-3 mb-3 bg-light rounded-3 border">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-box-seam text-primary fs-5"></i>
-                                <span class="fw-bold text-dark small text-uppercase">Pengaruh Terhadap Stok Parfum</span>
+                                <span class="fw-bold text-dark small text-uppercase">Varian Parfum & Efek Stok</span>
                             </div>
                             <div>
                                 <select class="form-select form-select-sm" id="stock_effect" name="stock_effect" onchange="handleStockEffectChange()">
@@ -160,64 +160,68 @@
                             </div>
                         </div>
 
-                        <div id="stockFieldsGroup">
-                            <div class="row g-3 mb-2">
-                                <!-- Lokasi Fisik -->
-                                <div class="col-md-4">
-                                    <label for="location_id" class="form-label small fw-bold text-muted text-uppercase">Lokasi Stok <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('location_id') is-invalid @enderror" id="location_id" name="location_id" onchange="updateLiveStockCalculator()">
-                                        <option value="">-- Pilih Lokasi --</option>
-                                        @foreach($locations as $loc)
-                                            <option value="{{ $loc->id }}" {{ old('location_id', $transaction->location_id) == $loc->id ? 'selected' : '' }}>
-                                                {{ $loc->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('location_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <!-- Varian Produk -->
-                                <div class="col-md-5">
-                                    <label for="product_id" class="form-label small fw-bold text-muted text-uppercase">Varian Produk <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('product_id') is-invalid @enderror" id="product_id" name="product_id" onchange="updateLiveStockCalculator()">
-                                        <option value="">-- Pilih Produk --</option>
-                                        @foreach($products as $prod)
-                                            <option value="{{ $prod->id }}" {{ old('product_id', $transaction->product_id) == $prod->id ? 'selected' : '' }}>
-                                                {{ $prod->name }} {{ $prod->code ? "({$prod->code})" : '' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('product_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <!-- Jumlah Qty -->
-                                <div class="col-md-3">
-                                    <label for="qty" class="form-label small fw-bold text-muted text-uppercase">Jumlah (Qty) <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="number" min="1" class="form-control @error('qty') is-invalid @enderror" id="qty" name="qty" value="{{ old('qty', $transaction->qty ?? 1) }}" oninput="updateLiveStockCalculator()">
-                                        <span class="input-group-text bg-white text-muted">pcs</span>
-                                    </div>
-                                    @error('qty')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                        <div class="row g-3 mb-2">
+                            <!-- Varian Produk by Master Data -->
+                            <div class="col-md-7" id="productGroup">
+                                <label for="product_id" class="form-label small fw-bold text-muted text-uppercase">
+                                    Varian Produk <span id="productRequiredStar" class="text-danger d-none">*</span> <span id="productOptionalNote" class="text-muted fw-normal">(Opsional untuk Non-Stok)</span>
+                                </label>
+                                <select class="form-select @error('product_id') is-invalid @enderror" id="product_id" name="product_id" onchange="onEditProductChange()">
+                                    <option value="">-- Tanpa Varian Produk (Kas Umum) --</option>
+                                    @foreach($products as $prod)
+                                        <option value="{{ $prod->id }}" data-cost="{{ $prod->cost_price }}" data-sell="{{ $prod->sell_price }}" {{ old('product_id', $transaction->product_id) == $prod->id ? 'selected' : '' }}>
+                                            {{ $prod->name }} {{ $prod->code ? "({$prod->code})" : '' }} (Rp {{ number_format($prod->sell_price, 0, ',', '.') }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('product_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <!-- Realtime Interactive Stock Info Widget -->
-                            <div id="stockCalculatorWidget" class="p-2 mt-2 bg-white rounded-2 border d-none">
-                                <div class="d-flex justify-content-between align-items-center small">
-                                    <div>
-                                        <span class="text-muted">Stok saat ini di lokasi:</span>
-                                        <strong id="currentStockDisplay" class="ms-1 text-dark">0 pcs</strong>
-                                    </div>
-                                    <div>
-                                        <span class="text-muted">Estimasi sisa stok:</span>
-                                        <span id="projectedStockBadge" class="badge bg-secondary ms-1">0 pcs</span>
-                                    </div>
+                            <!-- Jumlah Qty -->
+                            <div class="col-md-5" id="qtyGroup">
+                                <label for="qty" class="form-label small fw-bold text-muted text-uppercase">
+                                    Jumlah (Qty) <span id="qtyRequiredStar" class="text-danger d-none">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" min="1" class="form-control @error('qty') is-invalid @enderror" id="qty" name="qty" value="{{ old('qty', $transaction->qty ?? 1) }}" oninput="updateLiveStockCalculator()">
+                                    <span class="input-group-text bg-white text-muted">pcs</span>
+                                </div>
+                                @error('qty')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Lokasi Fisik (Hanya jika memengaruhi stok) -->
+                            <div class="col-12" id="locationGroup">
+                                <label for="location_id" class="form-label small fw-bold text-muted text-uppercase">
+                                    Lokasi Stok Gudang / Toko <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select @error('location_id') is-invalid @enderror" id="location_id" name="location_id" onchange="updateLiveStockCalculator()">
+                                    <option value="">-- Pilih Lokasi Stok --</option>
+                                    @foreach($locations as $loc)
+                                        <option value="{{ $loc->id }}" {{ old('location_id', $transaction->location_id) == $loc->id ? 'selected' : '' }}>
+                                            {{ $loc->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('location_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Realtime Interactive Stock Info Widget -->
+                        <div id="stockCalculatorWidget" class="p-2 mt-2 bg-white rounded-2 border d-none">
+                            <div class="d-flex justify-content-between align-items-center small">
+                                <div>
+                                    <span class="text-muted"><i class="bi bi-geo-alt me-1"></i>Stok saat ini di lokasi:</span>
+                                    <strong id="currentStockDisplay" class="ms-1 text-dark">0 pcs</strong>
+                                </div>
+                                <div>
+                                    <span class="text-muted"><i class="bi bi-calculator me-1"></i>Estimasi sisa stok:</span>
+                                    <span id="projectedStockBadge" class="badge bg-secondary ms-1">0 pcs</span>
                                 </div>
                             </div>
                         </div>
@@ -288,23 +292,38 @@
 
     function handleStockEffectChange() {
         const effect = document.getElementById('stock_effect').value;
-        const fieldsGroup = document.getElementById('stockFieldsGroup');
+        const locGroup = document.getElementById('locationGroup');
         const locSelect = document.getElementById('location_id');
         const prodSelect = document.getElementById('product_id');
         const qtyInput = document.getElementById('qty');
+        const prodStar = document.getElementById('productRequiredStar');
+        const prodNote = document.getElementById('productOptionalNote');
+        const qtyStar = document.getElementById('qtyRequiredStar');
+        const widget = document.getElementById('stockCalculatorWidget');
 
         if (effect === 'NONE') {
-            fieldsGroup.style.display = 'none';
-            locSelect.removeAttribute('required');
-            prodSelect.removeAttribute('required');
-            qtyInput.removeAttribute('required');
+            if (locGroup) locGroup.style.display = 'none';
+            if (locSelect) locSelect.removeAttribute('required');
+            if (prodSelect) prodSelect.removeAttribute('required');
+            if (qtyInput) qtyInput.removeAttribute('required');
+            if (prodStar) prodStar.classList.add('d-none');
+            if (prodNote) prodNote.classList.remove('d-none');
+            if (qtyStar) qtyStar.classList.add('d-none');
+            if (widget) widget.classList.add('d-none');
         } else {
-            fieldsGroup.style.display = '';
-            locSelect.setAttribute('required', 'required');
-            prodSelect.setAttribute('required', 'required');
-            qtyInput.setAttribute('required', 'required');
+            if (locGroup) locGroup.style.display = '';
+            if (locSelect) locSelect.setAttribute('required', 'required');
+            if (prodSelect) prodSelect.setAttribute('required', 'required');
+            if (qtyInput) qtyInput.setAttribute('required', 'required');
+            if (prodStar) prodStar.classList.remove('d-none');
+            if (prodNote) prodNote.classList.add('d-none');
+            if (qtyStar) qtyStar.classList.remove('d-none');
             updateLiveStockCalculator();
         }
+    }
+
+    function onEditProductChange() {
+        updateLiveStockCalculator();
     }
 
     function updateLiveStockCalculator() {

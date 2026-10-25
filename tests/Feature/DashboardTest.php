@@ -101,4 +101,25 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertViewHas('isReseller', true);
     }
+
+    public function test_dashboard_bestsellers_calculates_based_on_product_sales_transactions(): void
+    {
+        // 1. Penjualan kas dengan product_id
+        Transaction::create([
+            'tanggal' => now()->toDateString(),
+            'type' => Transaction::TYPE_INCOME,
+            'category' => 'Penjualan',
+            'product_id' => $this->product->id,
+            'qty' => 5,
+            'amount' => 1000000,
+            'stock_effect' => Transaction::EFFECT_NONE,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('dashboard'));
+        $response->assertOk();
+        $response->assertSee('Varian Parfum Terlaris (Best Seller)');
+        $response->assertSee('Sauvage Test');
+        $response->assertSee('5 pcs');
+        $response->assertSee('1.000.000');
+    }
 }

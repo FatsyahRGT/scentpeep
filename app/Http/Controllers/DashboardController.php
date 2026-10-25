@@ -82,10 +82,16 @@ class DashboardController extends Controller
 
         $criticalStocks = $criticalStocksQuery->orderBy('qty', 'asc')->take(10)->get();
 
-        // 4. Best Selling Products (Barang Terlaris)
-        $bestSellersQuery = Transaction::where('stock_effect', Transaction::EFFECT_OUT)
-            ->whereNotNull('product_id')
-            ->select('product_id', DB::raw('SUM(qty) as total_sold'), DB::raw('SUM(amount) as total_revenue'))
+        // 4. Best Selling Products (Varian Parfum Terlaris berdasarkan transaksi penjualan jenis parfum)
+        $bestSellersQuery = Transaction::whereNotNull('product_id')
+            ->where('stock_effect', '!=', Transaction::EFFECT_IN)
+            ->where('category', '!=', 'Pembelian Stok')
+            ->where(function ($q) {
+                $q->where('category', 'Penjualan')
+                  ->orWhere('stock_effect', Transaction::EFFECT_OUT)
+                  ->orWhere('type', Transaction::TYPE_INCOME);
+            })
+            ->select('product_id', DB::raw('SUM(COALESCE(qty, 1)) as total_sold'), DB::raw('SUM(amount) as total_revenue'))
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
             ->with('product');

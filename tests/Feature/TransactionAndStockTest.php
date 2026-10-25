@@ -266,4 +266,55 @@ class TransactionAndStockTest extends TestCase
         $adminResponse = $this->actingAs($this->admin)->get(route('users.index'));
         $adminResponse->assertOk();
     }
+
+    public function test_can_record_and_update_cash_transaction_with_selected_product_variant(): void
+    {
+        // 1. Simpan transaksi kas dengan varian parfum (stock_effect NONE)
+        $response = $this->actingAs($this->staff)->post(route('transactions.store'), [
+            'tanggal' => now()->toDateString(),
+            'type' => 'INCOME',
+            'category' => 'Penjualan',
+            'amount' => 180000,
+            'customer_name' => 'Budi Santoso',
+            'channel' => 'Offline Store',
+            'product_id' => $this->product->id,
+            'qty' => 1,
+            'stock_effect' => 'NONE',
+        ]);
+
+        $response->assertRedirect(route('transactions.index'));
+
+        $this->assertDatabaseHas('transactions', [
+            'category' => 'Penjualan',
+            'product_id' => $this->product->id,
+            'qty' => 1,
+            'customer_name' => 'Budi Santoso',
+            'stock_effect' => 'NONE',
+        ]);
+
+        $transaction = Transaction::where('customer_name', 'Budi Santoso')->first();
+
+        // 2. Update transaksi kas tersebut (misal ganti qty jadi 2 dan nominal)
+        $updateResponse = $this->actingAs($this->admin)->put(route('transactions.update', $transaction), [
+            'tanggal' => now()->toDateString(),
+            'type' => 'INCOME',
+            'category' => 'Penjualan',
+            'amount' => 360000,
+            'customer_name' => 'Budi Santoso Updated',
+            'channel' => 'WhatsApp',
+            'product_id' => $this->product->id,
+            'qty' => 2,
+            'stock_effect' => 'NONE',
+        ]);
+
+        $updateResponse->assertRedirect(route('transactions.index'));
+
+        $this->assertDatabaseHas('transactions', [
+            'id' => $transaction->id,
+            'customer_name' => 'Budi Santoso Updated',
+            'channel' => 'WhatsApp',
+            'qty' => 2,
+            'amount' => 360000,
+        ]);
+    }
 }
