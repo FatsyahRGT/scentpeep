@@ -101,7 +101,50 @@
                         </div>
                     </div>
 
-                    <!-- 2. Dynamic Stock Section -->
+                    <!-- 2. Detail Penjualan & Pelanggan -->
+                    <div class="p-3 mb-3 bg-light rounded-3 border" id="salesDetailSection">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="customer_name" class="form-label small fw-bold text-muted text-uppercase">
+                                    Nama Pembeli / Pelanggan <span class="text-muted fw-normal">(Opsional)</span>
+                                </label>
+                                <input type="text" class="form-control @error('customer_name') is-invalid @enderror" 
+                                    id="customer_name" name="customer_name" value="{{ old('customer_name', $transaction->customer_name) }}" placeholder="Contoh: sopyan, Vanya">
+                                @error('customer_name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="channel" class="form-label small fw-bold text-muted text-uppercase">
+                                    Saluran Penjualan <span class="text-muted fw-normal">(Opsional)</span>
+                                </label>
+                                <select class="form-select @error('channel') is-invalid @enderror" id="channel" name="channel">
+                                    <option value="">-- Pilih Saluran --</option>
+                                    <option value="Offline Store" {{ old('channel', $transaction->channel ?? 'Offline Store') === 'Offline Store' ? 'selected' : '' }}>Toko Offline</option>
+                                    <option value="WhatsApp" {{ old('channel', $transaction->channel) === 'WhatsApp' ? 'selected' : '' }}>WhatsApp / Kontak Pribadi</option>
+                                    <option value="Shopee" {{ old('channel', $transaction->channel) === 'Shopee' ? 'selected' : '' }}>Shopee</option>
+                                    <option value="TikTok Shop" {{ old('channel', $transaction->channel) === 'TikTok Shop' ? 'selected' : '' }}>TikTok Shop</option>
+                                    <option value="Tokopedia" {{ old('channel', $transaction->channel) === 'Tokopedia' ? 'selected' : '' }}>Tokopedia</option>
+                                    <option value="Reseller" {{ old('channel', $transaction->channel) === 'Reseller' ? 'selected' : '' }}>Mitra Reseller</option>
+                                </select>
+                                @error('channel')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="is_free" name="is_free" value="1" {{ old('is_free', $transaction->is_free) ? 'checked' : '' }} onchange="toggleSampleFree(this.checked)">
+                                    <label class="form-check-label small fw-semibold text-dark" for="is_free">
+                                        <i class="bi bi-gift text-success me-1"></i> Tandai sebagai Sampel / Tester Gratis (Nominal Rp 0)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Dynamic Stock Section -->
                     <div id="stockSectionContainer" class="p-3 mb-3 bg-light rounded-3 border">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="d-flex align-items-center gap-2">
@@ -190,10 +233,10 @@
                             @enderror
                         </div>
 
-                        <!-- Catatan / Pembeli -->
+                        <!-- Catatan Tambahan -->
                         <div class="col-md-6">
-                            <label for="note" class="form-label small fw-bold text-muted text-uppercase">Catatan / Pembeli <span class="text-muted fw-normal">(Opsional)</span></label>
-                            <input type="text" class="form-control @error('note') is-invalid @enderror" id="note" name="note" value="{{ old('note', $transaction->note) }}" placeholder="Contoh: sopyan / transfer BCA">
+                            <label for="note" class="form-label small fw-bold text-muted text-uppercase">Catatan Tambahan <span class="text-muted fw-normal">(Opsional)</span></label>
+                            <input type="text" class="form-control @error('note') is-invalid @enderror" id="note" name="note" value="{{ old('note', $transaction->note) }}" placeholder="Contoh: transfer BCA, diskon, dll">
                             @error('note')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -299,10 +342,31 @@
         }
     }
 
+    function toggleSampleFree(checked) {
+        const amountInput = document.getElementById('amount');
+        if (checked) {
+            if (amountInput) {
+                amountInput.dataset.previousAmount = amountInput.value;
+                amountInput.value = 0;
+                amountInput.setAttribute('readonly', 'readonly');
+            }
+        } else {
+            if (amountInput) {
+                amountInput.removeAttribute('readonly');
+                if (amountInput.dataset.previousAmount !== undefined) {
+                    amountInput.value = amountInput.dataset.previousAmount;
+                }
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const checkedType = document.querySelector('input[name="type"]:checked')?.value || 'INCOME';
         handleTypeChange(checkedType);
         handleStockEffectChange();
+        if (document.getElementById('is_free')?.checked) {
+            toggleSampleFree(true);
+        }
     });
 </script>
 @endpush
