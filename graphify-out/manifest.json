@@ -126,10 +126,10 @@
     "semantic_hash": "b370cf2d87c4de59dd4c1c90a1f0adbd"
   },
   "config/app.php": {
-    "mtime": 1790776605.0,
-    "seen": 1791356739.4561675,
-    "ast_hash": "8befef279da74e4a8e393cb3d59fd354",
-    "semantic_hash": "8befef279da74e4a8e393cb3d59fd354"
+    "mtime": 1792910575.1801603,
+    "seen": 1792910612.619807,
+    "ast_hash": "ba93f3eaf295e8bf1460870ef7f0cf05",
+    "semantic_hash": "ba93f3eaf295e8bf1460870ef7f0cf05"
   },
   "config/auth.php": {
     "mtime": 1790776605.0,
@@ -598,5 +598,11 @@
     "seen": 1792905916.0594995,
     "ast_hash": "0ab6b302fce9e1d4b1b770d011f18794",
     "semantic_hash": "0ab6b302fce9e1d4b1b770d011f18794"
+  },
+  ".vscode/settings.json": {
+    "mtime": 1792908622.447408,
+    "seen": 1792910612.6052291,
+    "ast_hash": "59e361a5d8c1edb14a8047365b46c8b4",
+    "semantic_hash": "59e361a5d8c1edb14a8047365b46c8b4"
   }
 }

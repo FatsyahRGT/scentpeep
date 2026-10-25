@@ -8,6 +8,11 @@
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
+## Graph Freshness
+- Built from commit: `27365cf4`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
+
 ## Community Hubs (Navigation)
 - Authentication & Routing
 - Composer & PHP Dependencies
@@ -70,10 +75,10 @@
   tests/Feature/TransactionAndStockTest.php → app/Models/Location.php
 - `TransactionAndStockTest` --references--> `Product`  [EXTRACTED]
   tests/Feature/TransactionAndStockTest.php → app/Models/Product.php
-- `ExportReportsTest` --references--> `User`  [EXTRACTED]
-  tests/Feature/ExportReportsTest.php → app/Models/User.php
 - `DashboardTest` --references--> `User`  [EXTRACTED]
   tests/Feature/DashboardTest.php → app/Models/User.php
+- `ExportReportsTest` --references--> `User`  [EXTRACTED]
+  tests/Feature/ExportReportsTest.php → app/Models/User.php
 - `SalesAndCriteriaTest` --references--> `User`  [EXTRACTED]
   tests/Feature/SalesAndCriteriaTest.php → app/Models/User.php
 

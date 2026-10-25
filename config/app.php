@@ -123,4 +123,38 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Exception Debug Blacklist / Masking
+    |--------------------------------------------------------------------------
+    |
+    | When an exception occurs and debug mode is active, these keys will be masked
+    | with asterisks (******) to prevent leaking credentials in error traces.
+    |
+    */
+
+    'debug_hide' => [
+        '_ENV' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'DB_ROOT_PASSWORD',
+            'REDIS_PASSWORD',
+            'MAIL_PASSWORD',
+            'AWS_SECRET_ACCESS_KEY',
+        ],
+        '_SERVER' => [
+            'APP_KEY',
+            'DB_PASSWORD',
+            'DB_ROOT_PASSWORD',
+            'REDIS_PASSWORD',
+            'MAIL_PASSWORD',
+            'HTTP_AUTHORIZATION',
+            'PHP_AUTH_PW',
+        ],
+        '_POST' => [
+            'password',
+            'password_confirmation',
+        ],
+    ],
+
 ];
