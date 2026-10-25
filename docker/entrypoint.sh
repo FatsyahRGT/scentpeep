@@ -11,23 +11,22 @@ mkdir -p /var/www/html/storage/framework/sessions \
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Generate app key if missing
+# Clear stale caches so fresh .env variables are always loaded
+php artisan config:clear || true
+php artisan route:clear || true
+php artisan view:clear || true
+
+# Auto-generate APP_KEY if empty in environment
 if [ -z "$APP_KEY" ]; then
     echo "Generating Application Key..."
-    php artisan key:generate --force
+    GENERATED_KEY=$(php artisan key:generate --show)
+    export APP_KEY="$GENERATED_KEY"
+    echo "Application Key initialized successfully."
 fi
 
 # Run database migrations automatically
 echo "Running database migrations..."
-php artisan migrate --force
-
-# Optimize Laravel cache in production
-if [ "$APP_ENV" = "production" ]; then
-    echo "Caching configuration and routes for production..."
-    php artisan config:cache
-    php artisan route:cache
-    php artisan view:cache
-fi
+php artisan migrate --force || echo "Database migration warning: will retry on next startup."
 
 echo "Starting PHP-FPM server..."
 exec "$@"
