@@ -41,7 +41,7 @@
                     <th class="text-center" style="width: 140px;">Tipe</th>
                     <th class="text-center" style="width: 140px;">Varian Terdaftar</th>
                     <th class="text-center" style="width: 150px;">Total Unit Fisik</th>
-                    <th class="text-end" style="width: 70px;">Aksi</th>
+                    <th class="text-end" style="width: 100px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="locationsTableBody">
@@ -73,24 +73,18 @@
                         <td class="text-center">
                             <span class="badge bg-blue-lt fs-6 fw-bold">{{ number_format($locTotalQty, 0, ',', '.') }} pcs</span>
                         </td>
-                        <td class="text-end">
-                            <div class="dropdown">
-                                <button class="btn btn-icon btn-sm btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" title="Menu Aksi">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-end shadow border-0">
-                                    <a class="dropdown-item" href="{{ route('locations.edit', $loc->id) }}">
-                                        <i class="bi bi-pencil-square text-primary me-2"></i> Edit Lokasi
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                    <form action="{{ route('locations.destroy', $loc->id) }}" method="POST" onsubmit="return confirmAction(this, 'Hapus Lokasi Stok', 'Apakah Anda yakin ingin menghapus lokasi {{ addslashes($loc->name) }}?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-trash me-2"></i> Hapus Lokasi
-                                        </button>
-                                    </form>
-                                </div>
+                        <td class="text-end text-nowrap">
+                            <div class="d-inline-flex gap-1">
+                                <a href="{{ route('locations.edit', $loc->id) }}" class="btn btn-sm btn-icon btn-outline-primary" data-bs-toggle="tooltip" title="Edit Lokasi">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ route('locations.destroy', $loc->id) }}" method="POST" onsubmit="return confirmAction(this, 'Hapus Lokasi Stok', 'Apakah Anda yakin ingin menghapus lokasi {{ addslashes($loc->name) }}?{{ $locTotalQty > 0 ? ' Catatan: Lokasi ini masih memiliki ' . $locTotalQty . ' pcs stok aktif.' : '' }}')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" data-bs-toggle="tooltip" title="Hapus Lokasi">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

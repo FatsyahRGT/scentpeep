@@ -36,7 +36,7 @@ services:
       CACHE_STORE: database
       QUEUE_CONNECTION: database
     volumes:
-      - ./.env:/var/www/html/.env:ro
+      - ./.env:/var/www/html/.env
       - storage_data:/var/www/html/storage
     depends_on:
       db:
