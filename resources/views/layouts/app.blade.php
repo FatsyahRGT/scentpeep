@@ -294,6 +294,97 @@
         .table > :not(caption) > * > * {
             padding: 0.75rem 0.85rem;
         }
+
+        /* Card Enhancements */
+        .card {
+            border-radius: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Button Improvements */
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-group-sm .btn {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        /* Badge Improvements */
+        .badge {
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* Responsive Chart Container */
+        @media (max-width: 768px) {
+            .card-body canvas {
+                max-height: 250px !important;
+            }
+        }
+
+        /* KPI Card Icons */
+        .avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar.rounded-3 {
+            border-radius: 10px !important;
+        }
+
+        /* Form Focus States */
+        .form-control:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--sp-accent);
+        }
+
+        /* Table Hover Enhancement */
+        .table-hover tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(32, 107, 196, 0.03);
+        }
+
+        /* Smooth Transitions for Interactive Elements */
+        a, button, .card, .badge, .btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Fix for Long Text in Tables */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Chart Loading State */
+        .chart-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+            color: #94a3b8;
+        }
     </style>
     @stack('styles')
 </head>

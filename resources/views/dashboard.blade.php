@@ -214,25 +214,50 @@
 
 <!-- Cashflow Trend Chart & Best Sellers -->
 <div class="row g-4 mb-4">
-    <!-- Monthly Chart -->
-    <div class="col-lg-6">
+    <!-- Monthly Chart - Full Width on Mobile, Half on Desktop -->
+    <div class="col-12 col-lg-8">
         <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-transparent py-3">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2">
                     <i class="bi bi-graph-up-arrow text-primary fs-5"></i>
                     <h4 class="card-title mb-0 fw-bold">Tren Arus Kas (6 Bulan Terakhir)</h4>
                 </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Chart Type">
+                    <button type="button" class="btn btn-outline-primary active" onclick="switchChartType('bar')" id="btnBar">
+                        <i class="bi bi-bar-chart"></i> Bar
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="switchChartType('line')" id="btnLine">
+                        <i class="bi bi-graph-up"></i> Line
+                    </button>
+                </div>
             </div>
             <div class="card-body p-3">
-                <canvas id="cashflowChart" style="max-height: 280px;"></canvas>
+                <canvas id="cashflowChart" style="max-height: 320px;"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Best Sellers Widget -->
-    <div class="col-lg-6">
+    <!-- Interactive Pie Chart - Stock Distribution -->
+    <div class="col-12 col-lg-4">
         <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+            <div class="card-header bg-transparent py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-pie-chart-fill text-success fs-5"></i>
+                    <h4 class="card-title mb-0 fw-bold">Distribusi Stok</h4>
+                </div>
+            </div>
+            <div class="card-body p-3 d-flex align-items-center justify-content-center">
+                <canvas id="stockPieChart" style="max-height: 280px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Best Sellers Widget -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3 flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2">
                     <i class="bi bi-trophy-fill text-warning fs-5"></i>
                     <h4 class="card-title mb-0 fw-bold">Varian Parfum Terlaris (Best Seller)</h4>
@@ -244,7 +269,7 @@
                     <table class="table table-vcenter table-hover m-0">
                         <thead class="table-light">
                             <tr>
-                                <th style="width: 40px;">#</th>
+                                <th style="width: 40px;" class="text-center">#</th>
                                 <th>Varian Produk</th>
                                 <th class="text-center" style="width: 100px;">Terjual</th>
                                 <th class="text-end" style="width: 140px;">Total Omzet</th>
@@ -253,15 +278,15 @@
                         <tbody>
                             @forelse($bestSellers as $rank => $bs)
                             <tr>
-                                <td class="text-muted fw-bold">
+                                <td class="text-center">
                                     @if($rank === 0)
-                                        <span class="badge bg-yellow text-dark rounded-circle" style="width: 22px; height: 22px; padding: 3px;">1</span>
+                                        <span class="badge bg-yellow text-dark rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 26px; height: 26px; font-weight: 700;">1</span>
                                     @elseif($rank === 1)
-                                        <span class="badge bg-secondary text-white rounded-circle" style="width: 22px; height: 22px; padding: 3px;">2</span>
+                                        <span class="badge bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 26px; height: 26px; font-weight: 700;">2</span>
                                     @elseif($rank === 2)
-                                        <span class="badge bg-brown text-white rounded-circle" style="width: 22px; height: 22px; padding: 3px; background-color: #cd7f32;">3</span>
+                                        <span class="badge rounded-circle d-inline-flex align-items-center justify-content-center text-white" style="width: 26px; height: 26px; font-weight: 700; background-color: #cd7f32;">3</span>
                                     @else
-                                        <span class="small text-muted">{{ $rank + 1 }}</span>
+                                        <span class="small text-muted fw-bold">{{ $rank + 1 }}</span>
                                     @endif
                                 </td>
                                 <td>
@@ -271,7 +296,7 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-success-lt fw-bold px-2 py-1 fs-6">
+                                    <span class="badge bg-success-lt fw-bold px-3 py-2 fs-6">
                                         {{ $bs->total_sold }} pcs
                                     </span>
                                 </td>
@@ -373,66 +398,220 @@
 
 @push('scripts')
 <script>
+    let cashflowChart = null;
+    let stockPieChart = null;
+    let currentChartType = 'bar';
+
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Cashflow Trend Chart
+        initCashflowChart();
+        
+        // Initialize Stock Distribution Pie Chart
+        initStockPieChart();
+    });
+
+    function initCashflowChart() {
         const trendData = {!! json_encode($monthlyTrend) !!};
         const labels = trendData.map(item => item.label);
         const incomeData = trendData.map(item => item.income);
         const outcomeData = trendData.map(item => item.outcome);
 
         const ctx = document.getElementById('cashflowChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
+        
+        if (cashflowChart) {
+            cashflowChart.destroy();
+        }
+
+        cashflowChart = new Chart(ctx, {
+            type: currentChartType,
             data: {
                 labels: labels,
                 datasets: [
                     {
                         label: 'Pemasukan (Income)',
                         data: incomeData,
-                        backgroundColor: 'rgba(47, 179, 68, 0.7)',
+                        backgroundColor: currentChartType === 'bar' ? 'rgba(47, 179, 68, 0.7)' : 'rgba(47, 179, 68, 0.1)',
                         borderColor: '#2fb344',
-                        borderWidth: 1,
-                        borderRadius: 4
+                        borderWidth: currentChartType === 'line' ? 3 : 1,
+                        borderRadius: currentChartType === 'bar' ? 4 : 0,
+                        fill: currentChartType === 'line',
+                        tension: 0.4,
+                        pointBackgroundColor: '#2fb344',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: currentChartType === 'line' ? 5 : 0,
+                        pointHoverRadius: 7
                     },
                     {
                         label: 'Pengeluaran (Outcome)',
                         data: outcomeData,
-                        backgroundColor: 'rgba(214, 57, 57, 0.7)',
+                        backgroundColor: currentChartType === 'bar' ? 'rgba(214, 57, 57, 0.7)' : 'rgba(214, 57, 57, 0.1)',
                         borderColor: '#d63939',
-                        borderWidth: 1,
-                        borderRadius: 4
+                        borderWidth: currentChartType === 'line' ? 3 : 1,
+                        borderRadius: currentChartType === 'bar' ? 4 : 0,
+                        fill: currentChartType === 'line',
+                        tension: 0.4,
+                        pointBackgroundColor: '#d63939',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: currentChartType === 'line' ? 5 : 0,
+                        pointHoverRadius: 7
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { boxWidth: 12, font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } }
+                        labels: { 
+                            boxWidth: 12, 
+                            padding: 15,
+                            font: { 
+                                family: "'Plus Jakarta Sans', sans-serif", 
+                                size: 11,
+                                weight: '600'
+                            } 
+                        }
                     },
                     tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
                         callbacks: {
                             label: function(context) {
                                 return context.dataset.label + ': Rp ' + new Intl.NumberFormat('id-ID').format(context.raw);
+                            },
+                            footer: function(tooltipItems) {
+                                const income = tooltipItems.find(item => item.dataset.label.includes('Pemasukan'));
+                                const outcome = tooltipItems.find(item => item.dataset.label.includes('Pengeluaran'));
+                                if (income && outcome) {
+                                    const net = income.raw - outcome.raw;
+                                    return 'Net: Rp ' + new Intl.NumberFormat('id-ID').format(net);
+                                }
+                                return '';
                             }
-                        }
+                        },
+                        footerFont: { size: 11, weight: 'bold' }
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
                         ticks: {
                             callback: function(value) {
-                                if (value >= 1000000) return (value / 1000000) + ' Jt';
-                                if (value >= 1000) return (value / 1000) + ' Rb';
+                                if (value >= 1000000) return (value / 1000000).toFixed(1) + ' Jt';
+                                if (value >= 1000) return (value / 1000).toFixed(0) + ' Rb';
                                 return value;
+                            },
+                            font: { size: 11 }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function initStockPieChart() {
+        const stockData = {!! json_encode($locationStockSummaries) !!};
+        const labels = stockData.map(item => item.name);
+        const quantities = stockData.map(item => item.total_qty);
+        
+        const colors = [
+            '#206bc4', '#2fb344', '#f59f00', '#d63939', '#9c36b5',
+            '#17a2b8', '#e83e8c', '#fd7e14', '#20c997', '#6610f2'
+        ];
+
+        const ctx = document.getElementById('stockPieChart').getContext('2d');
+        
+        stockPieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: quantities,
+                    backgroundColor: colors.slice(0, stockData.length),
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                family: "'Plus Jakarta Sans', sans-serif",
+                                size: 11,
+                                weight: '600'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return {
+                                            text: `${label}: ${value} pcs (${percentage}%)`,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            hidden: false,
+                                            index: i
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value} pcs (${percentage}%)`;
                             }
                         }
                     }
                 }
             }
         });
-    });
+    }
+
+    function switchChartType(type) {
+        currentChartType = type;
+        
+        // Update button states
+        document.getElementById('btnBar').classList.toggle('active', type === 'bar');
+        document.getElementById('btnLine').classList.toggle('active', type === 'line');
+        
+        // Reinitialize chart with new type
+        initCashflowChart();
+    }
 </script>
 @endpush
