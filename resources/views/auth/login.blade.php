@@ -24,7 +24,7 @@
                         <label for="email" class="form-label small fw-bold text-muted">Alamat Email</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', 'admin@scentpeep.com') }}" required autofocus placeholder="name@scentpeep.com">
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="off" placeholder="name@scentpeep.com">
                         </div>
                         @error('email')
                             <div class="text-danger small mt-1">{{ $message }}</div>
@@ -35,7 +35,7 @@
                         <label for="password" class="form-label small fw-bold text-muted">Password</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-lock text-muted"></i></span>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" value="password" required placeholder="Masukkan password">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required autocomplete="off" placeholder="Masukkan password">
                         </div>
                         @error('password')
                             <div class="text-danger small mt-1">{{ $message }}</div>
@@ -57,12 +57,6 @@
                 <div class="text-center mt-3">
                     <span class="text-muted small">Ingin bermitra sebagai reseller?</span>
                     <a href="{{ route('register') }}" class="small fw-semibold text-decoration-none ms-1">Daftar Reseller Baru &rarr;</a>
-                </div>
-
-                <div class="mt-4 p-3 bg-light rounded-3 text-muted small border">
-                    <div class="fw-bold text-dark mb-1"><i class="bi bi-info-circle text-primary me-1"></i> Akun Demo Default:</div>
-                    <div>&bull; <strong>Admin:</strong> admin@scentpeep.com / password</div>
-                    <div>&bull; <strong>Staff:</strong> staff@scentpeep.com / password</div>
                 </div>
             </div>
         </div>

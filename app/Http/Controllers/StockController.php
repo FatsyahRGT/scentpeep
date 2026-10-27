@@ -138,7 +138,8 @@ class StockController extends Controller
             $destStock->increment('qty', $request->qty);
 
             // 3. Record audit trail in stock_transfers
-            $transferCountToday = StockTransfer::whereDate('created_at', now()->toDateString())->count();
+            // Use lockForUpdate to prevent race condition on sequence number
+            $transferCountToday = StockTransfer::whereDate('created_at', now()->toDateString())->lockForUpdate()->count();
             $transferNo = 'TRF/' . date('Ymd') . '/' . str_pad($transferCountToday + 1, 4, '0', STR_PAD_LEFT);
 
             StockTransfer::create([

@@ -69,9 +69,14 @@ class TransactionController extends Controller
             });
         }
 
-        // Summary Statistics (dynamically calculated)
-        $totalIncome = (clone $query)->where('type', Transaction::TYPE_INCOME)->sum('amount');
-        $totalOutcome = (clone $query)->where('type', Transaction::TYPE_OUTCOME)->sum('amount');
+        // Summary Statistics (dynamically calculated with optimized single query)
+        $summaries = (clone $query)
+            ->selectRaw('type, SUM(amount) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type');
+        
+        $totalIncome = (float) ($summaries[Transaction::TYPE_INCOME] ?? 0);
+        $totalOutcome = (float) ($summaries[Transaction::TYPE_OUTCOME] ?? 0);
         $netSaldo = $totalIncome - $totalOutcome;
 
         $transactions = $query->paginate(20)->withQueryString();
@@ -209,7 +214,32 @@ class TransactionController extends Controller
         }
 
         DB::transaction(function () use ($request, $transaction, $locationId) {
-            // 1. Revert previous stock effect
+            // 1. Lock and validate stock before any changes
+            if ($request->stock_effect === Transaction::EFFECT_OUT) {
+                $currentStock = Stock::where('location_id', $locationId)
+                    ->where('product_id', $request->product_id)
+                    ->lockForUpdate()
+                    ->first();
+                
+                $currentQty = $currentStock?->qty ?? 0;
+                $oldQty = ($transaction->stock_effect === Transaction::EFFECT_OUT && 
+                          $transaction->location_id == $locationId && 
+                          $transaction->product_id == $request->product_id) 
+                    ? (int) $transaction->qty 
+                    : 0;
+                $qtyDelta = (int) $request->qty - $oldQty;
+                
+                // Check if available stock (after reversing old effect) is sufficient for new qty
+                if ($qtyDelta > 0 && $currentQty < $qtyDelta) {
+                    $location = Location::find($locationId)?->name ?? 'Lokasi';
+                    $product = Product::find($request->product_id)?->name ?? 'Produk';
+                    throw ValidationException::withMessages([
+                        'qty' => "Stok {$product} di {$location} tidak mencukupi untuk perubahan ini (Tersedia: {$currentQty} pcs, Perlu tambahan: {$qtyDelta} pcs).",
+                    ]);
+                }
+            }
+            
+            // 2. Revert previous stock effect
             if ($transaction->stock_effect !== Transaction::EFFECT_NONE && $transaction->location_id && $transaction->product_id) {
                 $this->reverseStockEffect(
                     (int) $transaction->location_id,
@@ -219,7 +249,7 @@ class TransactionController extends Controller
                 );
             }
 
-            // 2. Apply new stock effect
+            // 3. Apply new stock effect
             if ($request->stock_effect !== Transaction::EFFECT_NONE) {
                 $this->applyStockEffect(
                     (int) $locationId,
@@ -229,7 +259,7 @@ class TransactionController extends Controller
                 );
             }
 
-            // 3. Update transaction record
+            // 4. Update transaction record
             $transaction->update([
                 'tanggal' => $request->tanggal,
                 'type' => $request->type,
@@ -316,7 +346,14 @@ class TransactionController extends Controller
         );
 
         if ($effect === Transaction::EFFECT_IN) {
-            // Reversing an IN means decrementing
+            // Reversing an IN means decrementing - validate stock is sufficient
+            if ($stock->qty < $qty) {
+                $location = Location::find($locationId)?->name ?? 'Lokasi';
+                $product = Product::find($productId)?->name ?? 'Produk';
+                throw ValidationException::withMessages([
+                    'stock' => "Tidak bisa membatalkan/mengubah transaksi ini. Stok {$product} di {$location} sudah berkurang (tersedia: {$stock->qty} pcs, perlu dikembalikan: {$qty} pcs). Stok mungkin sudah terjual atau dipindahkan.",
+                ]);
+            }
             $stock->decrement('qty', $qty);
         } elseif ($effect === Transaction::EFFECT_OUT) {
             // Reversing an OUT means incrementing back

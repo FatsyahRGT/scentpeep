@@ -37,15 +37,27 @@ class DashboardController extends Controller
             $txQuery->where('location_id', $selectedLocationId);
         }
 
-        // 1. Dynamic Financial Totals (All Time & Current Month)
-        $totalIncome = (float) (clone $txQuery)->where('type', Transaction::TYPE_INCOME)->sum('amount');
-        $totalOutcome = (float) (clone $txQuery)->where('type', Transaction::TYPE_OUTCOME)->sum('amount');
+        // 1. Dynamic Financial Totals (All Time & Current Month) - Optimized with GROUP BY
+        $summaries = (clone $txQuery)
+            ->selectRaw('type, SUM(amount) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type');
+        
+        $totalIncome = (float) ($summaries[Transaction::TYPE_INCOME] ?? 0);
+        $totalOutcome = (float) ($summaries[Transaction::TYPE_OUTCOME] ?? 0);
         $netSaldo = $totalIncome - $totalOutcome;
 
         $startOfMonth = Carbon::now()->startOfMonth();
-        $thisMonthIncome = (float) (clone $txQuery)->where('type', Transaction::TYPE_INCOME)->whereDate('tanggal', '>=', $startOfMonth)->sum('amount');
-        $thisMonthOutcome = (float) (clone $txQuery)->where('type', Transaction::TYPE_OUTCOME)->whereDate('tanggal', '>=', $startOfMonth)->sum('amount');
-        $thisMonthTxCount = (clone $txQuery)->whereDate('tanggal', '>=', $startOfMonth)->count();
+        $monthSummaries = (clone $txQuery)
+            ->whereDate('tanggal', '>=', $startOfMonth)
+            ->selectRaw('type, SUM(amount) as total, COUNT(*) as count')
+            ->groupBy('type')
+            ->get()
+            ->keyBy('type');
+        
+        $thisMonthIncome = (float) ($monthSummaries[Transaction::TYPE_INCOME]->total ?? 0);
+        $thisMonthOutcome = (float) ($monthSummaries[Transaction::TYPE_OUTCOME]->total ?? 0);
+        $thisMonthTxCount = $monthSummaries->sum('count');
 
         // 2. Stock Summary by Location
         if ($isReseller) {
@@ -115,20 +127,27 @@ class DashboardController extends Controller
             ->take(8)
             ->get();
 
-        // 6. Monthly Cashflow Trend (Last 6 Months)
+        // 6. Monthly Cashflow Trend (Last 6 Months) - Optimized single query with cross-DB compatibility
+        $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth();
+        $dateFormat = DB::connection()->getDriverName() === 'sqlite' 
+            ? "strftime('%Y-%m', tanggal)" 
+            : "DATE_FORMAT(tanggal, '%Y-%m')";
+        
+        $trendData = (clone $txQuery)
+            ->where('tanggal', '>=', $sixMonthsAgo)
+            ->selectRaw("{$dateFormat} as month, type, SUM(amount) as total")
+            ->groupBy('month', 'type')
+            ->get()
+            ->groupBy('month');
+        
         $monthlyTrend = [];
         for ($i = 5; $i >= 0; $i--) {
             $monthDate = Carbon::now()->subMonths($i);
-            $mStart = $monthDate->copy()->startOfMonth();
-            $mEnd = $monthDate->copy()->endOfMonth();
-
-            $inc = (float) (clone $txQuery)->where('type', Transaction::TYPE_INCOME)
-                ->whereBetween('tanggal', [$mStart, $mEnd])
-                ->sum('amount');
-
-            $out = (float) (clone $txQuery)->where('type', Transaction::TYPE_OUTCOME)
-                ->whereBetween('tanggal', [$mStart, $mEnd])
-                ->sum('amount');
+            $monthKey = $monthDate->format('Y-m');
+            $monthGroup = $trendData->get($monthKey, collect());
+            
+            $inc = (float) $monthGroup->where('type', Transaction::TYPE_INCOME)->first()?->total ?? 0;
+            $out = (float) $monthGroup->where('type', Transaction::TYPE_OUTCOME)->first()?->total ?? 0;
 
             $monthlyTrend[] = [
                 'label' => $monthDate->translatedFormat('M Y'),
