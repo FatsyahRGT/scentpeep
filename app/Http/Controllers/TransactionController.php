@@ -73,6 +73,7 @@ class TransactionController extends Controller
         $summaries = (clone $query)
             ->selectRaw('type, SUM(amount) as total')
             ->groupBy('type')
+            ->reorder() // Remove existing ORDER BY from base query
             ->pluck('total', 'type');
         
         $totalIncome = (float) ($summaries[Transaction::TYPE_INCOME] ?? 0);

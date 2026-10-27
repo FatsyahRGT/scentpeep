@@ -7,27 +7,48 @@
 <!-- Cashflow Summary Metric Header -->
 <div class="row g-3 mb-4">
     <div class="col-sm-4">
-        <div class="card card-sm border-0 shadow-sm">
-            <div class="card-body p-3">
-                <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Pemasukan (Filter Terpilih)</div>
-                <div class="fw-bold fs-3 text-success">+Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
+        <div class="card card-sm border-0 shadow-sm h-100">
+            <div class="card-body p-3 d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                    <span class="bg-success-lt text-success avatar rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-arrow-down-left-circle fs-2"></i>
+                    </span>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Pemasukan (Filter Terpilih)</div>
+                    <div class="fw-bold fs-3 text-success mb-0">+Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-sm-4">
-        <div class="card card-sm border-0 shadow-sm">
-            <div class="card-body p-3">
-                <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Pengeluaran (Filter Terpilih)</div>
-                <div class="fw-bold fs-3 text-danger">-Rp {{ number_format($totalOutcome, 0, ',', '.') }}</div>
+        <div class="card card-sm border-0 shadow-sm h-100">
+            <div class="card-body p-3 d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                    <span class="bg-danger-lt text-danger avatar rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-arrow-up-right-circle fs-2"></i>
+                    </span>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Pengeluaran (Filter Terpilih)</div>
+                    <div class="fw-bold fs-3 text-danger mb-0">-Rp {{ number_format($totalOutcome, 0, ',', '.') }}</div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-sm-4">
-        <div class="card card-sm border-0 shadow-sm">
-            <div class="card-body p-3">
-                <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Saldo Bersih (Net Saldo)</div>
-                <div class="fw-bold fs-3 {{ $netSaldo >= 0 ? 'text-primary' : 'text-danger' }}">
-                    Rp {{ number_format($netSaldo, 0, ',', '.') }}
+        <div class="card card-sm border-0 shadow-sm h-100">
+            <div class="card-body p-3 d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                    <span class="bg-{{ $netSaldo >= 0 ? 'primary' : 'danger' }}-lt text-{{ $netSaldo >= 0 ? 'primary' : 'danger' }} avatar rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-wallet2 fs-2"></i>
+                    </span>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem;">Saldo Bersih (Net Saldo)</div>
+                    <div class="fw-bold fs-3 {{ $netSaldo >= 0 ? 'text-primary' : 'text-danger' }} mb-0">
+                        Rp {{ number_format($netSaldo, 0, ',', '.') }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -44,7 +65,7 @@
                 <small class="text-muted">Total {{ $transactions->total() }} baris transaksi tercatat dalam sistem</small>
             </div>
         </div>
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
             <div class="dropdown">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-download me-1"></i> Ekspor
@@ -70,8 +91,8 @@
 
     <!-- Filter Bar -->
     <div class="card-body border-bottom p-3 bg-light">
-        <form action="{{ route('transactions.index') }}" method="GET" class="row g-2 align-items-end">
-            <div class="col-md-3">
+        <form action="{{ route('transactions.index') }}" method="GET" class="row g-3 align-items-end">
+            <div class="col-lg-3 col-md-6">
                 <label class="form-label small fw-bold text-muted mb-1">Cari Keterangan / Ref</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
@@ -79,7 +100,7 @@
                 </div>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label small fw-bold text-muted mb-1">Tipe Arus Kas</label>
                 <select name="type" class="form-select form-select-sm">
                     <option value="">Semua Tipe</option>
@@ -88,7 +109,7 @@
                 </select>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label small fw-bold text-muted mb-1">Kategori</label>
                 <select name="category" class="form-select form-select-sm">
                     <option value="">Semua Kategori</option>
@@ -99,7 +120,7 @@
             </div>
 
             @if(!Auth::user()->isReseller() && isset($locations))
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label small fw-bold text-muted mb-1">Lokasi</label>
                 <select name="location_id" class="form-select form-select-sm">
                     <option value="">Semua Lokasi</option>
@@ -110,19 +131,19 @@
             </div>
             @endif
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label small fw-bold text-muted mb-1">Dari Tanggal</label>
                 <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label small fw-bold text-muted mb-1">Sampai Tanggal</label>
                 <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}">
             </div>
 
-            <div class="col-md-1 d-flex gap-1">
-                <button type="submit" class="btn btn-sm btn-primary w-100" title="Terapkan Filter">
-                    <i class="bi bi-funnel"></i>
+            <div class="col-lg-1 col-md-12 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary flex-fill" title="Terapkan Filter">
+                    <i class="bi bi-funnel me-1"></i> Filter
                 </button>
                 @if(request()->anyFilled(['search', 'type', 'category', 'location_id', 'start_date', 'end_date']))
                     <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Filter">
@@ -240,7 +261,8 @@
                 <tr>
                     <td colspan="7" class="text-center text-muted py-5">
                         <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
-                        Tidak ada transaksi yang cocok dengan filter.
+                        <div class="fw-semibold mb-1">Tidak ada transaksi yang cocok dengan filter</div>
+                        <small>Coba ubah filter atau catat transaksi baru</small>
                     </td>
                 </tr>
                 @endforelse

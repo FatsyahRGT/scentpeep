@@ -41,6 +41,7 @@ class DashboardController extends Controller
         $summaries = (clone $txQuery)
             ->selectRaw('type, SUM(amount) as total')
             ->groupBy('type')
+            ->reorder() // Remove existing ORDER BY from base query
             ->pluck('total', 'type');
         
         $totalIncome = (float) ($summaries[Transaction::TYPE_INCOME] ?? 0);
@@ -52,6 +53,7 @@ class DashboardController extends Controller
             ->whereDate('tanggal', '>=', $startOfMonth)
             ->selectRaw('type, SUM(amount) as total, COUNT(*) as count')
             ->groupBy('type')
+            ->reorder() // Remove existing ORDER BY from base query
             ->get()
             ->keyBy('type');
         
@@ -137,6 +139,7 @@ class DashboardController extends Controller
             ->where('tanggal', '>=', $sixMonthsAgo)
             ->selectRaw("{$dateFormat} as month, type, SUM(amount) as total")
             ->groupBy('month', 'type')
+            ->reorder() // Remove existing ORDER BY from base query
             ->get()
             ->groupBy('month');
         
