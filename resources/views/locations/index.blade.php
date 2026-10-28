@@ -11,13 +11,13 @@
             <small class="text-muted d-block">Kelola toko fisik, gudang pusat, dan partner reseller konsinyasi (RIZKY, IWAN, TOKO GPI).</small>
         </div>
         <div class="card-tools d-flex flex-wrap align-items-center gap-2">
+            <a href="{{ route('locations.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Lokasi
+            </a>
             <div class="input-group input-group-sm" style="width: 16rem">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                 <input type="search" id="liveLocationSearch" class="form-control border-start-0 ps-0" placeholder="Filter baris lokasi&hellip;" aria-label="Filter rows">
             </div>
-            <a href="{{ route('locations.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                <i class="bi bi-plus-lg me-1"></i> Tambah Lokasi
-            </a>
         </div>
     </div>
 

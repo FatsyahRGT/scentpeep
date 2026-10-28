@@ -11,10 +11,9 @@
             <small class="text-muted d-block">Kelola master varian parfum Scentpeep, kode SKU, dan harga modal & jual.</small>
         </div>
         <div class="card-tools d-flex flex-wrap align-items-center gap-2">
-            <div class="input-group input-group-sm" style="width: 16rem">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                <input type="search" id="liveProductSearch" name="search" class="form-control border-start-0 ps-0" placeholder="Filter baris tabel&hellip;" value="{{ request('search') }}" aria-label="Filter rows">
-            </div>
+            <a href="{{ route('products.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Produk
+            </a>
             <form method="GET" action="{{ route('products.index') }}" class="d-inline-block">
                 <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">-- Semua Status --</option>
@@ -22,9 +21,10 @@
                     <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Non-Aktif</option>
                 </select>
             </form>
-            <a href="{{ route('products.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                <i class="bi bi-plus-lg me-1"></i> Tambah Produk
-            </a>
+            <div class="input-group input-group-sm" style="width: 16rem">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="search" id="liveProductSearch" name="search" class="form-control border-start-0 ps-0" placeholder="Filter baris tabel&hellip;" value="{{ request('search') }}" aria-label="Filter rows">
+            </div>
         </div>
     </div>
 
