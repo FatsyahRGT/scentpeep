@@ -6,16 +6,16 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+        <div class="card border-0 shadow-sm mb-4" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3" style="border-bottom: 1px solid var(--color-border-subtle, #f0eee9);">
                 <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-arrow-left-right text-primary fs-4"></i>
+                    <i class="bi bi-arrow-left-right text-dark fs-4"></i>
                     <div>
-                        <h4 class="card-title mb-0 fw-bold">Formulir Transfer Stok</h4>
+                        <h4 class="font-serif card-title mb-0 fw-bold fs-5">Formulir Transfer Stok</h4>
                         <small class="text-muted">Pindahkan unit fisik parfum antar cabang / partner secara langsung & atomik</small>
                     </div>
                 </div>
-                <a href="{{ route('stocks.index') }}" class="btn btn-outline-secondary btn-sm">
+                <a href="{{ route('stocks.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                     <i class="bi bi-arrow-left me-1"></i> Kembali ke Ringkasan
                 </a>
             </div>
@@ -27,7 +27,7 @@
                     <!-- Route: Lokasi Asal & Lokasi Tujuan -->
                     <div class="row g-3 mb-4 align-items-center">
                         <div class="col-md-5">
-                            <label for="from_location_id" class="form-label small fw-bold text-muted text-uppercase">Lokasi Asal (Sumber) <span class="text-danger">*</span></label>
+                            <label for="from_location_id" class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing: 0.05em;">Lokasi Asal (Sumber) <span class="text-danger">*</span></label>
                             <select class="form-select @error('from_location_id') is-invalid @enderror" id="from_location_id" name="from_location_id" required onchange="updateLiveTransferCalculator()">
                                 <option value="">-- Pilih Lokasi Asal --</option>
                                 @foreach($locations as $loc)
@@ -42,13 +42,13 @@
                         </div>
 
                         <div class="col-md-2 text-center d-none d-md-block pt-3">
-                            <div class="p-2 bg-light rounded-circle d-inline-block text-primary shadow-sm">
+                            <div class="p-2 rounded-circle d-inline-block text-dark" style="background-color: var(--color-surface-hover, #f4f3f0); border: 1px solid var(--color-border, #e8e6e1);">
                                 <i class="bi bi-arrow-right fs-4"></i>
                             </div>
                         </div>
 
                         <div class="col-md-5">
-                            <label for="to_location_id" class="form-label small fw-bold text-muted text-uppercase">Lokasi Tujuan <span class="text-danger">*</span></label>
+                            <label for="to_location_id" class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing: 0.05em;">Lokasi Tujuan <span class="text-danger">*</span></label>
                             <select class="form-select @error('to_location_id') is-invalid @enderror" id="to_location_id" name="to_location_id" required onchange="updateLiveTransferCalculator()">
                                 <option value="">-- Pilih Lokasi Tujuan --</option>
                                 @foreach($locations as $loc)
@@ -66,7 +66,7 @@
                     <div class="row g-3 mb-3">
                         <!-- Product Selection -->
                         <div class="col-md-8">
-                            <label for="product_id" class="form-label small fw-bold text-muted text-uppercase">Varian Produk Parfum <span class="text-danger">*</span></label>
+                            <label for="product_id" class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing: 0.05em;">Varian Produk Parfum <span class="text-danger">*</span></label>
                             <select class="form-select @error('product_id') is-invalid @enderror" id="product_id" name="product_id" required onchange="updateLiveTransferCalculator()">
                                 <option value="">-- Pilih Varian Produk --</option>
                                 @foreach($products as $prod)
@@ -82,10 +82,10 @@
 
                         <!-- Quantity -->
                         <div class="col-md-4">
-                            <label for="qty" class="form-label small fw-bold text-muted text-uppercase">Jumlah Transfer <span class="text-danger">*</span></label>
+                            <label for="qty" class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing: 0.05em;">Jumlah Transfer <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" min="1" class="form-control @error('qty') is-invalid @enderror" id="qty" name="qty" value="{{ old('qty', 1) }}" required oninput="updateLiveTransferCalculator()">
-                                <span class="input-group-text bg-light text-muted">pcs</span>
+                                <span class="input-group-text bg-white text-muted">pcs</span>
                             </div>
                             @error('qty')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
@@ -94,7 +94,7 @@
                     </div>
 
                     <!-- Realtime Transfer Calculation Widget -->
-                    <div id="transferCalculatorWidget" class="p-3 mb-3 bg-light rounded-3 border d-none">
+                    <div id="transferCalculatorWidget" class="p-3 mb-3 rounded-3 border d-none" style="background-color: var(--color-surface-hover, #f4f3f0); border-color: var(--color-border, #e8e6e1) !important;">
                         <div class="row g-2 align-items-center text-center text-md-start">
                             <div class="col-md-6">
                                 <span class="text-muted small">Stok Asal:</span>
@@ -113,16 +113,16 @@
 
                     <!-- Notes -->
                     <div class="mb-4">
-                        <label for="notes" class="form-label small fw-bold text-muted text-uppercase">Catatan / Keterangan <span class="text-muted fw-normal">(Opsional)</span></label>
+                        <label for="notes" class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing: 0.05em;">Catatan / Keterangan <span class="text-muted fw-normal">(Opsional)</span></label>
                         <input type="text" class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" value="{{ old('notes') }}" placeholder="Contoh: Pengiriman stok konsinyasi bulanan">
                         @error('notes')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="{{ route('stocks.index') }}" class="btn btn-light border px-4">Batal</a>
-                        <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                    <div class="d-flex justify-content-end gap-2 pt-2 border-top" style="border-color: var(--color-border-subtle, #f0eee9) !important;">
+                        <a href="{{ route('stocks.index') }}" class="btn btn-light border px-4 rounded-pill">Batal</a>
+                        <button type="submit" class="btn btn-scent px-4 fw-semibold">
                             <i class="bi bi-arrow-left-right me-1"></i> Proses Transfer Stok
                         </button>
                     </div>
@@ -149,41 +149,34 @@
         const fromBadge = document.getElementById('fromProjectedBadge');
         const toBadge = document.getElementById('toProjectedBadge');
 
-        if (!fromId || !prodId) {
-            if (widget) widget.classList.add('d-none');
+        if (!fromId || !toId || !prodId) {
+            widget.classList.add('d-none');
             return;
         }
 
-        if (widget) widget.classList.remove('d-none');
+        widget.classList.remove('d-none');
 
-        const fromKey = `${fromId}_${prodId}`;
-        const fromStock = STOCKS_MAP[fromKey] !== undefined ? STOCKS_MAP[fromKey] : 0;
-        const fromRemain = fromStock - qty;
+        const fromStock = (STOCKS_MAP[fromId] && STOCKS_MAP[fromId][prodId]) ? STOCKS_MAP[fromId][prodId] : 0;
+        const toStock = (STOCKS_MAP[toId] && STOCKS_MAP[toId][prodId]) ? STOCKS_MAP[toId][prodId] : 0;
 
-        if (fromDisplay) fromDisplay.textContent = `${fromStock} pcs`;
-        if (fromBadge) {
-            fromBadge.textContent = `${fromRemain} pcs`;
-            fromBadge.className = fromRemain < 0 ? 'badge bg-danger text-white ms-1' : (fromRemain <= 3 ? 'badge bg-warning text-dark ms-1' : 'badge bg-secondary text-white ms-1');
-        }
+        const fromProjected = fromStock - qty;
+        const toProjected = toStock + qty;
 
-        if (toId) {
-            const toKey = `${toId}_${prodId}`;
-            const toStock = STOCKS_MAP[toKey] !== undefined ? STOCKS_MAP[toKey] : 0;
-            const toFinal = toStock + qty;
+        fromDisplay.textContent = fromStock + ' pcs';
+        toDisplay.textContent = toStock + ' pcs';
 
-            if (toDisplay) toDisplay.textContent = `${toStock} pcs`;
-            if (toBadge) {
-                toBadge.textContent = `${toFinal} pcs`;
-                toBadge.className = 'badge bg-success text-white ms-1';
-            }
+        fromBadge.textContent = fromProjected + ' pcs';
+        if (fromProjected < 0) {
+            fromBadge.className = 'badge bg-danger ms-1';
+        } else if (fromProjected <= 2) {
+            fromBadge.className = 'badge bg-warning text-dark ms-1';
         } else {
-            if (toDisplay) toDisplay.textContent = '-';
-            if (toBadge) toBadge.textContent = '-';
+            fromBadge.className = 'badge bg-secondary ms-1';
         }
+
+        toBadge.textContent = toProjected + ' pcs';
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        updateLiveTransferCalculator();
-    });
+    document.addEventListener('DOMContentLoaded', updateLiveTransferCalculator);
 </script>
 @endpush

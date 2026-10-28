@@ -5,231 +5,247 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', 'Dashboard') - Scentpeep Management System</title>
-    
-    <!-- Tabler Core CSS CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
-    <!-- Bootstrap Icons CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <!-- Google Fonts Plus Jakarta Sans -->
+
+    <!-- Google Fonts: Source Serif 4 + Plus Jakarta Sans + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3.3 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <style>
+        /* ==========================================================
+           SCENTPEEP LUXURY NICHE MONOCHROME DESIGN SYSTEM
+           ========================================================== */
         :root {
-            --tblr-font-sans-serif: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            --sp-navy: #0d1727;
-            --sp-accent: #206bc4;
+            --font-serif: 'Source Serif 4', Charter, Georgia, Cambria, 'Times New Roman', serif;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
+            --color-bg: #f9f9f8;
+            --color-surface: #ffffff;
+            --color-surface-hover: #f4f3f0;
+            --color-text-main: #171717;
+            --color-text-muted: #666666;
+            --color-text-subtle: #8a8a86;
+            --color-border: #e8e6e1;
+            --color-border-subtle: #f0eee9;
+            --scent-dark: #121212;
+            --scent-dark-hover: #000000;
+            --scent-amber: #b38b4d;
+            --scent-amber-subtle: rgba(179, 139, 77, 0.08);
         }
 
         body {
-            font-family: var(--tblr-font-sans-serif);
-            background-color: #f8fafc;
-            color: #1e293b;
+            font-family: var(--font-sans);
+            color: var(--color-text-main);
+            background-color: var(--color-bg);
+            letter-spacing: -0.012em;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        html, body { overflow-x: hidden; max-width: 100vw; }
+
+        /* Typography Helpers */
+        .font-serif { font-family: var(--font-serif); }
+        .font-sans { font-family: var(--font-sans); }
+        .font-mono-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+        .border-hairline { border-color: var(--color-border) !important; }
+        .border-hairline-b { border-bottom: 1px solid var(--color-border); }
+
+        h1, h2, h3, h4, .h1, .h2, .h3, .h4, .card-title {
+            font-family: var(--font-serif);
+            letter-spacing: -0.02em;
         }
 
-        /* Sidebar Styling */
-        .navbar-vertical.navbar-dark {
-            background-color: var(--sp-navy) !important;
-            border-right: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 1050;
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Luxury Button Overrides */
+        .btn-primary {
+            background-color: var(--scent-dark) !important;
+            border-color: var(--scent-dark) !important;
+            color: #ffffff !important;
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background-color: var(--scent-dark-hover) !important;
+            border-color: var(--scent-dark-hover) !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        }
+        .btn-outline-primary {
+            color: var(--scent-dark) !important;
+            border-color: var(--color-border) !important;
+        }
+        .btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active, .btn-outline-primary.active {
+            background-color: var(--scent-dark) !important;
+            border-color: var(--scent-dark) !important;
+            color: #ffffff !important;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--scent-dark) !important;
+            color: #ffffff !important;
         }
 
-        .navbar-brand-logo {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, #206bc4, #4299e1);
-            border-radius: 8px;
+        /* Brand Lockup */
+        .scent-brand {
+            font-family: var(--font-serif);
+            font-weight: 700;
+            font-size: 1.35rem;
+            letter-spacing: -0.035em;
+            color: var(--scent-dark);
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 1.2rem;
-            margin-right: 0.5rem;
-            flex-shrink: 0;
+            gap: 0.3rem;
         }
-
-        .navbar-vertical .nav-link {
-            font-weight: 500;
-            padding: 0.65rem 0.9rem;
-            border-radius: 8px;
-            margin-bottom: 3px;
-            color: #94a3b8;
-            transition: all 0.15s ease;
-        }
-
-        .navbar-vertical .nav-link:hover {
-            color: #ffffff;
-            background-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .navbar-vertical .nav-link.active {
-            color: #ffffff;
-            background-color: #206bc4;
+        .scent-brand:hover { color: #000000; }
+        .scent-brand-sub {
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
             font-weight: 600;
         }
 
-        .navbar-vertical .nav-link-icon {
-            font-size: 1.15rem;
-            margin-right: 0.65rem;
+        /* ==========================================================
+           SIDEBAR
+           ========================================================== */
+        .admin-sidebar {
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            width: 250px;
+            background-color: #ffffff;
+            border-right: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            z-index: 1050;
+            overflow-y: auto;
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-side-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.85rem;
+            color: var(--color-text-muted);
+            font-weight: 500;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .nav-side-link:hover { color: var(--color-text-main); background-color: var(--color-surface-hover); }
+        .nav-side-link.active { color: var(--scent-dark); background-color: #f1efea; font-weight: 600; }
+        .nav-side-link i { font-size: 1.1rem; }
+
+        .sidebar-section-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-text-subtle);
+            font-weight: 700;
+            padding: 0 0.85rem;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .sidebar-profile-box { border-top: 1px solid var(--color-border); padding-top: 0.75rem; }
+
+        .user-avatar-circle {
+            width: 34px; height: 34px;
+            border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
         }
 
-        /* Base Reset */
-        html, body {
-            overflow-x: hidden;
-            max-width: 100vw;
+        /* Page Wrapper */
+        body.has-sidebar .page-wrapper { margin-left: 250px; }
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Mobile Drawer rules (< 992px) */
-        @media (max-width: 991.98px) {
-            /* STATE TERTUTUP: seluruh sidebar disembunyikan total (tanpa sisa potongan) */
-            .navbar-vertical {
-                position: fixed !important;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                width: 280px !important;
-                max-width: 85vw;
-                height: 100vh !important;
-                height: 100dvh !important;
-                transform: translateX(-110%) !important;
-                visibility: hidden !important;
-                display: none !important;
-                pointer-events: none !important;
-                border-right: 0 !important;
-                box-shadow: none !important;
-                z-index: 1050 !important;
-                overflow: hidden !important;
-                transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-            .navbar-vertical > .container-fluid {
-                display: flex !important;
-                flex-direction: column !important;
-                height: 100% !important;
-                overflow: hidden !important;
-            }
-            .navbar-vertical .flex-grow-1 {
-                overflow-y: auto !important;
-                -webkit-overflow-scrolling: touch;
-                min-height: 0;
-            }
+        /* ==========================================================
+           LUXURY BUTTONS
+           ========================================================== */
+        .btn-scent {
+            background-color: var(--scent-dark);
+            color: #ffffff;
+            border: 1px solid var(--scent-dark);
+            font-weight: 500;
+            font-size: 0.875rem;
+            border-radius: 9999px;
+            padding: 0.45rem 1.25rem;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-scent:hover { background-color: var(--scent-dark-hover); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+        .btn-scent-outline {
+            background-color: transparent;
+            color: var(--color-text-main);
+            border: 1px solid var(--color-border);
+            font-weight: 500;
+            font-size: 0.875rem;
+            border-radius: 9999px;
+            padding: 0.45rem 1.2rem;
+            transition: all 0.2s ease;
+        }
+        .btn-scent-outline:hover { background-color: #fff; border-color: var(--scent-dark); color: #000; }
 
-            /* STATE TERBUKA */
-            body.sidebar-mobile-open .navbar-vertical {
-                display: flex !important;
-                transform: translateX(0) !important;
-                visibility: visible !important;
-                pointer-events: auto !important;
-                border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-                box-shadow: 4px 0 25px rgba(0, 0, 0, 0.5) !important;
-            }
-            .page-wrapper {
-                margin-left: 0 !important;
-                min-height: 100vh;
-            }
-            body.sidebar-mobile-open {
-                overflow: hidden;
-            }
+        /* ==========================================================
+           STAT CARDS (KPI)
+           ========================================================== */
+        .scent-stat-card {
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1.15rem 1.35rem;
+            height: 100%;
+            transition: border-color 0.15s ease;
+        }
+        .scent-stat-card:hover { border-color: #c4c1b9; }
+        .scent-stat-value {
+            font-family: var(--font-serif);
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--scent-dark);
+            line-height: 1.15;
+        }
+        .scent-stat-label {
+            font-size: 0.72rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
         }
 
-        /* Desktop rules (>= 992px) */
-        @media (min-width: 992px) {
-            .navbar-vertical {
-                position: fixed !important;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                width: 250px;
-                height: 100vh;
-                transform: none !important;
-                overflow-y: auto;
-                transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-            .page-wrapper {
-                margin-left: 250px;
-                transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-
-            /* FLEXIBLE COLLAPSED / MINI SIDEBAR ON DESKTOP */
-            body.sidebar-collapsed .navbar-vertical {
-                width: 76px !important;
-                overflow-x: hidden;
-            }
-            body.sidebar-collapsed .page-wrapper {
-                margin-left: 76px !important;
-            }
-
-            /* Hide text elements in collapsed mode */
-            body.sidebar-collapsed .navbar-vertical .sidebar-brand-text,
-            body.sidebar-collapsed .navbar-vertical .nav-link-title,
-            body.sidebar-collapsed .navbar-vertical .hr-text,
-            body.sidebar-collapsed .navbar-vertical .user-info-text {
-                display: none !important;
-            }
-
-            body.sidebar-collapsed .navbar-vertical .navbar-brand-logo {
-                margin-right: 0 !important;
-            }
-
-            body.sidebar-collapsed .navbar-vertical .sidebar-header-row {
-                justify-content: center !important;
-            }
-
-            body.sidebar-collapsed .navbar-vertical .nav-link {
-                justify-content: center !important;
-                padding: 0.75rem 0 !important;
-                text-align: center;
-            }
-
-            body.sidebar-collapsed .navbar-vertical .nav-link-icon {
-                margin-right: 0 !important;
-                font-size: 1.3rem;
-            }
-
-            body.sidebar-collapsed .navbar-vertical .sidebar-footer {
-                padding: 0.75rem 0.25rem !important;
-            }
-
-            body.sidebar-collapsed .navbar-vertical .sidebar-footer-row {
-                flex-direction: column !important;
-                justify-content: center !important;
-                align-items: center !important;
-                gap: 0.65rem !important;
-            }
-
-            body.sidebar-collapsed .navbar-vertical .sidebar-footer-row .avatar {
-                margin: 0 auto;
-            }
+        /* ==========================================================
+           DATA TABLE CARDS
+           ========================================================== */
+        .data-table-card {
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            overflow: hidden;
         }
-
-        /* Sidebar Backdrop Overlay on Mobile (Clean without blur) */
-        .sidebar-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(13, 23, 39, 0.65);
-            z-index: 1040;
-            opacity: 0;
-            transition: opacity 0.25s ease;
+        .data-row {
+            padding: 0.9rem 1.25rem;
+            border-bottom: 1px solid var(--color-border-subtle);
+            transition: background-color 0.12s ease;
         }
-        @media (max-width: 991.98px) {
-            body.sidebar-mobile-open .sidebar-backdrop {
-                display: block;
-                opacity: 1;
-            }
-        }
+        .data-row:last-child { border-bottom: none; }
+        .data-row:hover { background-color: #faf9f6; }
 
-        /* Stock Pill Indicators */
+        /* Stock Indicators */
         .stock-pill {
             display: inline-flex;
             align-items: center;
@@ -241,175 +257,212 @@
             font-size: 0.825rem;
             line-height: 1;
         }
+        .stock-safe { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+        .stock-warning { background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+        .stock-danger { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
 
-        .stock-safe {
-            background-color: #ecfdf5;
-            color: #047857;
-            border: 1px solid #a7f3d0;
-        }
-
-        .stock-warning {
-            background-color: #fffbeb;
-            color: #b45309;
-            border: 1px solid #fde68a;
-        }
-
-        .stock-danger {
-            background-color: #fef2f2;
-            color: #b91c1c;
-            border: 1px solid #fecaca;
-        }
-
-        /* Clean Form Controls & Dropdown Selects */
+        /* ==========================================================
+           FORMS
+           ========================================================== */
         .form-select, .form-control {
             border-radius: 8px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--color-border);
             padding: 0.55rem 0.85rem;
             font-size: 0.9rem;
             background-color: #ffffff;
-            color: #1e293b;
+            color: var(--color-text-main);
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
-
         .form-select:focus, .form-control:focus {
-            border-color: #206bc4;
-            box-shadow: 0 0 0 0.2rem rgba(32, 107, 196, 0.15);
+            border-color: var(--scent-dark);
+            box-shadow: 0 0 0 0.15rem rgba(18,18,18,0.08);
             background-color: #ffffff;
         }
 
-        .form-select option {
-            padding: 8px 12px;
+        /* ==========================================================
+           TABLES & CARDS
+           ========================================================== */
+        .table > :not(caption) > * > * { padding: 0.75rem 0.85rem; }
+        .table-hover tbody tr { transition: background-color 0.12s ease; }
+        .table-hover tbody tr:hover { background-color: #faf9f6; }
+
+        .card { border-radius: 8px; border: 1px solid var(--color-border); box-shadow: none; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); background-color: transparent; }
+        .card-title { margin-bottom: 0; font-size: 1.15rem; font-weight: 600; }
+        .card-tools { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
+        .badge { font-weight: 600; letter-spacing: 0.3px; }
+
+        /* AdminLTE 4 Pagination */
+        .pagination { display: flex; padding-left: 0; list-style: none; margin: 0; }
+        .pagination-sm .page-link {
+            padding: 0.28rem 0.65rem;
+            font-size: 0.8125rem;
+            border-radius: 4px;
+            margin: 0 1px;
+            text-decoration: none;
+        }
+        .pagination .page-item .page-link {
+            color: var(--color-text-main, #171717);
+            border: 1px solid var(--color-border, #e8e6e1);
             background-color: #ffffff;
-            color: #1e293b;
-        }
-
-        .form-select optgroup {
-            font-weight: 700;
-            color: #64748b;
-            background-color: #f8fafc;
-            padding: 4px 8px;
-        }
-
-        /* Consistent table rows */
-        .table > :not(caption) > * > * {
-            padding: 0.75rem 0.85rem;
-        }
-
-        /* Card Enhancements */
-        .card {
-            border-radius: 12px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-        }
-
-        .card-header {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        /* Button Improvements */
-        .btn {
-            border-radius: 8px;
-            font-weight: 500;
             transition: all 0.15s ease;
         }
-
-        .btn:hover {
-            transform: translateY(-1px);
+        .pagination .page-item .page-link:hover {
+            background-color: var(--color-surface-hover, #f4f3f0);
+            color: #000000;
+            border-color: #c4c1b9;
         }
-
-        .btn-group-sm .btn {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.875rem;
-        }
-
-        /* Badge Improvements */
-        .badge {
+        .pagination .page-item.active .page-link {
+            background-color: var(--scent-dark, #121212) !important;
+            border-color: var(--scent-dark, #121212) !important;
+            color: #ffffff !important;
             font-weight: 600;
-            letter-spacing: 0.3px;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: var(--color-text-subtle, #8a8a86);
+            background-color: #faf9f6;
+            border-color: var(--color-border-subtle, #f0eee9);
+            pointer-events: none;
         }
 
-        /* Responsive Chart Container */
-        @media (max-width: 768px) {
-            .card-body canvas {
-                max-height: 250px !important;
-            }
+        /* Pagination */
+        .pagination-luxury .page-link {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 36px; height: 36px; padding: 0 0.5rem;
+            font-size: 0.85rem; font-weight: 500;
+            color: var(--color-text-main);
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            transition: all 0.15s ease;
         }
+        .pagination-luxury .page-link:hover { background-color: #f1efea; color: #000; }
+        .pagination-luxury .active .page-link { background-color: var(--scent-dark); color: #fff; font-weight: 600; border-color: var(--scent-dark); }
+        .pagination-luxury .disabled .page-link { color: #c7c5be; pointer-events: none; }
 
-        /* KPI Card Icons */
+        /* ==========================================================
+           TABLER CLASS COMPATIBILITY LAYER
+           (prevents child views from breaking during migration)
+           ========================================================== */
+        .bg-blue-lt { background-color: rgba(32,107,196,0.08) !important; }
+        .bg-primary-lt { background-color: rgba(32,107,196,0.08) !important; }
+        .bg-success-lt { background-color: rgba(47,179,68,0.08) !important; }
+        .bg-danger-lt { background-color: rgba(214,57,57,0.08) !important; }
+        .bg-cyan-lt { background-color: rgba(23,162,184,0.08) !important; }
+        .bg-warning-lt { background-color: rgba(245,159,0,0.08) !important; }
+        .text-cyan { color: #17a2b8 !important; }
+        .text-teal { color: #0ca678 !important; }
         .avatar {
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            font-weight: 700;
+        }
+        .avatar-sm { width: 32px; height: 32px; font-size: 0.8rem; }
+        .avatar-xs { width: 26px; height: 26px; font-size: 0.7rem; }
+        .card-sm .card-body { padding: 0.75rem !important; }
+        .btn-ghost-secondary { background: transparent; border: none; color: var(--color-text-muted); }
+        .btn-ghost-secondary:hover { background-color: var(--color-surface-hover); color: var(--color-text-main); }
+        .btn-ghost-danger { background: transparent; border: none; color: #d63939; }
+        .btn-ghost-danger:hover { background-color: #fef2f2; }
+        .btn-ghost-light { background: transparent; border: none; color: rgba(255,255,255,0.7); }
+        .btn-ghost-light:hover { color: #fff; }
+        .btn-icon { padding: 0.35rem; line-height: 1; }
+        .hr-text { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-subtle); font-weight: 700; padding: 0 0.85rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+        .text-danger-lt { color: rgba(214,57,57,0.7) !important; }
+        .tracking-tight { letter-spacing: -0.02em; }
+
+        /* ==========================================================
+           RESPONSIVE: MOBILE SIDEBAR
+           ========================================================== */
+        @media (max-width: 991.98px) {
+            .admin-sidebar {
+                width: 280px !important;
+                max-width: 85vw;
+                transform: translateX(-110%) !important;
+                visibility: hidden !important;
+                display: none !important;
+                pointer-events: none !important;
+            }
+            body.sidebar-mobile-open .admin-sidebar {
+                display: flex !important;
+                transform: translateX(0) !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+                box-shadow: 4px 0 25px rgba(0,0,0,0.15);
+            }
+            body.has-sidebar .page-wrapper { margin-left: 0 !important; }
+            body.sidebar-mobile-open { overflow: hidden; }
         }
 
-        .avatar.rounded-3 {
-            border-radius: 10px !important;
+        /* Desktop Collapse */
+        @media (min-width: 992px) {
+            body.sidebar-collapsed.has-sidebar .admin-sidebar { width: 72px !important; overflow-x: hidden; }
+            body.sidebar-collapsed.has-sidebar .page-wrapper { margin-left: 72px !important; }
+
+            body.sidebar-collapsed .admin-sidebar .sidebar-brand-text,
+            body.sidebar-collapsed .admin-sidebar .nav-link-title,
+            body.sidebar-collapsed .admin-sidebar .sidebar-section-label,
+            body.sidebar-collapsed .admin-sidebar .user-info-text { display: none !important; }
+
+            body.sidebar-collapsed .admin-sidebar .nav-side-link {
+                justify-content: center !important;
+                padding: 0.7rem 0 !important;
+            }
+            body.sidebar-collapsed .admin-sidebar .nav-side-link i { margin-right: 0 !important; font-size: 1.25rem; }
+            body.sidebar-collapsed .admin-sidebar .sidebar-header-row { justify-content: center !important; }
+            body.sidebar-collapsed .admin-sidebar .sidebar-footer { padding: 0.75rem 0.25rem !important; }
+            body.sidebar-collapsed .admin-sidebar .sidebar-footer-row {
+                flex-direction: column !important; align-items: center !important; gap: 0.5rem !important;
+            }
         }
 
-        /* Form Focus States */
-        .form-control:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: var(--sp-accent);
+        /* Sidebar Backdrop */
+        .sidebar-backdrop {
+            display: none; position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(23,23,23,0.4);
+            z-index: 1040; opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        @media (max-width: 991.98px) {
+            body.sidebar-mobile-open .sidebar-backdrop { display: block; opacity: 1; }
         }
 
-        /* Table Hover Enhancement */
-        .table-hover tbody tr {
-            transition: background-color 0.15s ease;
+        /* Print & Chart */
+        @media print {
+            .admin-sidebar, .page-topbar, .sidebar-backdrop { display: none !important; }
+            body.has-sidebar .page-wrapper { margin-left: 0 !important; }
         }
-
-        .table-hover tbody tr:hover {
-            background-color: rgba(32, 107, 196, 0.03);
-        }
-
-        /* Smooth Transitions for Interactive Elements */
-        a, button, .card, .badge, .btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Fix for Long Text in Tables */
-        .text-truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Chart Loading State */
-        .chart-loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 280px;
-            color: #94a3b8;
+        @media (max-width: 768px) {
+            .card-body canvas { max-height: 250px !important; }
         }
     </style>
     @stack('styles')
 </head>
-<body>
+<body @auth class="has-sidebar" @endauth>
     <div class="page">
         @auth
-        <!-- Mobile Top Navbar Header (Visible only on < 992px) -->
-        <header class="navbar navbar-dark d-lg-none sticky-top py-2 px-3" style="background-color: var(--sp-navy); border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 1040;">
+        <!-- Mobile Top Navbar (< 992px) -->
+        <header class="d-lg-none sticky-top py-2 px-3" style="background-color: var(--scent-dark); border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 1040;">
             <div class="container-fluid p-0 d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-icon btn-ghost-light text-white" type="button" onclick="toggleMobileSidebar()" aria-label="Toggle Sidebar Navigation">
-                        <i class="bi bi-list fs-2"></i>
+                    <button class="btn btn-sm text-white border-0 p-1" type="button" onclick="toggleMobileSidebar()" aria-label="Toggle Sidebar">
+                        <i class="bi bi-list fs-3"></i>
                     </button>
-                    <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none text-white">
-                        <span class="navbar-brand-logo" style="width: 30px; height: 30px; font-size: 1rem;"><i class="bi bi-droplet-fill"></i></span>
-                        <span class="fw-bold fs-3 text-white">Scentpeep</span>
+                    <a href="{{ route('dashboard') }}" class="scent-brand text-white text-decoration-none" style="font-size:1.15rem;">
+                        Scentpeep<span class="text-white-50">.</span>
                     </a>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <span class="avatar avatar-xs bg-blue-lt fw-bold rounded-circle">
+                    <span class="user-avatar-circle bg-white text-dark" style="width:28px;height:28px;font-size:0.7rem;">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </span>
                     <form action="{{ route('logout') }}" method="POST" class="m-0">
                         @csrf
-                        <button type="submit" class="btn btn-icon btn-sm btn-ghost-danger text-danger-lt" title="Keluar">
+                        <button type="submit" class="btn btn-sm text-white border-0 p-1" title="Keluar">
                             <i class="bi bi-box-arrow-right"></i>
                         </button>
                     </form>
@@ -417,150 +470,110 @@
             </div>
         </header>
 
-        <!-- Sidebar Overlay Backdrop for Mobile -->
+        <!-- Sidebar Backdrop (Mobile) -->
         <div class="sidebar-backdrop" onclick="toggleMobileSidebar(false)"></div>
 
-        <!-- Sidebar Navigation (Tabler navbar-vertical) -->
-        <aside id="main-sidebar" class="navbar navbar-vertical navbar-expand-lg navbar-dark">
-            <div class="container-fluid d-flex flex-column h-100 p-3">
-                <!-- Brand & Close Button on Mobile -->
-                <div class="sidebar-header-row d-flex align-items-center justify-content-between w-100 mb-3">
-                    <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none text-white overflow-hidden">
-                        <span class="navbar-brand-logo"><i class="bi bi-droplet-fill"></i></span>
-                        <div class="sidebar-brand-text">
-                            <span class="fw-bold fs-3 tracking-tight">Scentpeep</span>
-                            <div class="small text-muted" style="font-size: 0.68rem; letter-spacing: 0.5px;">STOCK MANAGEMENT</div>
-                        </div>
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar p-3">
+            <div class="d-flex flex-column h-100">
+                <!-- Brand -->
+                <div class="sidebar-header-row d-flex align-items-center justify-content-between mb-2">
+                    <a href="{{ route('dashboard') }}" class="scent-brand text-decoration-none">
+                        <span>Scentpeep<span class="text-secondary">.</span></span>
                     </a>
-                    <button type="button" class="btn btn-icon btn-sm btn-ghost-light d-lg-none text-white" onclick="toggleMobileSidebar(false)" aria-label="Close sidebar">
-                        <i class="bi bi-x-lg fs-4"></i>
+                    <button type="button" class="btn btn-sm border-0 text-muted d-lg-none p-1" onclick="toggleMobileSidebar(false)" aria-label="Close sidebar">
+                        <i class="bi bi-x-lg fs-5"></i>
                     </button>
                 </div>
-
-                <!-- Sidebar Menu Nav Links -->
-                <div class="w-100 flex-grow-1 overflow-y-auto">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}" onclick="closeMobileSidebarIfOpen()" title="Dashboard">
-                                <span class="nav-link-icon"><i class="bi bi-grid-1x2-fill"></i></span>
-                                <span class="nav-link-title">Dashboard</span>
-                            </a>
-                        </li>
-
-                        @if(Auth::user()->isReseller())
-                        <li class="nav-item">
-                            <div class="hr-text text-uppercase text-muted my-2" style="font-size: 0.65rem;">PENJUALAN & STOK</div>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('transactions.create') ? 'active' : '' }}" href="{{ route('transactions.create', ['mode' => 'stock']) }}" onclick="closeMobileSidebarIfOpen()" title="Catat Penjualan">
-                                <span class="nav-link-icon text-teal"><i class="bi bi-cart-plus-fill"></i></span>
-                                <span class="nav-link-title">Catat Penjualan</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()" title="Riwayat Penjualan">
-                                <span class="nav-link-icon"><i class="bi bi-journal-text"></i></span>
-                                <span class="nav-link-title">Riwayat Penjualan</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()" title="Stok Saya">
-                                <span class="nav-link-icon text-cyan"><i class="bi bi-box-seam-fill"></i></span>
-                                <span class="nav-link-title">Stok Saya</span>
-                            </a>
-                        </li>
-                        @else
-                        <li class="nav-item">
-                            <div class="hr-text text-uppercase text-muted my-2" style="font-size: 0.65rem;">KAS & TRANSAKSI</div>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('transactions.create') && request('mode') !== 'stock' ? 'active' : '' }}" href="{{ route('transactions.create') }}" onclick="closeMobileSidebarIfOpen()" title="Catat Transaksi Kas">
-                                <span class="nav-link-icon text-warning"><i class="bi bi-wallet2"></i></span>
-                                <span class="nav-link-title">Catat Transaksi Kas</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('transactions.create') && request('mode') === 'stock' ? 'active' : '' }}" href="{{ route('transactions.create', ['mode' => 'stock']) }}" onclick="closeMobileSidebarIfOpen()" title="Catat Mutasi Stok">
-                                <span class="nav-link-icon text-teal"><i class="bi bi-box-arrow-in-down-right"></i></span>
-                                <span class="nav-link-title">Catat Mutasi Stok</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()" title="Riwayat Transaksi">
-                                <span class="nav-link-icon"><i class="bi bi-journal-text"></i></span>
-                                <span class="nav-link-title">Riwayat Transaksi</span>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <div class="hr-text text-uppercase text-muted my-2" style="font-size: 0.65rem;">STOK PARFUM</div>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()" title="Ringkasan Stok">
-                                <span class="nav-link-icon"><i class="bi bi-box-seam-fill"></i></span>
-                                <span class="nav-link-title">Ringkasan Stok</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('stocks.transfer.*') ? 'active' : '' }}" href="{{ route('stocks.transfer.create') }}" onclick="closeMobileSidebarIfOpen()" title="Transfer Stok">
-                                <span class="nav-link-icon text-info"><i class="bi bi-arrow-left-right"></i></span>
-                                <span class="nav-link-title">Transfer Stok</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('stocks.transfers') ? 'active' : '' }}" href="{{ route('stocks.transfers') }}" onclick="closeMobileSidebarIfOpen()" title="Riwayat Transfer">
-                                <span class="nav-link-icon text-muted"><i class="bi bi-clock-history"></i></span>
-                                <span class="nav-link-title">Riwayat Transfer</span>
-                            </a>
-                        </li>
-                        @endif
-
-                        @if(Auth::user()->isAdmin())
-                        <li class="nav-item">
-                            <div class="hr-text text-uppercase text-muted my-2" style="font-size: 0.65rem;">MASTER DATA</div>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}" onclick="closeMobileSidebarIfOpen()" title="Produk Parfum">
-                                <span class="nav-link-icon"><i class="bi bi-flower1"></i></span>
-                                <span class="nav-link-title">Produk Parfum</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('locations.*') ? 'active' : '' }}" href="{{ route('locations.index') }}" onclick="closeMobileSidebarIfOpen()" title="Lokasi Stok">
-                                <span class="nav-link-icon"><i class="bi bi-geo-alt-fill"></i></span>
-                                <span class="nav-link-title">Lokasi Stok</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}" onclick="closeMobileSidebarIfOpen()" title="Manajemen User">
-                                <span class="nav-link-icon"><i class="bi bi-people-fill"></i></span>
-                                <span class="nav-link-title">Manajemen User</span>
-                            </a>
-                        </li>
-                        @endif
-                    </ul>
+                <div class="sidebar-brand-text">
+                    <div class="scent-brand-sub mb-3">Stock Management</div>
                 </div>
 
-                <!-- User Footer in Sidebar -->
-                <div class="sidebar-footer w-100 pt-3 pb-2 mt-auto border-top border-dark-subtle flex-shrink-0">
+                <!-- Navigation Links -->
+                <div class="flex-grow-1 overflow-y-auto d-flex flex-column gap-1">
+                    <a class="nav-side-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span class="nav-link-title">Dashboard</span>
+                    </a>
+
+                    @if(Auth::user()->isReseller())
+                    <div class="sidebar-section-label">Penjualan & Stok</div>
+                    <a class="nav-side-link {{ request()->routeIs('transactions.create') ? 'active' : '' }}" href="{{ route('transactions.create', ['mode' => 'stock']) }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-cart-plus-fill"></i>
+                        <span class="nav-link-title">Catat Penjualan</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-journal-text"></i>
+                        <span class="nav-link-title">Riwayat Penjualan</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-box-seam-fill"></i>
+                        <span class="nav-link-title">Stok Saya</span>
+                    </a>
+
+                    @else
+                    <div class="sidebar-section-label">Kas & Transaksi</div>
+                    <a class="nav-side-link {{ request()->routeIs('transactions.create') && request('mode') !== 'stock' ? 'active' : '' }}" href="{{ route('transactions.create') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-wallet2"></i>
+                        <span class="nav-link-title">Catat Transaksi Kas</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-journal-text"></i>
+                        <span class="nav-link-title">Riwayat Transaksi</span>
+                    </a>
+
+                    <div class="sidebar-section-label">Stok Parfum</div>
+                    <a class="nav-side-link {{ request()->routeIs('transactions.create') && request('mode') === 'stock' ? 'active' : '' }}" href="{{ route('transactions.create', ['mode' => 'stock']) }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-box-arrow-in-down-right"></i>
+                        <span class="nav-link-title">Catat Mutasi Stok</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-box-seam-fill"></i>
+                        <span class="nav-link-title">Ringkasan Stok</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('stocks.transfer.*') ? 'active' : '' }}" href="{{ route('stocks.transfer.create') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span class="nav-link-title">Transfer Stok</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('stocks.transfers') ? 'active' : '' }}" href="{{ route('stocks.transfers') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-clock-history"></i>
+                        <span class="nav-link-title">Riwayat Transfer</span>
+                    </a>
+                    @endif
+
+                    @if(Auth::user()->isAdmin())
+                    <div class="sidebar-section-label">Master Data</div>
+                    <a class="nav-side-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-flower1"></i>
+                        <span class="nav-link-title">Produk Parfum</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('locations.*') ? 'active' : '' }}" href="{{ route('locations.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span class="nav-link-title">Lokasi Stok</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-people-fill"></i>
+                        <span class="nav-link-title">Manajemen User</span>
+                    </a>
+                    @endif
+                </div>
+
+                <!-- Sidebar Footer: User Profile & Logout -->
+                <div class="sidebar-footer sidebar-profile-box mt-auto pt-2">
                     <div class="sidebar-footer-row d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-2 overflow-hidden" style="min-width: 0;">
-                            <span class="avatar avatar-sm bg-blue-lt fw-bold rounded-circle flex-shrink-0">
+                        <div class="d-flex align-items-center gap-2 overflow-hidden" style="min-width:0;">
+                            <span class="user-avatar-circle bg-dark text-white flex-shrink-0">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </span>
-                            <div class="user-info-text text-truncate" style="min-width: 0;">
-                                <div class="text-white small fw-bold text-truncate">{{ Auth::user()->name }}</div>
-                                <div class="text-muted small" style="font-size: 0.7rem;">{{ ucfirst(Auth::user()->role) }}</div>
+                            <div class="user-info-text text-truncate" style="min-width:0;">
+                                <div class="fw-bold text-dark font-serif text-truncate" style="font-size:0.85rem;">{{ Auth::user()->name }}</div>
+                                <div class="text-muted text-truncate" style="font-size:0.68rem;">{{ ucfirst(Auth::user()->role) }}</div>
                             </div>
                         </div>
                         <form action="{{ route('logout') }}" method="POST" class="m-0 flex-shrink-0">
                             @csrf
-                            <button type="submit" class="btn btn-icon btn-sm btn-ghost-danger" title="Keluar">
-                                <i class="bi bi-box-arrow-right"></i>
+                            <button type="submit" class="btn btn-sm text-danger border-0 p-1" title="Keluar">
+                                <i class="bi bi-box-arrow-right fs-5"></i>
                             </button>
                         </form>
                     </div>
@@ -569,50 +582,47 @@
         </aside>
         @endauth
 
-        <!-- Page Wrapper Area -->
+        <!-- Page Wrapper -->
         <div class="page-wrapper">
             @auth
-            <!-- Topbar Header (Desktop) -->
-            <header class="navbar navbar-expand-md navbar-light d-none d-lg-flex d-print-none sticky-top bg-white border-bottom px-4 py-2">
-                <div class="container-fluid p-0">
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-icon btn-ghost-secondary border-0 text-secondary" type="button" onclick="toggleDesktopSidebar()" title="Perkecil / Perluas Sidebar">
-                            <i class="bi bi-layout-sidebar-inset fs-3"></i>
-                        </button>
-                        <h4 class="mb-0 fw-bold text-dark">@yield('page-header', 'Scentpeep Management System')</h4>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="badge bg-light text-secondary border px-3 py-2 d-none d-xl-inline-flex">
-                            <i class="bi bi-calendar3 me-1"></i> {{ date('d M Y') }}
-                        </span>
-                        <span class="badge bg-blue-lt px-3 py-2 fw-semibold">
-                            <i class="bi bi-shield-check me-1"></i> {{ strtoupper(Auth::user()->role) }}
-                        </span>
-                    </div>
+            <!-- Desktop Topbar (>= 992px) -->
+            <header class="page-topbar d-none d-lg-flex align-items-center justify-content-between bg-white border-hairline-b sticky-top py-2 px-4">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm border-0 text-muted p-1" type="button" onclick="toggleDesktopSidebar()" title="Perkecil / Perluas Sidebar">
+                        <i class="bi bi-layout-sidebar-inset fs-4"></i>
+                    </button>
+                    <h4 class="mb-0 fw-bold font-serif" style="color: var(--scent-dark);">@yield('page-header', 'Scentpeep Management System')</h4>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge bg-light text-muted border border-hairline px-3 py-2 d-none d-xl-inline-flex" style="font-size:0.78rem;">
+                        <i class="bi bi-calendar3 me-1"></i> {{ date('d M Y') }}
+                    </span>
+                    <span class="badge px-3 py-2 fw-semibold" style="background-color: var(--scent-amber-subtle); color: var(--scent-amber); font-size:0.78rem;">
+                        <i class="bi bi-shield-check me-1"></i> {{ strtoupper(Auth::user()->role) }}
+                    </span>
                 </div>
             </header>
             @endauth
 
-            <!-- Page Body Content -->
-            <div class="page-body px-3 px-lg-4 py-3">
+            <!-- Page Body -->
+            <div class="flex-grow-1 px-3 px-lg-4 py-3">
                 <div class="container-fluid p-0">
                     @yield('content')
                 </div>
             </div>
 
-            <!-- Minimal Footer -->
-            <footer class="footer footer-transparent d-print-none border-top py-3 px-4 bg-white mt-auto text-muted small">
+            <!-- Footer -->
+            <footer class="border-top py-3 px-4 bg-white mt-auto text-muted small" style="border-color: var(--color-border) !important;">
                 <div class="container-fluid p-0 d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
-                    <div>&copy; {{ date('Y') }} <strong>Scentpeep</strong>, Sistem Rekap Stok & Ledger Transaksi UMKM Parfum</div>
-                    <div>Tabler + Bootstrap 5 + SweetAlert2 (CDN)</div>
+                    <div>&copy; {{ date('Y') }} <strong class="font-serif">Scentpeep</strong>, Sistem Rekap Stok & Ledger Transaksi UMKM Parfum</div>
+                    <div>Bootstrap 5.3 + SweetAlert2 (CDN)</div>
                 </div>
             </footer>
         </div>
     </div>
 
-    <!-- Tabler Core JS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+    <!-- Bootstrap 5.3.3 JS Bundle CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <!-- SweetAlert2 CDN (v11) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -621,9 +631,7 @@
         function toggleDesktopSidebar() {
             document.body.classList.toggle('sidebar-collapsed');
             const isCollapsed = document.body.classList.contains('sidebar-collapsed');
-            try {
-                localStorage.setItem('scentpeep_sidebar_collapsed', isCollapsed ? '1' : '0');
-            } catch(e) {}
+            try { localStorage.setItem('scentpeep_sidebar_collapsed', isCollapsed ? '1' : '0'); } catch(e) {}
         }
 
         // Restore sidebar collapsed state on desktop load
@@ -635,14 +643,10 @@
             } catch(e) {}
         });
 
-        // Mobile Offcanvas Drawer Sidebar Helper (< 992px)
+        // Mobile Offcanvas Drawer Sidebar (< 992px)
         function toggleMobileSidebar(forceState = null) {
             if (forceState !== null) {
-                if (forceState) {
-                    document.body.classList.add('sidebar-mobile-open');
-                } else {
-                    document.body.classList.remove('sidebar-mobile-open');
-                }
+                document.body.classList.toggle('sidebar-mobile-open', forceState);
             } else {
                 document.body.classList.toggle('sidebar-mobile-open');
             }
@@ -654,11 +658,8 @@
             }
         }
 
-        // Close mobile sidebar on Escape key
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeMobileSidebarIfOpen();
-            }
+            if (e.key === 'Escape') closeMobileSidebarIfOpen();
         });
 
         // SweetAlert2 Toast Notifications
@@ -675,36 +676,24 @@
         });
 
         @if(session('success'))
-            Toast.fire({
-                icon: 'success',
-                title: "{{ session('success') }}"
-            });
+            Toast.fire({ icon: 'success', title: "{{ session('success') }}" });
         @endif
-
         @if(session('warning'))
-            Toast.fire({
-                icon: 'warning',
-                title: "{{ session('warning') }}"
-            });
+            Toast.fire({ icon: 'warning', title: "{{ session('warning') }}" });
         @endif
-
         @if(session('danger') || session('error'))
-            Toast.fire({
-                icon: 'error',
-                title: "{{ session('danger') ?? session('error') }}"
-            });
+            Toast.fire({ icon: 'error', title: "{{ session('danger') ?? session('error') }}" });
         @endif
-
         @if($errors->any())
             Swal.fire({
                 icon: 'error',
                 title: 'Terdapat Kesalahan Input',
                 html: '<ul class="text-start mb-0 ps-3">@foreach($errors->all() as $err)<li>{{ $err }}</li>@endforeach</ul>',
-                confirmButtonColor: '#206bc4'
+                confirmButtonColor: '#121212'
             });
         @endif
 
-        // Global SweetAlert2 Confirmation for Destructive Actions
+        // Confirm destructive actions (SweetAlert2)
         function confirmAction(formElement, titleText, messageText, confirmBtnText = 'Ya, Lanjutkan') {
             Swal.fire({
                 title: titleText || 'Apakah Anda yakin?',
@@ -717,9 +706,7 @@
                 cancelButtonText: 'Batal',
                 reverseButtons: true
             }).then((result) => {
-                if (result.isConfirmed) {
-                    formElement.submit();
-                }
+                if (result.isConfirmed) formElement.submit();
             });
             return false;
         }

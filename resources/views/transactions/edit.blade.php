@@ -6,16 +6,16 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+        <div class="card border-0 shadow-sm mb-4" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3" style="border-bottom: 1px solid var(--color-border-subtle, #f0eee9);">
                 <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-pencil-square text-primary fs-4"></i>
+                    <i class="bi bi-pencil-square text-dark fs-4"></i>
                     <div>
-                        <h4 class="card-title mb-0 fw-bold">Edit Transaksi #{{ $transaction->id }}</h4>
+                        <h4 class="font-serif card-title mb-0 fw-bold fs-5">Edit Transaksi #{{ $transaction->id }}</h4>
                         <small class="text-muted">Perubahan data akan otomatis membalikkan efek stok lama dan menerapkan efek stok baru</small>
                     </div>
                 </div>
-                <a href="{{ route('transactions.index') }}" class="btn btn-outline-secondary btn-sm">
+                <a href="{{ route('transactions.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                     <i class="bi bi-arrow-left me-1"></i> Kembali ke Riwayat
                 </a>
             </div>
@@ -247,9 +247,9 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="{{ route('transactions.index') }}" class="btn btn-light border px-4">Batal</a>
-                        <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                    <div class="d-flex justify-content-end gap-2 pt-2 border-top" style="border-color: var(--color-border-subtle, #f0eee9) !important;">
+                        <a href="{{ route('transactions.index') }}" class="btn btn-light border px-4 rounded-pill">Batal</a>
+                        <button type="submit" class="btn btn-scent px-4 fw-semibold">
                             <i class="bi bi-save me-1"></i> Perbarui Transaksi
                         </button>
                     </div>

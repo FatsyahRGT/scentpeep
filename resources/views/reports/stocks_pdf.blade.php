@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Laporan Matriks Stok Parfum - Scentpeep</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; background: #fff; color: #1e293b; padding: 20px; font-size: 11px; }
         .table th, .table td { padding: 6px 8px !important; font-size: 11px; }

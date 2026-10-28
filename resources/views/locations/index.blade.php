@@ -4,106 +4,96 @@
 @section('page-header', 'Master Data Lokasi Stok')
 
 @section('content')
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
-    <div>
-        <h3 class="fw-bold mb-1 text-dark">Master Lokasi Stok Fisik</h3>
-        <p class="text-muted mb-0 small">Kelola toko fisik, gudang pusat, dan partner reseller konsinyasi (RIZKY, IWAN, TOKO GPI).</p>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('locations.create') }}" class="btn btn-primary fw-semibold shadow-sm">
-            <i class="bi bi-plus-lg me-1"></i> Tambah Lokasi
-        </a>
-    </div>
-</div>
-
-<!-- Location Table Card -->
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-body border-bottom p-3 bg-light">
-        <div class="row g-2 align-items-center">
-            <div class="col-md-5">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" id="liveLocationSearch" class="form-control" placeholder="Cari nama lokasi secara realtime...">
-                </div>
-            </div>
-            <div class="col-md-7 text-md-end small text-muted">
-                Total <strong class="text-dark">{{ $locations->total() }}</strong> lokasi terdaftar
+<div class="card mb-4">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+        <div>
+            <h3 class="card-title mb-1 font-serif fw-bold text-dark">Master Lokasi Stok Fisik</h3>
+            <small class="text-muted d-block">Kelola toko fisik, gudang pusat, dan partner reseller konsinyasi (RIZKY, IWAN, TOKO GPI).</small>
+        </div>
+        <div class="card-tools d-flex flex-wrap align-items-center gap-2">
+            <a href="{{ route('locations.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Lokasi
+            </a>
+            <div class="input-group input-group-sm" style="width: 16rem">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="search" id="liveLocationSearch" class="form-control border-start-0 ps-0" placeholder="Filter baris lokasi&hellip;" aria-label="Filter rows">
             </div>
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-vcenter table-hover card-table mb-0" id="locationsTable">
-            <thead class="table-light small">
-                <tr>
-                    <th style="width: 50px;" class="text-muted">#</th>
-                    <th>Nama Lokasi</th>
-                    <th class="text-center" style="width: 140px;">Tipe</th>
-                    <th class="text-center" style="width: 140px;">Varian Terdaftar</th>
-                    <th class="text-center" style="width: 150px;">Total Unit Fisik</th>
-                    <th class="text-end" style="width: 100px;">Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="locationsTableBody">
-                @forelse($locations as $index => $loc)
-                    @php
-                        $locTotalQty = (int) $loc->stocks->sum('qty');
-                        $skuCount = $loc->stocks->where('qty', '>', 0)->count();
-                    @endphp
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover m-0" id="locationsTable">
+                <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
                     <tr>
-                        <td class="text-muted small">{{ $locations->firstItem() + $index }}</td>
-                        <td>
-                            <div class="fw-bold text-dark fs-5">{{ $loc->name }}</div>
-                            @if($loc->user)
-                                <div class="text-muted small" style="font-size: 0.72rem;">
-                                    <i class="bi bi-person me-1"></i>Reseller: {{ $loc->user->name }} ({{ $loc->user->email }})
+                        <th style="width: 50px;" class="py-2 px-3 text-muted small fw-semibold">#</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold">Nama Lokasi</th>
+                        <th class="text-center py-2 px-3 text-muted small fw-semibold" style="width: 140px;">Tipe</th>
+                        <th class="text-center py-2 px-3 text-muted small fw-semibold" style="width: 140px;">Varian Terdaftar</th>
+                        <th class="text-center py-2 px-3 text-muted small fw-semibold" style="width: 150px;">Total Unit Fisik</th>
+                        <th class="text-end py-2 px-3 text-muted small fw-semibold" style="width: 100px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="locationsTableBody">
+                    @forelse($locations as $index => $loc)
+                        @php
+                            $locTotalQty = (int) $loc->stocks->sum('qty');
+                            $skuCount = $loc->stocks->where('qty', '>', 0)->count();
+                        @endphp
+                        <tr>
+                            <td class="text-muted small py-2 px-3">{{ $locations->firstItem() + $index }}</td>
+                            <td class="py-2 px-3">
+                                <div class="fw-semibold text-dark fs-6">{{ $loc->name }}</div>
+                                @if($loc->user)
+                                    <div class="text-muted small" style="font-size: 0.72rem;">
+                                        <i class="bi bi-person me-1"></i>Reseller: {{ $loc->user->name }} ({{ $loc->user->email }})
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="text-center py-2 px-3">
+                                @if($loc->type === 'reseller')
+                                    <span class="badge bg-light text-dark border fw-bold px-2 py-1">RESELLER</span>
+                                @else
+                                    <span class="badge bg-secondary-subtle text-dark border fw-bold px-2 py-1">GUDANG</span>
+                                @endif
+                            </td>
+                            <td class="text-center py-2 px-3">
+                                <span class="badge bg-light text-muted border">{{ $skuCount }} SKU</span>
+                            </td>
+                            <td class="text-center py-2 px-3">
+                                <span class="badge bg-light text-dark border font-mono-num fw-bold fs-6">{{ number_format($locTotalQty, 0, ',', '.') }} pcs</span>
+                            </td>
+                            <td class="text-end text-nowrap py-2 px-3">
+                                <div class="d-inline-flex gap-1">
+                                    <a href="{{ route('locations.edit', $loc->id) }}" class="btn btn-sm btn-icon btn-outline-secondary rounded-circle" data-bs-toggle="tooltip" title="Edit Lokasi">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form action="{{ route('locations.destroy', $loc->id) }}" method="POST" onsubmit="return confirmAction(this, 'Hapus Lokasi Stok', 'Apakah Anda yakin ingin menghapus lokasi {{ addslashes($loc->name) }}?{{ $locTotalQty > 0 ? ' Catatan: Lokasi ini masih memiliki ' . $locTotalQty . ' pcs stok aktif.' : '' }}')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-icon btn-outline-danger rounded-circle" data-bs-toggle="tooltip" title="Hapus Lokasi">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            @if($loc->type === 'reseller')
-                                <span class="badge bg-teal-lt fw-bold px-2 py-1">RESELLER</span>
-                            @else
-                                <span class="badge bg-blue-lt fw-bold px-2 py-1">GUDANG</span>
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-light text-secondary border">{{ $skuCount }} SKU</span>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-blue-lt fs-6 fw-bold">{{ number_format($locTotalQty, 0, ',', '.') }} pcs</span>
-                        </td>
-                        <td class="text-end text-nowrap">
-                            <div class="d-inline-flex gap-1">
-                                <a href="{{ route('locations.edit', $loc->id) }}" class="btn btn-sm btn-icon btn-outline-primary" data-bs-toggle="tooltip" title="Edit Lokasi">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <form action="{{ route('locations.destroy', $loc->id) }}" method="POST" onsubmit="return confirmAction(this, 'Hapus Lokasi Stok', 'Apakah Anda yakin ingin menghapus lokasi {{ addslashes($loc->name) }}?{{ $locTotalQty > 0 ? ' Catatan: Lokasi ini masih memiliki ' . $locTotalQty . ' pcs stok aktif.' : '' }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" data-bs-toggle="tooltip" title="Hapus Lokasi">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr class="no-search-match">
-                        <td colspan="5" class="text-center py-5 text-muted">
-                            <i class="bi bi-geo-alt fs-1 d-block mb-2"></i>
-                            Belum ada lokasi terdaftar.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr class="no-search-match">
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-geo-alt fs-1 d-block mb-2"></i>
+                                Belum ada lokasi terdaftar.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @if($locations->hasPages())
-        <div class="card-footer d-flex align-items-center justify-content-between p-3 border-top">
-            <span class="text-muted small">Menampilkan {{ $locations->firstItem() }} - {{ $locations->lastItem() }} dari {{ $locations->total() }} lokasi</span>
-            <div>{{ $locations->links('pagination::bootstrap-5') }}</div>
+        <div class="card-footer clearfix bg-transparent py-3 border-top" style="border-color: var(--color-border-subtle, #f0eee9) !important;">
+            {{ $locations->links('vendor.pagination.bootstrap-5') }}
         </div>
     @endif
 </div>

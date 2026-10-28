@@ -27,14 +27,14 @@
             </a>
         </div>
 
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-transparent py-3">
+        <div class="card border-0 shadow-sm mb-4" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
+            <div class="card-header bg-transparent py-3" style="border-bottom: 1px solid var(--color-border-subtle, #f0eee9);">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="p-2 rounded bg-{{ $mode === 'stock' ? 'teal-lt' : 'blue-lt' }} text-{{ $mode === 'stock' ? 'teal' : 'primary' }}">
+                    <div class="p-2 rounded" style="background-color: var(--color-surface-hover, #f4f3f0); color: var(--scent-dark, #121212);">
                         <i class="bi {{ $mode === 'stock' ? 'bi-box-seam-fill' : 'bi-cash-coin' }} fs-3"></i>
                     </div>
                     <div>
-                        <h4 class="card-title mb-0 fw-bold">
+                        <h4 class="font-serif card-title mb-0 fw-bold fs-5">
                             {{ $mode === 'stock' ? 'Formulir Mutasi Stok Parfum' : 'Formulir Transaksi Kas' }}
                         </h4>
                         <small class="text-muted">
@@ -357,9 +357,9 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2 pt-2 border-top">
-                        <a href="{{ route('transactions.index') }}" class="btn btn-light border px-4">Batal</a>
-                        <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                    <div class="d-flex justify-content-end gap-2 pt-2 border-top" style="border-color: var(--color-border-subtle, #f0eee9) !important;">
+                        <a href="{{ route('transactions.index') }}" class="btn btn-light border px-4 rounded-pill">Batal</a>
+                        <button type="submit" class="btn btn-scent px-4 fw-semibold">
                             <i class="bi bi-save me-1"></i> Simpan Transaksi
                         </button>
                     </div>
