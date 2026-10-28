@@ -86,28 +86,28 @@
         </div>
     </div>
 
-    <!-- Filter Bar -->
+    <!-- Filter Bar (1 Baris Ringkas Kesamping) -->
     <div class="card-body p-3" style="background-color: var(--color-surface-hover, #f4f3f0); border-bottom: 1px solid var(--color-border, #e8e6e1);">
-        <form action="{{ route('transactions.index') }}" method="GET" class="row g-3 align-items-end">
-            <div class="col-lg-3 col-md-6">
-                <label class="form-label small fw-semibold text-muted mb-1">Cari Keterangan / Ref</label>
+        <form action="{{ route('transactions.index') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
+            <!-- Cari Keterangan / Ref -->
+            <div style="flex: 1 1 170px; min-width: 140px;">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Kata kunci..." value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Keterangan / ref..." value="{{ request('search') }}">
                 </div>
             </div>
 
-            <div class="col-lg-2 col-md-6">
-                <label class="form-label small fw-semibold text-muted mb-1">Tipe Arus Kas</label>
+            <!-- Tipe Arus Kas -->
+            <div style="flex: 0 1 125px; min-width: 105px;">
                 <select name="type" class="form-select form-select-sm">
                     <option value="">Semua Tipe</option>
-                    <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>INCOME (Pemasukan)</option>
-                    <option value="OUTCOME" {{ request('type') === 'OUTCOME' ? 'selected' : '' }}>OUTCOME (Pengeluaran)</option>
+                    <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
+                    <option value="OUTCOME" {{ request('type') === 'OUTCOME' ? 'selected' : '' }}>Keluar</option>
                 </select>
             </div>
 
-            <div class="col-lg-2 col-md-6">
-                <label class="form-label small fw-semibold text-muted mb-1">Kategori</label>
+            <!-- Kategori -->
+            <div style="flex: 0 1 135px; min-width: 110px;">
                 <select name="category" class="form-select form-select-sm">
                     <option value="">Semua Kategori</option>
                     @foreach($categories as $cat)
@@ -116,9 +116,9 @@
                 </select>
             </div>
 
+            <!-- Lokasi (Admin Only) -->
             @if(!Auth::user()->isReseller() && isset($locations))
-            <div class="col-lg-2 col-md-6">
-                <label class="form-label small fw-semibold text-muted mb-1">Lokasi</label>
+            <div style="flex: 0 1 135px; min-width: 110px;">
                 <select name="location_id" class="form-select form-select-sm">
                     <option value="">Semua Lokasi</option>
                     @foreach($locations as $loc)
@@ -128,23 +128,21 @@
             </div>
             @endif
 
-            <div class="col-lg-2 col-md-6">
-                <label class="form-label small fw-semibold text-muted mb-1">Dari Tanggal</label>
-                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}">
+            <!-- Rentang Tanggal (Dari & Sampai 1 baris) -->
+            <div class="d-flex align-items-center gap-1" style="flex: 0 1 auto;">
+                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}" title="Dari Tanggal" style="width: 125px;">
+                <span class="text-muted small">&ndash;</span>
+                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}" title="Sampai Tanggal" style="width: 125px;">
             </div>
 
-            <div class="col-lg-2 col-md-6">
-                <label class="form-label small fw-semibold text-muted mb-1">Sampai Tanggal</label>
-                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}">
-            </div>
-
-            <div class="col-lg-1 col-md-12 d-flex gap-2">
-                <button type="submit" class="btn btn-sm btn-scent flex-fill" title="Terapkan Filter">
+            <!-- Tombol Filter & Reset -->
+            <div class="d-flex align-items-center gap-1 ms-auto">
+                <button type="submit" class="btn btn-sm btn-scent px-3" title="Terapkan Filter">
                     <i class="bi bi-funnel me-1"></i> Filter
                 </button>
                 @if(request()->anyFilled(['search', 'type', 'category', 'location_id', 'start_date', 'end_date']))
                     <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Filter">
-                        <i class="bi bi-x-lg"></i>
+                        <i class="bi bi-arrow-counterclockwise"></i>
                     </a>
                 @endif
             </div>
