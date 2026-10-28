@@ -11,9 +11,6 @@
             <small class="text-muted d-block">Kelola akun pengguna, penugasan role (Admin / Staff), dan kontrol status aktif.</small>
         </div>
         <div class="card-tools d-flex flex-wrap align-items-center gap-2">
-            <a href="{{ route('users.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                <i class="bi bi-person-plus me-1"></i> Tambah Pengguna
-            </a>
             <div class="input-group input-group-sm" style="width: 16rem">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                 <input type="search" id="liveUserSearch" name="search" class="form-control border-start-0 ps-0" placeholder="Filter baris pengguna&hellip;" value="{{ request('search') }}" aria-label="Filter rows">
@@ -25,6 +22,9 @@
                     <option value="staff" {{ request('role') === 'staff' ? 'selected' : '' }}>Staff</option>
                 </select>
             </form>
+            <a href="{{ route('users.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                <i class="bi bi-person-plus me-1"></i> Tambah Pengguna
+            </a>
         </div>
     </div>
 
