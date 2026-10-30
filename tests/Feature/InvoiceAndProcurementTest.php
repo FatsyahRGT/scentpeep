@@ -234,4 +234,118 @@ class InvoiceAndProcurementTest extends TestCase
         // Was 5, now should be 13
         $this->assertEquals(13, Stock::where('product_id', $this->product->id)->where('location_id', $this->rizky->id)->first()->qty);
     }
+
+    public function test_admin_can_view_invoice_edit_page(): void
+    {
+        $invoice = Invoice::create([
+            'invoice_no' => 'INV-EDIT-01',
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Customer Edit Test',
+            'product_id' => $this->product->id,
+            'qty' => 2,
+            'location_id' => $this->iwan->id,
+            'total_price' => 360000,
+            'payment_status' => 'BELUM LUNAS',
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('invoices.edit', $invoice));
+        $response->assertOk();
+        $response->assertSee('Edit Invoice INV-EDIT-01');
+        $response->assertSee('Customer Edit Test');
+    }
+
+    public function test_admin_can_update_invoice_and_adjusts_stock_atomically(): void
+    {
+        // Initial stock at IWAN is 10
+        $invoice = Invoice::create([
+            'invoice_no' => 'INV-UPDATE-01',
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Budi Lama',
+            'product_id' => $this->product->id,
+            'qty' => 2,
+            'location_id' => $this->iwan->id,
+            'total_price' => 360000,
+            'payment_status' => 'BELUM LUNAS',
+        ]);
+        // Stock decreased to 8
+        Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->decrement('qty', 2);
+
+        // Update to 4 pcs and change customer name & location to RIZKY (which has 5 pcs)
+        $response = $this->actingAs($this->admin)->put(route('invoices.update', $invoice), [
+            'invoice_no' => 'INV-UPDATE-01-REV',
+            'sales_name' => 'IWAN',
+            'customer_name' => 'Budi Baru',
+            'product_id' => $this->product->id,
+            'qty' => 4,
+            'location_id' => $this->rizky->id,
+            'total_price' => 700000,
+            'payment_status' => 'LUNAS',
+            'notes' => 'Catatan revisi',
+        ]);
+
+        $response->assertRedirect(route('invoices.index'));
+
+        // Old location IWAN should be restored to 10
+        $this->assertEquals(10, Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first()->qty);
+
+        // New location RIZKY was 5, now should be 1 (5 - 4)
+        $this->assertEquals(1, Stock::where('product_id', $this->product->id)->where('location_id', $this->rizky->id)->first()->qty);
+
+        // Invoice record updated
+        $this->assertDatabaseHas('invoices', [
+            'id' => $invoice->id,
+            'invoice_no' => 'INV-UPDATE-01-REV',
+            'customer_name' => 'Budi Baru',
+            'sales_name' => 'IWAN',
+            'qty' => 4,
+            'payment_status' => 'LUNAS',
+        ]);
+
+        // Transaction for cash income should be created since it was changed to LUNAS
+        $this->assertDatabaseHas('transactions', [
+            'invoice_no' => 'INV-UPDATE-01-REV',
+            'type' => Transaction::TYPE_INCOME,
+            'amount' => 700000,
+        ]);
+    }
+
+    public function test_admin_can_delete_invoice_and_restores_stock_and_removes_cash_record(): void
+    {
+        $invoice = Invoice::create([
+            'invoice_no' => 'INV-DEL-01',
+            'sales_name' => 'IWAN',
+            'customer_name' => 'Customer Hapus',
+            'product_id' => $this->product->id,
+            'qty' => 3,
+            'location_id' => $this->iwan->id,
+            'total_price' => 540000,
+            'payment_status' => 'LUNAS',
+            'created_by' => $this->admin->id,
+        ]);
+
+        Transaction::create([
+            'tanggal' => now()->toDateString(),
+            'type' => Transaction::TYPE_INCOME,
+            'category' => 'Penjualan',
+            'customer_name' => 'Customer Hapus',
+            'amount' => 540000,
+            'invoice_no' => 'INV-DEL-01',
+            'description' => 'Penjualan Invoice INV-DEL-01',
+            'stock_effect' => Transaction::EFFECT_NONE,
+            'created_by' => $this->admin->id,
+        ]);
+
+        // Stock was 10, simulate that 3 was deducted
+        Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->decrement('qty', 3);
+        $this->assertEquals(7, Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first()->qty);
+
+        $response = $this->actingAs($this->admin)->delete(route('invoices.destroy', $invoice));
+
+        $response->assertRedirect(route('invoices.index'));
+        $this->assertDatabaseMissing('invoices', ['id' => $invoice->id]);
+        $this->assertDatabaseMissing('transactions', ['invoice_no' => 'INV-DEL-01']);
+
+        // Stock should be restored to 10
+        $this->assertEquals(10, Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first()->qty);
+    }
 }

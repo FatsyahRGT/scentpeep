@@ -126,6 +126,98 @@ class InvoiceController extends Controller
         return redirect()->route('invoices.index')->with('success', 'Invoice berhasil diterbitkan dan stok telah terpotong otomatis.');
     }
 
+    public function edit(Invoice $invoice): View
+    {
+        $products = Product::where('is_active', true)->orWhere('id', $invoice->product_id)->orderBy('name')->get();
+        $locations = Location::orderBy('name')->get();
+        $salesOptions = Invoice::getSalesOptions();
+
+        return view('invoices.edit', compact('invoice', 'products', 'locations', 'salesOptions'));
+    }
+
+    public function update(Request $request, Invoice $invoice): RedirectResponse
+    {
+        $validated = $request->validate([
+            'invoice_no' => 'nullable|string|max:100',
+            'sales_name' => 'required|string|max:100',
+            'customer_name' => 'required|string|max:255',
+            'product_id' => 'required|exists:products,id',
+            'qty' => 'required|integer|min:1',
+            'location_id' => 'required|exists:locations,id',
+            'total_price' => 'required|numeric|min:0',
+            'payment_status' => 'required|in:BELUM LUNAS,LUNAS',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        DB::transaction(function () use ($validated, $invoice) {
+            $oldProductId = $invoice->product_id;
+            $oldLocationId = $invoice->location_id;
+            $oldQty = $invoice->qty;
+            $oldPaymentStatus = $invoice->payment_status;
+
+            // 1. Kembalikan stok lama sebelum memeriksa stok baru
+            $oldStock = Stock::where('product_id', $oldProductId)
+                ->where('location_id', $oldLocationId)
+                ->first();
+            if ($oldStock) {
+                $oldStock->increment('qty', $oldQty);
+            }
+
+            // 2. Kunci dan potong stok baru
+            $newStock = Stock::where('product_id', $validated['product_id'])
+                ->where('location_id', $validated['location_id'])
+                ->lockForUpdate()
+                ->first();
+
+            if (! $newStock || $newStock->qty < $validated['qty']) {
+                $available = $newStock ? $newStock->qty : 0;
+                throw ValidationException::withMessages([
+                    'qty' => "Stok di lokasi terpilih tidak mencukupi. Sisa stok tersedia: {$available} pcs.",
+                ]);
+            }
+
+            $newStock->decrement('qty', $validated['qty']);
+
+            $newInvoiceNo = $validated['invoice_no'] ?: $invoice->invoice_no;
+
+            // 3. Sinkronisasi pencatatan kas jika status pembayaran atau nominal berubah
+            if ($oldPaymentStatus === Invoice::STATUS_PAID && $validated['payment_status'] === Invoice::STATUS_PAID) {
+                $incomeTx = Transaction::where('invoice_no', $invoice->invoice_no)
+                    ->where('type', Transaction::TYPE_INCOME)
+                    ->first();
+                if ($incomeTx) {
+                    $incomeTx->update([
+                        'invoice_no' => $newInvoiceNo,
+                        'amount' => $validated['total_price'],
+                        'customer_name' => $validated['customer_name'],
+                        'description' => "Penjualan Invoice {$newInvoiceNo} ({$newStock->product?->name} x {$validated['qty']}) via {$validated['sales_name']}",
+                    ]);
+                }
+            } elseif ($oldPaymentStatus === Invoice::STATUS_UNPAID && $validated['payment_status'] === Invoice::STATUS_PAID) {
+                Transaction::create([
+                    'tanggal' => now()->toDateString(),
+                    'type' => Transaction::TYPE_INCOME,
+                    'category' => 'Penjualan',
+                    'customer_name' => $validated['customer_name'],
+                    'amount' => $validated['total_price'],
+                    'invoice_no' => $newInvoiceNo,
+                    'description' => "Penjualan Invoice {$newInvoiceNo} ({$newStock->product?->name} x {$validated['qty']}) via {$validated['sales_name']}",
+                    'stock_effect' => Transaction::EFFECT_NONE,
+                    'created_by' => Auth::id(),
+                ]);
+            } elseif ($oldPaymentStatus === Invoice::STATUS_PAID && $validated['payment_status'] === Invoice::STATUS_UNPAID) {
+                Transaction::where('invoice_no', $invoice->invoice_no)
+                    ->where('type', Transaction::TYPE_INCOME)
+                    ->delete();
+            }
+
+            // 4. Update data invoice
+            $invoice->update($validated);
+        });
+
+        return redirect()->route('invoices.index')->with('success', "Invoice {$invoice->invoice_no} berhasil diperbarui.");
+    }
+
     public function markPaid(Invoice $invoice): RedirectResponse
     {
         if ($invoice->payment_status === Invoice::STATUS_PAID) {
@@ -161,6 +253,11 @@ class InvoiceController extends Controller
             if ($stock) {
                 $stock->increment('qty', $invoice->qty);
             }
+
+            // Hapus pencatatan kas terkait jika invoice dihapus
+            Transaction::where('invoice_no', $invoice->invoice_no)
+                ->where('type', Transaction::TYPE_INCOME)
+                ->delete();
 
             $invoice->delete();
         });

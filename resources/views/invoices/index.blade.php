@@ -74,77 +74,92 @@
 
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table align-middle table-hover m-0">
+            <table class="table table-sm align-middle table-hover m-0" style="font-size: 0.82rem;">
                 <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
                     <tr>
-                        <th class="py-2 px-3 text-muted small fw-semibold" style="width: 130px;">No. Invoice</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Tanggal</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Customer</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Sales</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Varian Parfum</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center" style="width: 80px;">Qty</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center" style="width: 100px;">Stok Asal</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-end">Total Harga</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center" style="width: 120px;">Status</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-end" style="width: 100px;">Aksi</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold" style="width: 110px;">No. Invoice</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold" style="width: 95px;">Tanggal</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold">Customer</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold" style="width: 85px;">Sales</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold">Varian Parfum</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold text-center" style="width: 60px;">Qty</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold text-center" style="width: 85px;">Stok Asal</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold text-end" style="width: 105px;">Total Harga</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold text-center" style="width: 95px;">Status</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold text-end" style="width: 105px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($invoices as $inv)
                     <tr>
-                        <td class="py-2 px-3 font-mono fw-semibold text-dark">{{ $inv->invoice_no }}</td>
-                        <td class="py-2 px-3 text-muted small">{{ $inv->created_at->format('d/m/Y H:i') }}</td>
-                        <td class="py-2 px-3 fw-semibold text-dark">{{ $inv->customer_name }}</td>
-                        <td class="py-2 px-3">
+                        <td class="py-2 px-2">
+                            <span class="font-mono fw-bold text-dark text-nowrap" style="font-size: 0.78rem;">{{ $inv->invoice_no }}</span>
+                        </td>
+                        <td class="py-2 px-2 text-muted text-nowrap" style="font-size: 0.72rem;">
+                            {{ $inv->created_at->format('d/m/y H:i') }}
+                        </td>
+                        <td class="py-2 px-2">
+                            <div class="fw-semibold text-dark text-truncate" style="max-width: 120px;" title="{{ $inv->customer_name }}">{{ $inv->customer_name }}</div>
+                        </td>
+                        <td class="py-2 px-2">
                             @php $salesPal = \App\Models\Location::paletteForName($inv->sales_name); @endphp
-                            <span class="badge" style="background-color: {{ $salesPal['badge_bg'] }}; color: {{ $salesPal['badge_text'] }}; border: 1px solid {{ $salesPal['border'] }}; font-weight: 700; font-size: 0.78rem;">
+                            <span class="badge text-truncate d-inline-block" style="background-color: {{ $salesPal['badge_bg'] }}; color: {{ $salesPal['badge_text'] }}; border: 1px solid {{ $salesPal['border'] }}; font-weight: 700; font-size: 0.72rem; padding: 0.2rem 0.45rem; max-width: 85px;" title="{{ $inv->sales_name }}">
                                 <i class="bi bi-person-fill me-1"></i>{{ $inv->sales_name }}
                             </span>
                         </td>
-                        <td class="py-2 px-3">
-                            <span class="fw-semibold text-dark">{{ $inv->product->name ?? '-' }}</span>
-                            <small class="text-muted d-block font-mono">{{ $inv->product->code ?? '' }}</small>
+                        <td class="py-2 px-2">
+                            <div class="fw-semibold text-dark text-truncate" style="max-width: 150px;" title="{{ $inv->product->name ?? '-' }}">{{ $inv->product->name ?? '-' }}</div>
+                            @if($inv->product?->code)
+                                <span class="text-muted font-mono d-block" style="font-size: 0.68rem; line-height: 1;">{{ $inv->product->code }}</span>
+                            @endif
                         </td>
-                        <td class="py-2 px-3 text-center fw-bold">{{ $inv->qty }} pcs</td>
-                        <td class="py-2 px-3 text-center">
+                        <td class="py-2 px-2 text-center">
+                            <span class="badge bg-light text-dark border font-mono fw-bold" style="font-size: 0.75rem; padding: 0.2rem 0.45rem;">
+                                {{ $inv->qty }} pcs
+                            </span>
+                        </td>
+                        <td class="py-2 px-2 text-center">
                             @if($inv->location)
                                 @php $invPal = $inv->location->getColorPalette(); @endphp
-                                <span class="badge" style="background-color: {{ $invPal['badge_bg'] }}; color: {{ $invPal['badge_text'] }}; border: 1px solid {{ $invPal['border'] }}; font-weight: 600;">
-                                    {{ $inv->location->name }}
+                                <span class="badge text-truncate d-inline-block" style="background-color: {{ $invPal['badge_bg'] }}; color: {{ $invPal['badge_text'] }}; border: 1px solid {{ $invPal['border'] }}; font-weight: 600; font-size: 0.72rem; padding: 0.2rem 0.45rem; max-width: 85px;" title="{{ $inv->location->name }}">
+                                    <i class="bi bi-geo-alt-fill me-1"></i>{{ $inv->location->name }}
                                 </span>
                             @else
-                                <span class="badge bg-light text-muted border">-</span>
+                                <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">-</span>
                             @endif
                         </td>
-                        <td class="py-2 px-3 text-end font-mono fw-bold text-dark">
+                        <td class="py-2 px-2 text-end font-mono fw-bold text-dark text-nowrap" style="font-size: 0.8rem;">
                             Rp {{ number_format($inv->total_price, 0, ',', '.') }}
                         </td>
-                        <td class="py-2 px-3 text-center">
+                        <td class="py-2 px-2 text-center text-nowrap">
                             @if($inv->payment_status === 'LUNAS')
-                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                                <i class="bi bi-check-circle-fill me-1"></i> LUNAS
+                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;">
+                                <i class="bi bi-check-circle-fill me-1"></i>LUNAS
                             </span>
                             @else
-                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
-                                <i class="bi bi-clock-history me-1"></i> BELUM LUNAS
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;">
+                                <i class="bi bi-clock-history me-1"></i>BELUM LUNAS
                             </span>
                             @endif
                         </td>
-                        <td class="py-2 px-3 text-end">
-                            <div class="d-inline-flex gap-1 align-items-center">
+                        <td class="py-2 px-2 text-end text-nowrap">
+                            <div class="d-inline-flex gap-1 align-items-center justify-content-end">
+                                <a href="{{ route('invoices.edit', $inv) }}" class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="tooltip" title="Edit Invoice" style="width: 26px; height: 26px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-pencil" style="font-size: 0.72rem;"></i>
+                                </a>
                                 @if($inv->payment_status !== 'LUNAS')
                                 <form action="{{ route('invoices.markPaid', $inv) }}" method="POST" class="d-inline" onsubmit="return confirm('Tandai invoice {{ $inv->invoice_no }} LUNAS dan catat penerimaan uang ke Buku Kas?');">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-success py-0 px-2" title="Tandai Lunas">
-                                        <i class="bi bi-check2"></i>
+                                    <button type="submit" class="btn btn-sm btn-outline-success rounded-circle" data-bs-toggle="tooltip" title="Tandai Lunas" style="width: 26px; height: 26px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-check2" style="font-size: 0.8rem;"></i>
                                     </button>
                                 </form>
                                 @endif
                                 <form action="{{ route('invoices.destroy', $inv) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus invoice ini? Stok akan otomatis dikembalikan ke lokasi {{ $inv->location->name ?? '' }}.');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Hapus Invoice">
-                                        <i class="bi bi-trash"></i>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" data-bs-toggle="tooltip" title="Hapus Invoice" style="width: 26px; height: 26px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-trash" style="font-size: 0.72rem;"></i>
                                     </button>
                                 </form>
                             </div>

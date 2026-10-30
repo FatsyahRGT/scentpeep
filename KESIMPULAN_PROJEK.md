@@ -30,7 +30,9 @@ Aplikasi ini mencakup kebutuhan operasional harian:
    - Penjualan parfum diterbitkan via **Invoice** per varian parfum.
    - Pembuatan invoice otomatis memotong stok fisik dari lokasi terpilih (`IWAN` atau `RIZKY`) secara atomik dalam `DB::transaction`.
    - Status invoice bisa `BELUM LUNAS` (piutang) atau `LUNAS`. Saat invoice berstatus `LUNAS` (atau ditandai lunas), penerimaan uang otomatis dicatat di Buku Kas (Income Penjualan).
-   - Menghapus invoice secara otomatis mengembalikan stok ke lokasi asal.
+   - **Fitur Edit Invoice**: Invoice dapat diedit langsung dari daftar invoice (`/invoices/{invoice}/edit`). Perubahan varian parfum, kuantitas, atau lokasi asal stok diproses secara atomik di dalam `DB::transaction` (mengembalikan kuantitas lama ke stok lokasi asal terlebih dahulu, memverifikasi ketersediaan stok di lokasi baru, lalu memotong stok baru). Perubahan status pembayaran atau nominal secara otomatis menyinkronkan pencatatan di Buku Kas (`transactions`).
+   - Menghapus invoice secara otomatis mengembalikan stok ke lokasi asal dan membersihkan transaksi kas terkait jika berstatus LUNAS.
+   - **Desain Tabel Invoice Ringkas (Compact Table)**: Tabel invoice didesain ramping (`table-sm` dengan proporsi kolom terukur dan teks terpangkas `text-truncate`) sehingga seluruh kolom (mulai dari No. Invoice hingga tombol Aksi Edit/Lunas/Hapus) muat sempurna di layar tanpa terpotong horizontal.
 2. **Pre-Order (PO) & Stok Pending**:
    - Pre-Order dicatat dalam segmen tersendiri sebagai **Stok Pending (PO)** di luar stok utama.
    - Ketika pesanan PO siap dan status diubah menjadi `SELESAI`, stok secara otomatis ditambahkan ke Stok Utama lokasi tujuan.
