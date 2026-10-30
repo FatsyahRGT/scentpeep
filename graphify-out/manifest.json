@@ -282,15 +282,15 @@
     "semantic_hash": ""
   },
   "resources/views/dashboard.blade.php": {
-    "mtime": 1793363530.9945524,
-    "seen": 1793364003.9655647,
-    "ast_hash": "049f52e654bcd5e5a22f37eecd16d3b4",
+    "mtime": 1793369160.9071681,
+    "seen": 1793369270.4397264,
+    "ast_hash": "44bae1454786ec56e7ee846a2e015297",
     "semantic_hash": ""
   },
   "resources/views/layouts/app.blade.php": {
-    "mtime": 1793360857.9121258,
-    "seen": 1793361746.6697118,
-    "ast_hash": "8ea51edb8972269127f874ba89516e98",
+    "mtime": 1793369154.3713338,
+    "seen": 1793369270.4397264,
+    "ast_hash": "f8efed54b6aaebe3f9bb346303405aa4",
     "semantic_hash": ""
   },
   "resources/views/locations/create.blade.php": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "resources/views/stocks/index.blade.php": {
-    "mtime": 1793365214.7819147,
-    "seen": 1793365460.1876948,
-    "ast_hash": "5ecb8255464a54eb6f1822ba728f42f7",
+    "mtime": 1793369089.8453286,
+    "seen": 1793369270.4397264,
+    "ast_hash": "07b0250d077a89de775b64f3d7896333",
     "semantic_hash": ""
   },
   "routes/console.php": {
@@ -504,9 +504,9 @@
     "semantic_hash": ""
   },
   "resources/views/transactions/create.blade.php": {
-    "mtime": 1793345695.2206013,
-    "seen": 1793361746.6697118,
-    "ast_hash": "bb2f5a556ee7a11477cea8a94797e49d",
+    "mtime": 1793369041.7012088,
+    "seen": 1793369270.4397264,
+    "ast_hash": "f2333ba655a346ba93f0a2c671e5ae17",
     "semantic_hash": ""
   },
   "resources/views/transactions/edit.blade.php": {
@@ -570,9 +570,9 @@
     "semantic_hash": "2dac99251c2df7a915333f6567241be8"
   },
   "tests/Feature/TransactionAndStockTest.php": {
-    "mtime": 1793363901.6021502,
-    "seen": 1793364003.9665608,
-    "ast_hash": "fc6608f5d185fdebd3f2cf5375b60ed1",
+    "mtime": 1793369219.49735,
+    "seen": 1793369270.4397264,
+    "ast_hash": "f28fa8df68307358f83aaf80842e569a",
     "semantic_hash": ""
   },
   "tests/Feature/WebRoutesRenderingTest.php": {
@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/create.blade.php": {
-    "mtime": 1793351928.6324081,
-    "seen": 1793361746.6697118,
-    "ast_hash": "977216193db4d79716e4ca7594543e1f",
+    "mtime": 1793369078.360592,
+    "seen": 1793369270.4397264,
+    "ast_hash": "d16cf6931356c167f3710c8c7cf64db2",
     "semantic_hash": ""
   },
   "resources/views/invoices/edit.blade.php": {
@@ -804,9 +804,9 @@
     "semantic_hash": ""
   },
   "KESIMPULAN_PROJEK.md": {
-    "mtime": 1793358500.1107488,
-    "seen": 1793361746.6697118,
-    "ast_hash": "067ac40a422ad2ac59252534b4a60c43",
+    "mtime": 1793369258.9430711,
+    "seen": 1793369270.4397264,
+    "ast_hash": "d7f6ef6995171e1923ee54050d0d5126",
     "semantic_hash": ""
   },
   "PANDUAN_SESI_BARU_GRAPHIFY.md": {

@@ -108,8 +108,8 @@
                     <i class="bi bi-arrow-left-right me-1"></i> Transfer Stok
                 </a>
                 @endif
-                <a href="{{ route('transactions.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                    <i class="bi bi-plus-circle me-1"></i> Catat Transaksi
+                <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                    <i class="bi bi-receipt-cutoff me-1"></i> Buat Invoice
                 </a>
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -235,8 +235,8 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('transactions.create') }}?product_id={{ $prod->id }}">
-                                            <i class="bi bi-plus-circle me-2 text-dark"></i> Catat Transaksi
+                                        <a class="dropdown-item" href="{{ route('invoices.create') }}?product_id={{ $prod->id }}">
+                                            <i class="bi bi-receipt-cutoff me-2 text-dark"></i> Buat Invoice Varian Ini
                                         </a>
                                     </li>
                                     <li>
@@ -345,8 +345,8 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('transactions.create') }}?product_id={{ $prod->id }}">
-                                            <i class="bi bi-plus-circle me-2 text-dark"></i> Catat Transaksi
+                                        <a class="dropdown-item" href="{{ route('invoices.create') }}?product_id={{ $prod->id }}">
+                                            <i class="bi bi-receipt-cutoff me-2 text-dark"></i> Buat Invoice Varian Ini
                                         </a>
                                     </li>
                                     <li>

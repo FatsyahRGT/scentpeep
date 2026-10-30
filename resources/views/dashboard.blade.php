@@ -88,8 +88,11 @@
                 </p>
             </div>
             <div class="col-md-5 d-flex flex-wrap gap-2 justify-content-md-end">
-                <a href="{{ route('transactions.create') }}" class="btn btn-scent fw-semibold">
-                    <i class="bi bi-plus-circle me-1"></i> Catat Transaksi
+                <a href="{{ route('invoices.create') }}" class="btn btn-scent fw-semibold">
+                    <i class="bi bi-receipt-cutoff me-1"></i> Buat Invoice
+                </a>
+                <a href="{{ route('transactions.create') }}" class="btn btn-scent-outline fw-semibold">
+                    <i class="bi bi-wallet2 me-1"></i> Catat Kas
                 </a>
                 @if(!$isReseller)
                 <a href="{{ route('stocks.transfer.create') }}" class="btn btn-scent-outline fw-semibold">

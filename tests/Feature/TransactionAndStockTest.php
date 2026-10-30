@@ -414,4 +414,45 @@ class TransactionAndStockTest extends TestCase
         $this->assertFalse($filteredData->contains(fn ($item) => $item['product']->id === $prodEmpty->id));
         $this->assertEquals(1, $response->viewData('metrics')['low_stock_count']);
     }
+
+    public function test_can_record_pure_cash_ledger_transaction_without_affecting_stock(): void
+    {
+        // 1. Catat pengeluaran kas operasional (misal Iklan Shopee)
+        $outcomeResponse = $this->actingAs($this->admin)->post(route('transactions.store'), [
+            'tanggal' => now()->toDateString(),
+            'type' => 'OUTCOME',
+            'category' => 'Iklan Shopee',
+            'amount' => 350000,
+            'description' => 'Topup saldo Shopee Ads kampanye Payday',
+            'customer_name' => 'Shopee Ads',
+            'stock_effect' => 'NONE',
+        ]);
+
+        $outcomeResponse->assertRedirect(route('transactions.index'));
+        $this->assertDatabaseHas('transactions', [
+            'type' => 'OUTCOME',
+            'category' => 'Iklan Shopee',
+            'amount' => 350000,
+            'stock_effect' => 'NONE',
+            'customer_name' => 'Shopee Ads',
+        ]);
+
+        // 2. Catat pemasukan kas (misal Modal Masuk / Jasa)
+        $incomeResponse = $this->actingAs($this->admin)->post(route('transactions.store'), [
+            'tanggal' => now()->toDateString(),
+            'type' => 'INCOME',
+            'category' => 'Pendapatan Jasa',
+            'amount' => 500000,
+            'description' => 'Jasa peracikan formula parfum custom',
+            'stock_effect' => 'NONE',
+        ]);
+
+        $incomeResponse->assertRedirect(route('transactions.index'));
+        $this->assertDatabaseHas('transactions', [
+            'type' => 'INCOME',
+            'category' => 'Pendapatan Jasa',
+            'amount' => 500000,
+            'stock_effect' => 'NONE',
+        ]);
+    }
 }

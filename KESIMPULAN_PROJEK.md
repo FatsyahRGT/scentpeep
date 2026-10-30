@@ -36,11 +36,15 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 2. **Pre-Order (PO) & Stok Pending**:
    - Pre-Order dicatat dalam segmen tersendiri sebagai **Stok Pending (PO)** di luar stok utama.
    - Ketika pesanan PO siap dan status diubah menjadi `SELESAI`, stok secara otomatis ditambahkan ke Stok Utama lokasi tujuan.
-3. **Pengadaan Barang Mentah (Box & Botol)**:
-   - Modul khusus memantau stok fisik Box Packaging dan Botol Kaca.
+3. **Pengadaan Barang Mentah (Box & Botol) & Kategori Dinamis**:
+   - Modul khusus memantau stok fisik Box Packaging, Botol Kaca, dan kategori material lainnya (Dinamis CRUD Kategori & Item Bahan).
    - Setiap pengadaan (IN) dapat mencatat biaya belanja yang langsung tersinkronisasi ke Buku Kas (Pengeluaran Bahan Baku).
    - Pemantauan real-time ditampilkan di Dashboard Utama dengan alert stok menipis.
-4. **Dashboard & Sebaran Stok Reseller (Internal & Publik)**:
+4. **Isolasi Penuh Buku Kas (`/transactions`)**:
+   - Formulir pencatatan kas (`/transactions/create`) difokuskan 100% sebagai **Buku Kas Operasional Murni** (Pemasukan Non-Invoice dan Pengeluaran Beban Usaha seperti Iklan Shopee, Entertain, Gaji, Operasional, dll) dengan `stock_effect = NONE`.
+   - Tab lama "Mutasi Stok Parfum" yang membingungkan telah dipensiunkan: seluruh penjualan parfum dialirkan melalui pintu resmi **Invoice**, restock pabrik melalui **Pre-Order** atau **Restock Produksi**, dan belanja packaging melalui **Barang Mentah**.
+   - Tombol-tombol di halaman Ringkasan Stok (`/stocks`) dan Dashboard yang sebelumnya mengarah ke pencatatan transaksi lama telah diselaraskan ke **Buat Invoice** (`/invoices/create`).
+5. **Dashboard & Sebaran Stok Reseller (Internal & Publik)**:
    - **Internal Reseller Monitor (`/stocks/reseller`)**: Halaman monitoring stok internal dengan pembeda visual warna dinamis, sebaran stok per pemegang, leaderboard varian terlaris, filter ready/habis, dan tombol tambah stok manual sehabis produksi.
    - **Katalog Publik Reseller (`/stok-reseller` & `/katalog-stok`)**: Halaman publik responsif tanpa login khusus reseller untuk melihat:
      1. Peringatan Stok Menipis (< 3 pcs).

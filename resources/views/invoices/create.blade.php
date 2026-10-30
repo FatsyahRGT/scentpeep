@@ -55,7 +55,7 @@
                             <select name="product_id" id="product_id" class="form-select @error('product_id') is-invalid @enderror" required onchange="calculateSuggestedPrice()">
                                 <option value="">-- Pilih Varian Parfum --</option>
                                 @foreach($products as $prod)
-                                <option value="{{ $prod->id }}" data-price="{{ $prod->sell_price ?? 0 }}" {{ old('product_id') == $prod->id ? 'selected' : '' }}>
+                                <option value="{{ $prod->id }}" data-price="{{ $prod->sell_price ?? 0 }}" {{ (old('product_id', request('product_id')) == $prod->id) ? 'selected' : '' }}>
                                     {{ $prod->name }} ({{ $prod->code ?? '-' }}) - Rp {{ number_format($prod->sell_price ?? 0, 0, ',', '.') }}
                                 </option>
                                 @endforeach

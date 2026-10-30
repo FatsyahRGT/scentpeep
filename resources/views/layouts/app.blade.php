@@ -526,7 +526,7 @@
                     </a>
 
                     <!-- Reseller Dropdown: Penjualan & Stok Saya -->
-                    @php $isResellerActive = request()->routeIs('transactions.*') || request()->routeIs('stocks.index'); @endphp
+                    @php $isResellerActive = request()->routeIs('invoices.*') || request()->routeIs('stocks.index'); @endphp
                     <div>
                         <a class="nav-side-link d-flex justify-content-between align-items-center {{ $isResellerActive ? 'active' : '' }} {{ $isResellerActive ? '' : 'collapsed' }}" 
                            data-bs-toggle="collapse" 
@@ -540,13 +540,13 @@
                             <i class="bi bi-chevron-down nav-chevron"></i>
                         </a>
                         <div class="collapse {{ $isResellerActive ? 'show' : '' }} nav-side-sub" id="menuReseller">
-                            <a class="nav-side-link {{ request()->routeIs('transactions.create') ? 'active' : '' }}" href="{{ route('transactions.create', ['mode' => 'stock']) }}" onclick="closeMobileSidebarIfOpen()">
-                                <i class="bi bi-cart-plus"></i>
-                                <span>Catat Penjualan</span>
+                            <a class="nav-side-link {{ request()->routeIs('invoices.create') ? 'active' : '' }}" href="{{ route('invoices.create') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-receipt-cutoff"></i>
+                                <span>Buat Invoice Penjualan</span>
                             </a>
-                            <a class="nav-side-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()">
-                                <i class="bi bi-journal-text"></i>
-                                <span>Riwayat Penjualan</span>
+                            <a class="nav-side-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>Daftar Invoice</span>
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-boxes"></i>
