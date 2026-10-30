@@ -82,8 +82,15 @@
                 <small class="text-muted">Halaman ini menampilkan sebaran stok parfum di Iwan & Rizky, varian ready, dan antrean PO yang sedang diproduksi.</small>
             </div>
         </div>
-        <div class="text-muted small">
-            Update: <span class="font-mono fw-semibold text-dark" id="clientUpdateTime">{{ now()->translatedFormat('d M Y, H:i') }} WIB</span>
+        <div class="d-flex align-items-center flex-wrap gap-2 text-muted small">
+            <span class="d-inline-flex align-items-center gap-1 badge bg-light text-dark border px-2 py-1">
+                <span class="d-inline-block rounded-circle bg-success me-1" style="width: 7px; height: 7px;"></span>
+                <span class="text-muted">Mutasi Stok Terakhir:</span>
+                <strong class="font-mono text-dark" id="lastStockActivityTime" data-iso="{{ $lastStockActivity->toIso8601String() }}">
+                    {{ $lastStockActivity->translatedFormat('d M Y, H:i') }} WIB
+                </strong>
+                <span class="text-secondary fw-normal ms-1" id="relativeStockTime">({{ $lastStockActivity->diffForHumans() }})</span>
+            </span>
         </div>
     </div>
 
@@ -481,19 +488,25 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     (function() {
-        const updateEl = document.getElementById('clientUpdateTime');
-        if (!updateEl) return;
+        const timeEl = document.getElementById('lastStockActivityTime');
+        const relEl = document.getElementById('relativeStockTime');
+        if (!timeEl) return;
 
-        const now = new Date();
+        const iso = timeEl.getAttribute('data-iso');
+        if (!iso) return;
+
+        const activityDate = new Date(iso);
+        if (isNaN(activityDate.getTime())) return;
+
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
-        const day = now.getDate();
-        const month = months[now.getMonth()];
-        const year = now.getFullYear();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const day = activityDate.getDate();
+        const month = months[activityDate.getMonth()];
+        const year = activityDate.getFullYear();
+        const hours = String(activityDate.getHours()).padStart(2, '0');
+        const minutes = String(activityDate.getMinutes()).padStart(2, '0');
 
         // Deteksi zona waktu lokal pembuka web (WIB / WITA / WIT / GMT offset)
-        const offsetMinutes = now.getTimezoneOffset(); // -420 = UTC+7 (WIB), -480 = UTC+8 (WITA), -540 = UTC+9 (WIT)
+        const offsetMinutes = activityDate.getTimezoneOffset(); // -420 = UTC+7 (WIB), -480 = UTC+8 (WITA), -540 = UTC+9 (WIT)
         let tzLabel = '';
         if (offsetMinutes === -420) {
             tzLabel = 'WIB';
@@ -502,11 +515,36 @@
         } else if (offsetMinutes === -540) {
             tzLabel = 'WIT';
         } else {
-            const tzParts = Intl.DateTimeFormat('id-ID', { timeZoneName: 'short' }).formatToParts(now);
+            const tzParts = Intl.DateTimeFormat('id-ID', { timeZoneName: 'short' }).formatToParts(activityDate);
             tzLabel = tzParts.find(p => p.type === 'timeZoneName')?.value || ('GMT' + (offsetMinutes <= 0 ? '+' : '-') + Math.abs(Math.floor(offsetMinutes / 60)));
         }
 
-        updateEl.textContent = `${day} ${month} ${year}, ${hours}:${minutes} ${tzLabel}`;
+        // Tampilkan jam mutasi sesuai zona lokal pembuka web
+        timeEl.textContent = `${day} ${month} ${year}, ${hours}:${minutes} ${tzLabel}`;
+
+        // Hitung selisih waktu relatif terhadap jam perangkat sekarang
+        const now = new Date();
+        const diffMs = now.getTime() - activityDate.getTime();
+        const diffMins = Math.max(0, Math.floor(diffMs / 60000));
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        let relativeText = '';
+        if (diffMins < 2) {
+            relativeText = 'baru saja';
+        } else if (diffMins < 60) {
+            relativeText = `${diffMins} menit lalu`;
+        } else if (diffHours < 24) {
+            relativeText = `${diffHours} jam lalu`;
+        } else if (diffDays === 1) {
+            relativeText = 'kemarin';
+        } else {
+            relativeText = `${diffDays} hari lalu`;
+        }
+
+        if (relEl) {
+            relEl.textContent = `(${relativeText})`;
+        }
     })();
 </script>
 </body>

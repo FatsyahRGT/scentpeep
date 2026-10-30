@@ -404,6 +404,16 @@ class StockController extends Controller
             return (int) $p->stocks->sum('qty') === 0;
         })->values();
 
+        // 6. Waktu Aktivitas / Mutasi Stok Terakhir Riil di Sistem
+        $lastStockActivityTimestamp = collect([
+            Stock::max('updated_at'),
+            \App\Models\Transaction::where('stock_effect', '!=', \App\Models\Transaction::EFFECT_NONE)->max('created_at'),
+            \App\Models\StockTransfer::max('created_at'),
+            \App\Models\Invoice::max('created_at'),
+        ])->filter()->max();
+
+        $lastStockActivity = $lastStockActivityTimestamp ? \Carbon\Carbon::parse($lastStockActivityTimestamp) : now();
+
         $metrics = [
             'total_iwan_stock' => $iwan ? (int) Stock::where('location_id', $iwan->id)->sum('qty') : 0,
             'total_rizky_stock' => $rizky ? (int) Stock::where('location_id', $rizky->id)->sum('qty') : 0,
@@ -425,7 +435,8 @@ class StockController extends Controller
             'locations',
             'outOfStockProducts',
             'iwan',
-            'rizky'
+            'rizky',
+            'lastStockActivity'
         ));
     }
 }
