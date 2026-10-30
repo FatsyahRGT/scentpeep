@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             ProductSeeder::class,
             InitialStockSeeder::class,
+            RawMaterialSeeder::class,
         ]);
     }
 }

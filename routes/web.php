@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PreOrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RawMaterialController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -27,12 +31,27 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // 1. Transactions (Buku Kas & Stok)
+    // 1. Invoices (Penjualan Parfum per Varian)
+    Route::post('/invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.markPaid');
+    Route::resource('invoices', InvoiceController::class);
+
+    // 2. Pre-Orders (Stok Pending PO)
+    Route::post('/pre-orders/{preOrder}/complete', [PreOrderController::class, 'complete'])->name('pre-orders.complete');
+    Route::resource('pre-orders', PreOrderController::class);
+
+    // 3. Raw Materials (Pengadaan Barang Mentah: Box & Botol)
+    Route::post('/raw-materials/{rawMaterial}/procure', [RawMaterialController::class, 'procure'])->name('raw-materials.procure');
+    Route::post('/raw-materials/{rawMaterial}/consume', [RawMaterialController::class, 'consume'])->name('raw-materials.consume');
+    Route::resource('raw-materials', RawMaterialController::class);
+
+    // 4. Transactions (Buku Kas & Keuangan)
     Route::resource('transactions', TransactionController::class);
 
-    // 2. Stocks (Ringkasan Matriks Stok & Transfer Antar Lokasi)
+    // 5. Stocks (Ringkasan Matriks Stok, Restock Produksi, & Reseller Dashboard)
     Route::prefix('stocks')->name('stocks.')->group(function () {
         Route::get('/', [StockController::class, 'index'])->name('index');
+        Route::get('/reseller', [StockController::class, 'resellerStocks'])->name('reseller');
+        Route::post('/manual-restock', [StockController::class, 'manualRestock'])->name('manualRestock');
         Route::get('/transfers', [StockController::class, 'transfers'])->name('transfers');
         Route::get('/transfer', [StockController::class, 'createTransfer'])->name('transfer.create');
         Route::post('/transfer', [StockController::class, 'storeTransfer'])->name('transfer.store');

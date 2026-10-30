@@ -39,3 +39,6 @@ Setiap sesi pengerjaan AI wajib mematuhi standar skill berikut secara default ta
    - `staff`: Akses Dashboard, Input Transaksi, Riwayat Transaksi, Ringkasan Stok, dan Transfer Stok.
 3. **Standar Pengujian**:
    - Pastikan seluruh test PHPUnit (`php artisan test`) selalu berstatus hijau (100% passed) setelah setiap perubahan.
+4. **Penyelarasan Visi & Spesifikasi Fitur**:
+   - Sebelum merombak atau menambah fitur besar (khususnya pemisahan kas & stok, dan modul baru seperti Stok Pengadaan Barang Mentah), wajib merinci kuesioner pertanyaan terperinci untuk menyatukan visi dengan user guna menghindari revisi berulang.
+   - Simpan setiap hasil keputusan arsitektur baru ke dalam memori Graphify dan dokumentasi projek.

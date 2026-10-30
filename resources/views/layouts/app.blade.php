@@ -512,32 +512,48 @@
                     </a>
 
                     @else
-                    <div class="sidebar-section-label">Kas & Transaksi</div>
-                    <a class="nav-side-link {{ request()->routeIs('transactions.create') && request('mode') !== 'stock' ? 'active' : '' }}" href="{{ route('transactions.create') }}" onclick="closeMobileSidebarIfOpen()">
+                    <div class="sidebar-section-label">Penjualan (Invoice)</div>
+                    <a class="nav-side-link {{ request()->routeIs('invoices.create') ? 'active' : '' }}" href="{{ route('invoices.create') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-receipt-cutoff"></i>
+                        <span class="nav-link-title">Buat Invoice Baru</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span class="nav-link-title">Daftar Invoice</span>
+                    </a>
+
+                    <div class="sidebar-section-label">Stok Parfum & PO</div>
+                    <a class="nav-side-link {{ request()->routeIs('stocks.reseller') ? 'active' : '' }}" href="{{ route('stocks.reseller') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-shop-window"></i>
+                        <span class="nav-link-title">Stok Reseller (Iwan & Rizky)</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-box-seam-fill"></i>
+                        <span class="nav-link-title">Ringkasan Matriks Stok</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('pre-orders.*') ? 'active' : '' }}" href="{{ route('pre-orders.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-hourglass-split"></i>
+                        <span class="nav-link-title">Stok Pending (PO)</span>
+                    </a>
+                    <a class="nav-side-link {{ request()->routeIs('stocks.transfers') || request()->routeIs('stocks.transfer.*') ? 'active' : '' }}" href="{{ route('stocks.transfers') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span class="nav-link-title">Transfer Stok</span>
+                    </a>
+
+                    <div class="sidebar-section-label">Barang Mentah</div>
+                    <a class="nav-side-link {{ request()->routeIs('raw-materials.*') ? 'active' : '' }}" href="{{ route('raw-materials.index') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-boxes"></i>
+                        <span class="nav-link-title">Pengadaan Box & Botol</span>
+                    </a>
+
+                    <div class="sidebar-section-label">Keuangan (Buku Kas)</div>
+                    <a class="nav-side-link {{ request()->routeIs('transactions.create') ? 'active' : '' }}" href="{{ route('transactions.create') }}" onclick="closeMobileSidebarIfOpen()">
                         <i class="bi bi-wallet2"></i>
                         <span class="nav-link-title">Catat Transaksi Kas</span>
                     </a>
                     <a class="nav-side-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()">
                         <i class="bi bi-journal-text"></i>
-                        <span class="nav-link-title">Riwayat Transaksi</span>
-                    </a>
-
-                    <div class="sidebar-section-label">Stok Parfum</div>
-                    <a class="nav-side-link {{ request()->routeIs('transactions.create') && request('mode') === 'stock' ? 'active' : '' }}" href="{{ route('transactions.create', ['mode' => 'stock']) }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-box-arrow-in-down-right"></i>
-                        <span class="nav-link-title">Catat Mutasi Stok</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-box-seam-fill"></i>
-                        <span class="nav-link-title">Ringkasan Stok</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('stocks.transfer.*') ? 'active' : '' }}" href="{{ route('stocks.transfer.create') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-arrow-left-right"></i>
-                        <span class="nav-link-title">Transfer Stok</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('stocks.transfers') ? 'active' : '' }}" href="{{ route('stocks.transfers') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-clock-history"></i>
-                        <span class="nav-link-title">Riwayat Transfer</span>
+                        <span class="nav-link-title">Riwayat Kas</span>
                     </a>
                     @endif
 

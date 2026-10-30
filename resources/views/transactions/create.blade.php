@@ -190,15 +190,19 @@
                             <select class="form-select @error('category') is-invalid @enderror" id="category" name="category" required onchange="handleCategoryChange()">
                                 <option value="">-- Pilih Kategori --</option>
                                 <optgroup label="Pemasukan" id="optgroup_income">
-                                    <option value="Penjualan" {{ old('category') === 'Penjualan' ? 'selected' : '' }}>Penjualan Produk Parfum</option>
-                                    <option value="Pendapatan Jasa" {{ old('category', 'Pendapatan Jasa') === 'Pendapatan Jasa' ? 'selected' : '' }}>Pendapatan Jasa / Konsultasi</option>
+                                    <option value="Penjualan" {{ old('category') === 'Penjualan' ? 'selected' : '' }}>Penjualan (Kas Masuk)</option>
+                                    <option value="Pendapatan Jasa" {{ old('category') === 'Pendapatan Jasa' ? 'selected' : '' }}>Pendapatan Jasa / Konsultasi</option>
                                     <option value="Pemasukan Lain-lain" {{ old('category') === 'Pemasukan Lain-lain' ? 'selected' : '' }}>Pemasukan Lain-lain</option>
                                 </optgroup>
                                 <optgroup label="Pengeluaran" id="optgroup_outcome">
-                                    <option value="Operasional" {{ old('category', 'Operasional') === 'Operasional' ? 'selected' : '' }}>Operasional Toko / Listrik / Sewa</option>
-                                    <option value="Marketing" {{ old('category') === 'Marketing' ? 'selected' : '' }}>Marketing / Iklan / Endorsement</option>
+                                    <option value="Entertain" {{ old('category') === 'Entertain' ? 'selected' : '' }}>Entertain</option>
+                                    <option value="Iklan Shopee" {{ old('category') === 'Iklan Shopee' ? 'selected' : '' }}>Iklan Shopee</option>
+                                    <option value="Bahan Baku" {{ old('category') === 'Bahan Baku' ? 'selected' : '' }}>Bahan Baku</option>
+                                    <option value="Bayar Jasa" {{ old('category') === 'Bayar Jasa' ? 'selected' : '' }}>Bayar Jasa</option>
+                                    <option value="Operasional" {{ old('category', 'Operasional') === 'Operasional' ? 'selected' : '' }}>Operasional Toko / Sewa</option>
+                                    <option value="Marketing" {{ old('category') === 'Marketing' ? 'selected' : '' }}>Marketing</option>
                                     <option value="Gaji & Bonus" {{ old('category') === 'Gaji & Bonus' ? 'selected' : '' }}>Gaji Karyawan & Bonus</option>
-                                    <option value="Pembelian Stok" {{ old('category') === 'Pembelian Stok' ? 'selected' : '' }}>Pembelian Stok / Restock Pabrik</option>
+                                    <option value="Pembelian Stok" {{ old('category') === 'Pembelian Stok' ? 'selected' : '' }}>Pembelian Stok / Restock</option>
                                     <option value="Pengeluaran Lain-lain" {{ old('category') === 'Pengeluaran Lain-lain' ? 'selected' : '' }}>Pengeluaran Lain-lain</option>
                                 </optgroup>
                             </select>
@@ -287,8 +291,15 @@
                                 <label for="customer_name" class="form-label small fw-bold text-muted text-uppercase">
                                     Nama Pembeli / Pelanggan <span class="text-muted fw-normal">(Opsional)</span>
                                 </label>
-                                <input type="text" class="form-control @error('customer_name') is-invalid @enderror" 
-                                    id="customer_name" name="customer_name" value="{{ old('customer_name') }}" placeholder="Contoh: sopyan, Vanya">
+                                <input type="text" list="customerNamesList" class="form-control @error('customer_name') is-invalid @enderror" 
+                                    id="customer_name" name="customer_name" value="{{ old('customer_name') }}" placeholder="Pilih atau ketik nama pembeli...">
+                                <datalist id="customerNamesList">
+                                    @if(isset($customerNames))
+                                        @foreach($customerNames as $name)
+                                            <option value="{{ $name }}">
+                                        @endforeach
+                                    @endif
+                                </datalist>
                                 @error('customer_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

@@ -127,6 +127,75 @@
 </div>
 
 <div class="row g-4 mb-4">
+    <!-- Monitoring Barang Mentah (Box & Botol) -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3" style="border-bottom: 1px solid var(--color-border-subtle, #f0eee9);">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-boxes text-dark fs-5"></i>
+                    <h4 class="font-serif card-title mb-0 fw-bold fs-5">Stok Bahan Mentah (Packaging)</h4>
+                </div>
+                <a href="{{ route('raw-materials.index') }}" class="small text-muted text-decoration-none">Kelola Pengadaan &rarr;</a>
+            </div>
+            <div class="card-body p-3">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="p-3 rounded-3" style="background-color: var(--color-surface-hover, #f4f3f0); border: 1px solid var(--color-border, #e8e6e1);">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <span class="fw-semibold text-dark"><i class="bi bi-box me-1"></i> Box Packaging</span>
+                                <span class="badge bg-secondary text-white" style="font-size: 0.7rem;">BOX</span>
+                            </div>
+                            <div class="d-flex align-items-baseline gap-1 mt-2">
+                                <span class="font-serif fs-2 fw-bold text-dark">{{ number_format($rawMaterialBoxStock) }}</span>
+                                <span class="text-muted small">pcs siap pakai</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 rounded-3" style="background-color: var(--color-surface-hover, #f4f3f0); border: 1px solid var(--color-border, #e8e6e1);">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <span class="fw-semibold text-dark"><i class="bi bi-eyedropper me-1"></i> Botol Kaca</span>
+                                <span class="badge bg-dark text-white" style="font-size: 0.7rem;">BOTOL</span>
+                            </div>
+                            <div class="d-flex align-items-baseline gap-1 mt-2">
+                                <span class="font-serif fs-2 fw-bold text-dark">{{ number_format($rawMaterialBotolStock) }}</span>
+                                <span class="text-muted small">pcs siap isi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribusi Penjualan Sales (Iwan, Rizky, Vanny) -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3" style="border-bottom: 1px solid var(--color-border-subtle, #f0eee9);">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-people-fill text-muted fs-5"></i>
+                    <h4 class="font-serif card-title mb-0 fw-bold fs-5">Distribusi Penjualan per Sales</h4>
+                </div>
+                <a href="{{ route('invoices.index') }}" class="small text-muted text-decoration-none">Semua Invoice &rarr;</a>
+            </div>
+            <div class="card-body p-3">
+                <div class="row g-2">
+                    @foreach($salesDistribution as $sales)
+                    <div class="col-4">
+                        <div class="p-2 p-md-3 rounded-3 text-center" style="background-color: var(--color-surface-hover, #f4f3f0); border: 1px solid var(--color-border, #e8e6e1);">
+                            <div class="fw-bold text-dark small">{{ $sales['name'] }}</div>
+                            <div class="font-serif fs-4 fw-bold text-dark my-1">{{ $sales['total_qty'] }} <span class="fs-6 text-muted font-sans fw-normal">pcs</span></div>
+                            <div class="text-muted font-mono" style="font-size: 0.75rem;">Rp {{ number_format($sales['total_omset'], 0, ',', '.') }}</div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
     <!-- Stock Summary by Location Cards -->
     <div class="col-lg-6">
         <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
@@ -310,6 +379,72 @@
                                     <i class="bi bi-bag-check fs-3 d-block mb-1"></i>
                                     Belum ada data penjualan tercatat.
                                 </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Invoices Widget -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3" style="border-bottom: 1px solid var(--color-border-subtle, #f0eee9);">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-receipt-cutoff text-muted fs-5"></i>
+                    <h4 class="font-serif card-title mb-0 fw-bold fs-5">Riwayat Invoice Penjualan Terbaru</h4>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                        <i class="bi bi-plus-lg me-1"></i> Buat Invoice
+                    </a>
+                    <a href="{{ route('invoices.index') }}" class="small text-muted text-decoration-none">Semua Invoice &rarr;</a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover m-0">
+                        <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
+                            <tr>
+                                <th class="py-2 px-3 text-muted small fw-semibold">No. Invoice</th>
+                                <th class="py-2 px-3 text-muted small fw-semibold">Customer</th>
+                                <th class="py-2 px-3 text-muted small fw-semibold">Sales</th>
+                                <th class="py-2 px-3 text-muted small fw-semibold">Varian Parfum</th>
+                                <th class="py-2 px-3 text-muted small fw-semibold text-center">Qty</th>
+                                <th class="py-2 px-3 text-muted small fw-semibold text-center">Stok Asal</th>
+                                <th class="py-2 px-3 text-muted small fw-semibold text-end">Total Harga</th>
+                                <th class="py-2 px-3 text-muted small fw-semibold text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentInvoices as $inv)
+                            <tr>
+                                <td class="py-2 px-3 font-mono fw-semibold text-dark">{{ $inv->invoice_no }}</td>
+                                <td class="py-2 px-3 fw-semibold text-dark">{{ $inv->customer_name }}</td>
+                                <td class="py-2 px-3"><span class="badge bg-light text-dark border">{{ $inv->sales_name }}</span></td>
+                                <td class="py-2 px-3 text-dark">{{ $inv->product->name ?? '-' }}</td>
+                                <td class="py-2 px-3 text-center fw-bold">{{ $inv->qty }} pcs</td>
+                                <td class="py-2 px-3 text-center">
+                                    <span class="badge {{ ($inv->location->name ?? '') === 'IWAN' ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary' }}">
+                                        {{ $inv->location->name ?? '-' }}
+                                    </span>
+                                </td>
+                                <td class="py-2 px-3 text-end font-mono fw-bold">Rp {{ number_format($inv->total_price, 0, ',', '.') }}</td>
+                                <td class="py-2 px-3 text-center">
+                                    @if($inv->payment_status === 'LUNAS')
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">LUNAS</span>
+                                    @else
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">BELUM LUNAS</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">Belum ada invoice diterbitkan.</td>
                             </tr>
                             @endforelse
                         </tbody>

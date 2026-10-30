@@ -118,7 +118,12 @@ class TransactionController extends Controller
             $stocksMap["{$stk->location_id}_{$stk->product_id}"] = (int) $stk->qty;
         }
 
-        return view('transactions.create', compact('products', 'locations', 'stocksMap', 'mode'));
+        $customerNames = Transaction::whereNotNull('customer_name')
+            ->where('customer_name', '!=', '')
+            ->distinct()
+            ->pluck('customer_name');
+
+        return view('transactions.create', compact('products', 'locations', 'stocksMap', 'mode', 'customerNames'));
     }
 
     /**

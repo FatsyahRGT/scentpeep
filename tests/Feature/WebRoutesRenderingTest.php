@@ -56,6 +56,12 @@ class WebRoutesRenderingTest extends TestCase
     {
         $routes = [
             '/dashboard',
+            '/invoices',
+            '/invoices/create',
+            '/pre-orders',
+            '/pre-orders/create',
+            '/raw-materials',
+            '/stocks/reseller',
             '/transactions',
             '/transactions/create?mode=stock',
             '/transactions/create?mode=cash',

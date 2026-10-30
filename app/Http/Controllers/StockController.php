@@ -191,4 +191,89 @@ class StockController extends Controller
 
         return view('stocks.transfers_index', compact('transfers'));
     }
+
+    /**
+     * Tambah manual stok produk parfum (sehabis produksi parfum).
+     */
+    public function manualRestock(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'location_id' => 'required|exists:locations,id',
+            'qty' => 'required|integer|min:1',
+            'notes' => 'nullable|string|max:255',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            $stock = Stock::firstOrCreate(
+                ['product_id' => $validated['product_id'], 'location_id' => $validated['location_id']],
+                ['qty' => 0]
+            );
+            $stock->increment('qty', $validated['qty']);
+        });
+
+        $productName = Product::find($validated['product_id'])->name ?? 'Produk';
+        $locationName = Location::find($validated['location_id'])->name ?? 'Lokasi';
+
+        return redirect()->back()->with('success', "Stok {$productName} di {$locationName} berhasil ditambah {$validated['qty']} pcs (Hasil Produksi).");
+    }
+
+    /**
+     * Dashboard terpisah untuk reseller / monitoring visual stok IWAN & RIZKY.
+     */
+    public function resellerStocks(Request $request): View
+    {
+        $iwan = Location::where('name', 'IWAN')->first();
+        $rizky = Location::where('name', 'RIZKY')->first();
+
+        $query = Product::where('is_active', true)->with(['stocks.location'])->orderBy('name');
+
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', $search)->orWhere('code', 'like', $search);
+            });
+        }
+
+        $allProducts = $query->get();
+
+        // Siapkan data per varian parfum
+        $productStockData = $allProducts->map(function ($product) use ($iwan, $rizky) {
+            $stockIwan = $iwan ? (int) $product->stocks->firstWhere('location_id', $iwan->id)?->qty : 0;
+            $stockRizky = $rizky ? (int) $product->stocks->firstWhere('location_id', $rizky->id)?->qty : 0;
+            $totalStock = $stockIwan + $stockRizky;
+
+            return [
+                'product' => $product,
+                'stock_iwan' => $stockIwan,
+                'stock_rizky' => $stockRizky,
+                'total_stock' => $totalStock,
+                'is_out_of_stock' => $totalStock === 0,
+            ];
+        });
+
+        // Filter jika user hanya ingin melihat stok yang habis
+        if ($request->boolean('out_of_stock')) {
+            $productStockData = $productStockData->filter(fn ($item) => $item['is_out_of_stock']);
+        }
+
+        $metrics = [
+            'total_iwan_stock' => $iwan ? (int) Stock::where('location_id', $iwan->id)->sum('qty') : 0,
+            'total_rizky_stock' => $rizky ? (int) Stock::where('location_id', $rizky->id)->sum('qty') : 0,
+            'total_combined_stock' => Stock::sum('qty'),
+            'out_of_stock_count' => $productStockData->where('is_out_of_stock', true)->count(),
+        ];
+
+        $locations = Location::whereIn('name', ['IWAN', 'RIZKY'])->get();
+        $products = Product::where('is_active', true)->orderBy('name')->get();
+
+        return view('stocks.reseller_dashboard', compact(
+            'productStockData',
+            'metrics',
+            'iwan',
+            'rizky',
+            'locations',
+            'products'
+        ));
+    }
 }

@@ -25,6 +25,10 @@ class Transaction extends Model
     ];
 
     public const CATEGORIES_OUTCOME = [
+        'Entertain',
+        'Iklan Shopee',
+        'Bahan Baku',
+        'Bayar Jasa',
         'Pembelian Stok',
         'Operasional',
         'Marketing',

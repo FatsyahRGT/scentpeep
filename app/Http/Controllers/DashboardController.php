@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
 use App\Models\Location;
 use App\Models\Product;
+use App\Models\RawMaterial;
 use App\Models\Stock;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -162,6 +164,33 @@ class DashboardController extends Controller
         $totalProductsCount = Product::where('is_active', true)->count();
         $allLocations = $isReseller ? collect([]) : Location::orderBy('name')->get();
 
+        // 7. Monitoring Pengadaan Barang Mentah (Box & Botol)
+        $rawMaterialBoxStock = (int) RawMaterial::where('category', RawMaterial::CATEGORY_BOX)->sum('stock_qty');
+        $rawMaterialBotolStock = (int) RawMaterial::where('category', RawMaterial::CATEGORY_BOTOL)->sum('stock_qty');
+        $rawMaterialsList = RawMaterial::orderBy('category')->orderBy('name')->get();
+
+        // 8. Distribusi Penjualan Sales (IWAN, RIZKY, VANNY)
+        $salesStats = Invoice::selectRaw('sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as invoice_count')
+            ->groupBy('sales_name')
+            ->get()
+            ->keyBy('sales_name');
+
+        $salesDistribution = collect(Invoice::SALES_OPTIONS)->map(function ($name) use ($salesStats) {
+            $stat = $salesStats->get($name);
+            return [
+                'name' => $name,
+                'total_qty' => (int) ($stat->total_qty ?? 0),
+                'total_omset' => (float) ($stat->total_omset ?? 0),
+                'invoice_count' => (int) ($stat->invoice_count ?? 0),
+            ];
+        });
+
+        // 9. Riwayat Invoice Terbaru
+        $recentInvoices = Invoice::with(['product', 'location'])
+            ->latest()
+            ->take(6)
+            ->get();
+
         return view('dashboard', compact(
             'totalIncome',
             'totalOutcome',
@@ -178,7 +207,12 @@ class DashboardController extends Controller
             'totalProductsCount',
             'allLocations',
             'selectedLocationId',
-            'isReseller'
+            'isReseller',
+            'rawMaterialBoxStock',
+            'rawMaterialBotolStock',
+            'rawMaterialsList',
+            'salesDistribution',
+            'recentInvoices'
         ));
     }
 }
