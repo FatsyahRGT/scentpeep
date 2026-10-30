@@ -6,6 +6,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PreOrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RawMaterialCategoryController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockController;
@@ -43,7 +44,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/pre-orders/{preOrder}/complete', [PreOrderController::class, 'complete'])->name('pre-orders.complete');
     Route::resource('pre-orders', PreOrderController::class);
 
-    // 3. Raw Materials (Pengadaan Barang Mentah: Box & Botol)
+    // 3. Raw Materials (Pengadaan Barang Mentah & Manajemen Kategori)
+    Route::post('/raw-materials/categories', [RawMaterialCategoryController::class, 'store'])->name('raw-materials.categories.store');
+    Route::put('/raw-materials/categories/{rawMaterialCategory}', [RawMaterialCategoryController::class, 'update'])->name('raw-materials.categories.update');
+    Route::delete('/raw-materials/categories/{rawMaterialCategory}', [RawMaterialCategoryController::class, 'destroy'])->name('raw-materials.categories.destroy');
     Route::post('/raw-materials/{rawMaterial}/procure', [RawMaterialController::class, 'procure'])->name('raw-materials.procure');
     Route::post('/raw-materials/{rawMaterial}/consume', [RawMaterialController::class, 'consume'])->name('raw-materials.consume');
     Route::resource('raw-materials', RawMaterialController::class);

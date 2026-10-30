@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RawMaterial extends Model
@@ -17,6 +18,7 @@ class RawMaterial extends Model
     protected $fillable = [
         'name',
         'category',
+        'category_id',
         'stock_qty',
         'min_stock',
     ];
@@ -25,6 +27,11 @@ class RawMaterial extends Model
         'stock_qty' => 'integer',
         'min_stock' => 'integer',
     ];
+
+    public function materialCategory(): BelongsTo
+    {
+        return $this->belongsTo(RawMaterialCategory::class, 'category_id');
+    }
 
     public function mutations(): HasMany
     {

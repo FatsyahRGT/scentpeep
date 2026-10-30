@@ -342,9 +342,9 @@
     "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
   },
   "routes/web.php": {
-    "mtime": 1793346582.119372,
-    "seen": 1793361746.6697118,
-    "ast_hash": "1e2fb68cee63e6ec7a8850f02a3d95ac",
+    "mtime": 1793367901.5511549,
+    "seen": 1793368115.7163944,
+    "ast_hash": "765d17bbdb1adf6dc2404ddb67bd7b5b",
     "semantic_hash": ""
   },
   "tests/Feature/ExampleTest.php": {
@@ -612,9 +612,9 @@
     "semantic_hash": ""
   },
   "app/Http/Controllers/RawMaterialController.php": {
-    "mtime": 1793345251.1538355,
-    "seen": 1793361746.6687133,
-    "ast_hash": "fac60b7d0415c7f3d82de2955670b7af",
+    "mtime": 1793367929.0727928,
+    "seen": 1793368115.7163944,
+    "ast_hash": "f2ee8f0851ab23422df0cde645a8fdd3",
     "semantic_hash": ""
   },
   "app/Models/Invoice.php": {
@@ -630,9 +630,9 @@
     "semantic_hash": ""
   },
   "app/Models/RawMaterial.php": {
-    "mtime": 1793345146.5446038,
-    "seen": 1793361746.6687133,
-    "ast_hash": "764ffddd27c6d084d4c2df3c9f3e6a51",
+    "mtime": 1793367533.8159094,
+    "seen": 1793368115.7163944,
+    "ast_hash": "0a3d9a54d14c157fc68bd61980f096a2",
     "semantic_hash": ""
   },
   "app/Models/RawMaterialMutation.php": {
@@ -708,9 +708,9 @@
     "semantic_hash": ""
   },
   "resources/views/raw_materials/index.blade.php": {
-    "mtime": 1793345526.5041034,
-    "seen": 1793361746.6697118,
-    "ast_hash": "25febf232fc9805ee6de0dd3976088af",
+    "mtime": 1793367999.4624133,
+    "seen": 1793368115.7163944,
+    "ast_hash": "25c37babaf4f1778a638fc21ddc7d260",
     "semantic_hash": ""
   },
   "resources/views/stocks/public_reseller_dashboard.blade.php": {
@@ -873,6 +873,30 @@
     "mtime": 1790776605.0,
     "seen": 1793361746.6707106,
     "ast_hash": "b6216d61c03e6ce0c9aea6ca7808f7ca",
+    "semantic_hash": ""
+  },
+  "app/Http/Controllers/RawMaterialCategoryController.php": {
+    "mtime": 1793367549.5596733,
+    "seen": 1793368115.7163944,
+    "ast_hash": "66c2a12f71619b1e9565676db0e0e176",
+    "semantic_hash": ""
+  },
+  "app/Models/RawMaterialCategory.php": {
+    "mtime": 1793367513.500769,
+    "seen": 1793368115.7163944,
+    "ast_hash": "a59e557f17f23f48bcf739eb09e6b551",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_10_30_000005_create_raw_material_categories_table.php": {
+    "mtime": 1793367498.3640065,
+    "seen": 1793368115.7163944,
+    "ast_hash": "6c6fc0ce416b458023e5092b8bfb24a4",
+    "semantic_hash": ""
+  },
+  "tests/Feature/RawMaterialCrudTest.php": {
+    "mtime": 1793368073.407335,
+    "seen": 1793368115.7163944,
+    "ast_hash": "0fcfc50a8c9a064330e99c2c5a7e273e",
     "semantic_hash": ""
   }
 }
