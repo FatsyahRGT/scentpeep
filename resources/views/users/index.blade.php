@@ -54,8 +54,11 @@
                                     <div>
                                         <div class="fw-semibold text-dark">{{ $user->name }}</div>
                                         @if($user->location)
-                                            <div class="text-muted" style="font-size: 0.72rem;">
-                                                <i class="bi bi-geo-alt me-1"></i>{{ $user->location->name }}
+                                            @php $uLocPal = $user->location->getColorPalette(); @endphp
+                                            <div class="mt-1">
+                                                <span class="badge" style="background-color: {{ $uLocPal['badge_bg'] }}; color: {{ $uLocPal['badge_text'] }}; border: 1px solid {{ $uLocPal['border'] }}; font-size: 0.72rem; font-weight: 600;">
+                                                    <i class="bi bi-geo-alt me-1"></i>{{ $user->location->name }}
+                                                </span>
                                             </div>
                                         @endif
                                         @if($user->id === Auth::id())

@@ -141,6 +141,28 @@
         .nav-side-link:hover { color: var(--color-text-main); background-color: var(--color-surface-hover); }
         .nav-side-link.active { color: var(--scent-dark); background-color: #f1efea; font-weight: 600; }
         .nav-side-link i { font-size: 1.1rem; }
+        .nav-side-link[data-bs-toggle="collapse"] .nav-chevron {
+            transition: transform 0.2s ease;
+            font-size: 0.72rem;
+            color: var(--color-text-subtle);
+        }
+        .nav-side-link[data-bs-toggle="collapse"][aria-expanded="true"] .nav-chevron {
+            transform: rotate(180deg);
+        }
+        .nav-side-sub {
+            border-left: 2px solid var(--color-border);
+            margin-left: 1.35rem;
+            padding-left: 0.4rem;
+            margin-top: 0.2rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+        .nav-side-sub .nav-side-link {
+            padding: 0.4rem 0.65rem;
+            font-size: 0.82rem;
+        }
 
         .sidebar-section-label {
             font-size: 0.65rem;
@@ -497,80 +519,186 @@
                     </a>
 
                     @if(Auth::user()->isReseller())
-                    <div class="sidebar-section-label">Penjualan & Stok</div>
-                    <a class="nav-side-link {{ request()->routeIs('transactions.create') ? 'active' : '' }}" href="{{ route('transactions.create', ['mode' => 'stock']) }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-cart-plus-fill"></i>
-                        <span class="nav-link-title">Catat Penjualan</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-journal-text"></i>
-                        <span class="nav-link-title">Riwayat Penjualan</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-box-seam-fill"></i>
-                        <span class="nav-link-title">Stok Saya</span>
-                    </a>
-
-                    @else
-                    <div class="sidebar-section-label">Penjualan (Invoice)</div>
-                    <a class="nav-side-link {{ request()->routeIs('invoices.create') ? 'active' : '' }}" href="{{ route('invoices.create') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-receipt-cutoff"></i>
-                        <span class="nav-link-title">Buat Invoice Baru</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span class="nav-link-title">Daftar Invoice</span>
-                    </a>
-
-                    <div class="sidebar-section-label">Stok Parfum & PO</div>
+                    <!-- Reseller Menu: Sebaran Stok -->
                     <a class="nav-side-link {{ request()->routeIs('stocks.reseller') ? 'active' : '' }}" href="{{ route('stocks.reseller') }}" onclick="closeMobileSidebarIfOpen()">
                         <i class="bi bi-shop-window"></i>
-                        <span class="nav-link-title">Stok Reseller (Iwan & Rizky)</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-box-seam-fill"></i>
-                        <span class="nav-link-title">Ringkasan Matriks Stok</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('pre-orders.*') ? 'active' : '' }}" href="{{ route('pre-orders.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-hourglass-split"></i>
-                        <span class="nav-link-title">Stok Pending (PO)</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('stocks.transfers') || request()->routeIs('stocks.transfer.*') ? 'active' : '' }}" href="{{ route('stocks.transfers') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-arrow-left-right"></i>
-                        <span class="nav-link-title">Transfer Stok</span>
+                        <span class="nav-link-title">Katalog & Sebaran Stok</span>
                     </a>
 
-                    <div class="sidebar-section-label">Barang Mentah</div>
-                    <a class="nav-side-link {{ request()->routeIs('raw-materials.*') ? 'active' : '' }}" href="{{ route('raw-materials.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-boxes"></i>
-                        <span class="nav-link-title">Pengadaan Box & Botol</span>
-                    </a>
+                    <!-- Reseller Dropdown: Penjualan & Stok Saya -->
+                    @php $isResellerActive = request()->routeIs('transactions.*') || request()->routeIs('stocks.index'); @endphp
+                    <div>
+                        <a class="nav-side-link d-flex justify-content-between align-items-center {{ $isResellerActive ? 'active' : '' }} {{ $isResellerActive ? '' : 'collapsed' }}" 
+                           data-bs-toggle="collapse" 
+                           href="#menuReseller" 
+                           role="button" 
+                           aria-expanded="{{ $isResellerActive ? 'true' : 'false' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-box-seam-fill"></i>
+                                <span class="nav-link-title">Penjualan & Stok Saya</span>
+                            </div>
+                            <i class="bi bi-chevron-down nav-chevron"></i>
+                        </a>
+                        <div class="collapse {{ $isResellerActive ? 'show' : '' }} nav-side-sub" id="menuReseller">
+                            <a class="nav-side-link {{ request()->routeIs('transactions.create') ? 'active' : '' }}" href="{{ route('transactions.create', ['mode' => 'stock']) }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-cart-plus"></i>
+                                <span>Catat Penjualan</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-journal-text"></i>
+                                <span>Riwayat Penjualan</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-boxes"></i>
+                                <span>Stok Fisik Saya</span>
+                            </a>
+                        </div>
+                    </div>
 
-                    <div class="sidebar-section-label">Keuangan (Buku Kas)</div>
-                    <a class="nav-side-link {{ request()->routeIs('transactions.create') ? 'active' : '' }}" href="{{ route('transactions.create') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-wallet2"></i>
-                        <span class="nav-link-title">Catat Transaksi Kas</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-journal-text"></i>
-                        <span class="nav-link-title">Riwayat Kas</span>
-                    </a>
+                    @else
+                    <!-- 1. Dropdown Penjualan (Invoice) -->
+                    @php $isInvoiceActive = request()->routeIs('invoices.*'); @endphp
+                    <div>
+                        <a class="nav-side-link d-flex justify-content-between align-items-center {{ $isInvoiceActive ? 'active' : '' }} {{ $isInvoiceActive ? '' : 'collapsed' }}" 
+                           data-bs-toggle="collapse" 
+                           href="#menuInvoice" 
+                           role="button" 
+                           aria-expanded="{{ $isInvoiceActive ? 'true' : 'false' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-receipt-cutoff"></i>
+                                <span class="nav-link-title">Penjualan (Invoice)</span>
+                            </div>
+                            <i class="bi bi-chevron-down nav-chevron"></i>
+                        </a>
+                        <div class="collapse {{ $isInvoiceActive ? 'show' : '' }} nav-side-sub" id="menuInvoice">
+                            <a class="nav-side-link {{ request()->routeIs('invoices.create') ? 'active' : '' }}" href="{{ route('invoices.create') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Buat Invoice Baru</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>Daftar Invoice</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 2. Dropdown Stok Parfum & PO -->
+                    @php $isStockActive = request()->routeIs('stocks.*') || request()->routeIs('pre-orders.*'); @endphp
+                    <div>
+                        <a class="nav-side-link d-flex justify-content-between align-items-center {{ $isStockActive ? 'active' : '' }} {{ $isStockActive ? '' : 'collapsed' }}" 
+                           data-bs-toggle="collapse" 
+                           href="#menuStok" 
+                           role="button" 
+                           aria-expanded="{{ $isStockActive ? 'true' : 'false' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-box-seam-fill"></i>
+                                <span class="nav-link-title">Stok Parfum & PO</span>
+                            </div>
+                            <i class="bi bi-chevron-down nav-chevron"></i>
+                        </a>
+                        <div class="collapse {{ $isStockActive ? 'show' : '' }} nav-side-sub" id="menuStok">
+                            <a class="nav-side-link {{ request()->routeIs('stocks.reseller') ? 'active' : '' }}" href="{{ route('stocks.reseller') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-shop-window"></i>
+                                <span>Sebaran Stok Reseller</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-grid-3x3"></i>
+                                <span>Ringkasan Matriks Stok</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('pre-orders.*') ? 'active' : '' }}" href="{{ route('pre-orders.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-hourglass-split"></i>
+                                <span>Stok Pending (PO)</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('stocks.transfers') || request()->routeIs('stocks.transfer.*') ? 'active' : '' }}" href="{{ route('stocks.transfers') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-arrow-left-right"></i>
+                                <span>Transfer Stok Antar Lokasi</span>
+                            </a>
+                            <a class="nav-side-link text-primary fw-semibold" href="{{ route('stocks.publicReseller') }}" target="_blank" title="Buka dashboard stok versi reseller tanpa login">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                                <span>Buka Link Publik Reseller</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 3. Dropdown Barang Mentah -->
+                    @php $isMaterialActive = request()->routeIs('raw-materials.*'); @endphp
+                    <div>
+                        <a class="nav-side-link d-flex justify-content-between align-items-center {{ $isMaterialActive ? 'active' : '' }} {{ $isMaterialActive ? '' : 'collapsed' }}" 
+                           data-bs-toggle="collapse" 
+                           href="#menuMaterial" 
+                           role="button" 
+                           aria-expanded="{{ $isMaterialActive ? 'true' : 'false' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-boxes"></i>
+                                <span class="nav-link-title">Barang Mentah</span>
+                            </div>
+                            <i class="bi bi-chevron-down nav-chevron"></i>
+                        </a>
+                        <div class="collapse {{ $isMaterialActive ? 'show' : '' }} nav-side-sub" id="menuMaterial">
+                            <a class="nav-side-link {{ request()->routeIs('raw-materials.index') ? 'active' : '' }}" href="{{ route('raw-materials.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-box"></i>
+                                <span>Pengadaan Box & Botol</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 4. Dropdown Keuangan (Buku Kas) -->
+                    @php $isKasActive = request()->routeIs('transactions.*'); @endphp
+                    <div>
+                        <a class="nav-side-link d-flex justify-content-between align-items-center {{ $isKasActive ? 'active' : '' }} {{ $isKasActive ? '' : 'collapsed' }}" 
+                           data-bs-toggle="collapse" 
+                           href="#menuKas" 
+                           role="button" 
+                           aria-expanded="{{ $isKasActive ? 'true' : 'false' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-wallet2"></i>
+                                <span class="nav-link-title">Keuangan (Buku Kas)</span>
+                            </div>
+                            <i class="bi bi-chevron-down nav-chevron"></i>
+                        </a>
+                        <div class="collapse {{ $isKasActive ? 'show' : '' }} nav-side-sub" id="menuKas">
+                            <a class="nav-side-link {{ request()->routeIs('transactions.create') ? 'active' : '' }}" href="{{ route('transactions.create') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Catat Transaksi Kas</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-journal-text"></i>
+                                <span>Riwayat Kas Masuk & Keluar</span>
+                            </a>
+                        </div>
+                    </div>
                     @endif
 
                     @if(Auth::user()->isAdmin())
-                    <div class="sidebar-section-label">Master Data</div>
-                    <a class="nav-side-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-flower1"></i>
-                        <span class="nav-link-title">Produk Parfum</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('locations.*') ? 'active' : '' }}" href="{{ route('locations.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-geo-alt-fill"></i>
-                        <span class="nav-link-title">Lokasi Stok</span>
-                    </a>
-                    <a class="nav-side-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-people-fill"></i>
-                        <span class="nav-link-title">Manajemen User</span>
-                    </a>
+                    <!-- 5. Dropdown Master Data (Admin Only) -->
+                    @php $isMasterActive = request()->routeIs('products.*') || request()->routeIs('locations.*') || request()->routeIs('users.*'); @endphp
+                    <div>
+                        <a class="nav-side-link d-flex justify-content-between align-items-center {{ $isMasterActive ? 'active' : '' }} {{ $isMasterActive ? '' : 'collapsed' }}" 
+                           data-bs-toggle="collapse" 
+                           href="#menuMaster" 
+                           role="button" 
+                           aria-expanded="{{ $isMasterActive ? 'true' : 'false' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-gear-wide-connected"></i>
+                                <span class="nav-link-title">Master Data</span>
+                            </div>
+                            <i class="bi bi-chevron-down nav-chevron"></i>
+                        </a>
+                        <div class="collapse {{ $isMasterActive ? 'show' : '' }} nav-side-sub" id="menuMaster">
+                            <a class="nav-side-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-flower1"></i>
+                                <span>Produk Parfum</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('locations.*') ? 'active' : '' }}" href="{{ route('locations.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span>Lokasi Stok</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-people-fill"></i>
+                                <span>Manajemen User</span>
+                            </a>
+                        </div>
+                    </div>
                     @endif
                 </div>
 

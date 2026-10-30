@@ -56,15 +56,27 @@
                             {{ \Carbon\Carbon::parse($trf->tanggal)->translatedFormat('d M Y') }}
                         </td>
                         <td class="py-2 px-3">
-                            <span class="badge bg-light text-muted border fw-semibold">{{ $trf->fromLocation?->name ?? 'Gudang' }}</span>
+                            @if($trf->fromLocation)
+                                @php $fromPal = $trf->fromLocation->getColorPalette(); @endphp
+                                <span class="badge" style="background-color: {{ $fromPal['badge_bg'] }}; color: {{ $fromPal['badge_text'] }}; border: 1px solid {{ $fromPal['border'] }}; font-weight: 700; font-size: 0.78rem;">
+                                    <i class="bi bi-geo-alt-fill me-1"></i>{{ $trf->fromLocation->name }}
+                                </span>
+                            @else
+                                <span class="badge bg-light text-muted border fw-semibold">Gudang</span>
+                            @endif
                         </td>
                         <td class="text-center text-muted py-2 px-3">
                             <i class="bi bi-arrow-right"></i>
                         </td>
                         <td class="py-2 px-3">
-                            <span class="badge bg-light text-dark border fw-semibold">
-                                {{ $trf->toLocation?->name ?? 'Tujuan' }}
-                            </span>
+                            @if($trf->toLocation)
+                                @php $toPal = $trf->toLocation->getColorPalette(); @endphp
+                                <span class="badge" style="background-color: {{ $toPal['badge_bg'] }}; color: {{ $toPal['badge_text'] }}; border: 1px solid {{ $toPal['border'] }}; font-weight: 700; font-size: 0.78rem;">
+                                    <i class="bi bi-geo-alt-fill me-1"></i>{{ $trf->toLocation->name }}
+                                </span>
+                            @else
+                                <span class="badge bg-light text-dark border fw-semibold">Tujuan</span>
+                            @endif
                         </td>
                         <td class="py-2 px-3">
                             <div class="fw-semibold text-dark">{{ $trf->product?->name }}</div>

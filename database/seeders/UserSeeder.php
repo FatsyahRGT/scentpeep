@@ -32,5 +32,23 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
             ]
         );
+
+        $team = [
+            ['email' => 'rizky@scentpeep.com', 'name' => 'RIZKY', 'role' => 'staff'],
+            ['email' => 'iwan@scentpeep.com', 'name' => 'IWAN', 'role' => 'staff'],
+            ['email' => 'vanny@scentpeep.com', 'name' => 'VANNY', 'role' => 'staff'],
+        ];
+
+        foreach ($team as $member) {
+            User::updateOrCreate(
+                ['email' => $member['email']],
+                [
+                    'name' => $member['name'],
+                    'role' => $member['role'],
+                    'is_active' => true,
+                    'password' => Hash::make('password'),
+                ]
+            );
+        }
     }
 }

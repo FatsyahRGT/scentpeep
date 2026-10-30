@@ -13,11 +13,15 @@ class Invoice extends Model
     public const STATUS_UNPAID = 'BELUM LUNAS';
     public const STATUS_PAID = 'LUNAS';
 
-    public const SALES_OPTIONS = [
-        'RIZKY',
-        'IWAN',
-        'VANNY',
-    ];
+    /**
+     * Dapatkan daftar nama sales dinamis dari pengguna (User) yang aktif.
+     */
+    public static function getSalesOptions(): \Illuminate\Support\Collection
+    {
+        return User::where('is_active', true)
+            ->orderBy('name')
+            ->pluck('name');
+    }
 
     protected $fillable = [
         'invoice_no',

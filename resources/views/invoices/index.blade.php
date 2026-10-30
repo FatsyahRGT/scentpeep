@@ -49,7 +49,7 @@
             <form method="GET" action="{{ route('invoices.index') }}" class="d-flex flex-wrap align-items-center gap-2 m-0">
                 <select name="sales_name" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
                     <option value="">-- Semua Sales --</option>
-                    @foreach(\App\Models\Invoice::SALES_OPTIONS as $s)
+                    @foreach($salesOptions as $s)
                     <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
                     @endforeach
                 </select>
@@ -96,7 +96,10 @@
                         <td class="py-2 px-3 text-muted small">{{ $inv->created_at->format('d/m/Y H:i') }}</td>
                         <td class="py-2 px-3 fw-semibold text-dark">{{ $inv->customer_name }}</td>
                         <td class="py-2 px-3">
-                            <span class="badge bg-light text-dark border">{{ $inv->sales_name }}</span>
+                            @php $salesPal = \App\Models\Location::paletteForName($inv->sales_name); @endphp
+                            <span class="badge" style="background-color: {{ $salesPal['badge_bg'] }}; color: {{ $salesPal['badge_text'] }}; border: 1px solid {{ $salesPal['border'] }}; font-weight: 700; font-size: 0.78rem;">
+                                <i class="bi bi-person-fill me-1"></i>{{ $inv->sales_name }}
+                            </span>
                         </td>
                         <td class="py-2 px-3">
                             <span class="fw-semibold text-dark">{{ $inv->product->name ?? '-' }}</span>
@@ -104,10 +107,13 @@
                         </td>
                         <td class="py-2 px-3 text-center fw-bold">{{ $inv->qty }} pcs</td>
                         <td class="py-2 px-3 text-center">
-                            @if(($inv->location->name ?? '') === 'IWAN')
-                            <span class="badge" style="background:#e8f5e9; color:#1b5e20; border:1px solid #c8e6c9;">IWAN</span>
+                            @if($inv->location)
+                                @php $invPal = $inv->location->getColorPalette(); @endphp
+                                <span class="badge" style="background-color: {{ $invPal['badge_bg'] }}; color: {{ $invPal['badge_text'] }}; border: 1px solid {{ $invPal['border'] }}; font-weight: 600;">
+                                    {{ $inv->location->name }}
+                                </span>
                             @else
-                            <span class="badge" style="background:#e3f2fd; color:#0d47a1; border:1px solid #bbdefb;">RIZKY</span>
+                                <span class="badge bg-light text-muted border">-</span>
                             @endif
                         </td>
                         <td class="py-2 px-3 text-end font-mono fw-bold text-dark">

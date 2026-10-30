@@ -204,13 +204,19 @@
                         <!-- Efek Stok Fisik -->
                         <td class="d-none d-sm-table-cell py-2 px-3">
                             @if($tx->stock_effect !== 'NONE' && $tx->product)
-                                <div class="d-flex align-items-center gap-1">
+                                <div class="d-flex align-items-center gap-1 flex-wrap">
                                     <span class="badge {{ $tx->stock_effect === 'IN' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-dark' }} border">
                                         {{ $tx->stock_effect === 'IN' ? '+ ' : '- ' }}{{ $tx->qty }} pcs
                                     </span>
-                                    <small class="text-muted text-truncate" style="max-width: 140px;">
-                                        {{ $tx->product->name }} ({{ $tx->location?->name }})
+                                    <small class="text-dark fw-semibold text-truncate" style="max-width: 140px;">
+                                        {{ $tx->product->name }}
                                     </small>
+                                    @if($tx->location)
+                                        @php $txLocPal = $tx->location->getColorPalette(); @endphp
+                                        <span class="badge" style="background-color: {{ $txLocPal['badge_bg'] }}; color: {{ $txLocPal['badge_text'] }}; border: 1px solid {{ $txLocPal['border'] }}; font-size: 0.68rem;">
+                                            <i class="bi bi-geo-alt"></i> {{ $tx->location->name }}
+                                        </span>
+                                    @endif
                                 </div>
                             @else
                                 <span class="text-muted small">&mdash; (Murni Kas)</span>

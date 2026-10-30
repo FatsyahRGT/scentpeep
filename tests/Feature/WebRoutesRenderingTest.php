@@ -50,6 +50,8 @@ class WebRoutesRenderingTest extends TestCase
     {
         $this->get('/login')->assertOk();
         $this->get('/register')->assertOk();
+        $this->get('/stok-reseller')->assertOk();
+        $this->get('/katalog-stok')->assertRedirect(route('stocks.publicReseller'));
     }
 
     public function test_admin_can_render_all_views(): void
@@ -98,5 +100,62 @@ class WebRoutesRenderingTest extends TestCase
             $response = $this->actingAs($this->reseller)->get($url);
             $response->assertOk();
         }
+    }
+
+    public function test_location_generates_distinct_contrasting_color_palettes(): void
+    {
+        $iwan = Location::create(['name' => 'IWAN', 'type' => Location::TYPE_WAREHOUSE]);
+        $rizky = Location::create(['name' => 'RIZKY', 'type' => Location::TYPE_RESELLER]);
+        $vanny = Location::create(['name' => 'VANNY', 'type' => Location::TYPE_RESELLER]);
+        $newLoc1 = Location::create(['name' => 'Gudang Pusat Surabaya', 'type' => Location::TYPE_WAREHOUSE]);
+        $newLoc2 = Location::create(['name' => 'Toko Distributor Medan', 'type' => Location::TYPE_RESELLER]);
+
+        $iwanPalette = $iwan->getColorPalette();
+        $rizkyPalette = $rizky->getColorPalette();
+        $vannyPalette = $vanny->getColorPalette();
+        $newLoc1Palette = $newLoc1->getColorPalette();
+        $newLoc2Palette = $newLoc2->getColorPalette();
+
+        $this->assertEquals('emerald', $iwanPalette['name']);
+        $this->assertEquals('sapphire', $rizkyPalette['name']);
+        $this->assertEquals('ruby', $vannyPalette['name']);
+
+        // Check that static paletteForName matches instance getColorPalette
+        $this->assertEquals($iwanPalette, Location::paletteForName('IWAN'));
+        $this->assertEquals($rizkyPalette, Location::paletteForName('RIZKY'));
+        $this->assertEquals($vannyPalette, Location::paletteForName('VANNY'));
+
+        // Validate hex format for all color keys
+        $hexPattern = '/^#[0-9a-f]{6}$/i';
+        foreach ([$iwanPalette, $rizkyPalette, $vannyPalette, $newLoc1Palette, $newLoc2Palette] as $pal) {
+            $this->assertMatchesRegularExpression($hexPattern, $pal['text']);
+            $this->assertMatchesRegularExpression($hexPattern, $pal['bg']);
+            $this->assertMatchesRegularExpression($hexPattern, $pal['border']);
+            $this->assertMatchesRegularExpression($hexPattern, $pal['badge_bg']);
+            $this->assertMatchesRegularExpression($hexPattern, $pal['badge_text']);
+            $this->assertMatchesRegularExpression($hexPattern, $pal['pill_bg']);
+        }
+
+        // Distinct hues for different locations
+        $this->assertNotEquals($newLoc1Palette['hue'], $newLoc2Palette['hue']);
+
+        // Check that /stocks/reseller and /stok-reseller render successfully with all dynamic locations
+        $this->actingAs($this->admin)->get('/stocks/reseller')
+            ->assertOk()
+            ->assertSee('IWAN')
+            ->assertSee('RIZKY')
+            ->assertSee('VANNY');
+
+        $this->get('/stok-reseller')
+            ->assertOk()
+            ->assertSee('IWAN')
+            ->assertSee('RIZKY')
+            ->assertSee('VANNY');
+
+        // Check that dashboard, invoices, transactions, and transfers render successfully with HSL badges
+        $this->actingAs($this->admin)->get('/dashboard')->assertOk();
+        $this->actingAs($this->admin)->get('/invoices')->assertOk();
+        $this->actingAs($this->admin)->get('/transactions')->assertOk();
+        $this->actingAs($this->admin)->get('/stocks/transfers')->assertOk();
     }
 }

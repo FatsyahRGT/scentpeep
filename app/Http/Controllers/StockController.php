@@ -219,12 +219,13 @@ class StockController extends Controller
     }
 
     /**
-     * Dashboard terpisah untuk reseller / monitoring visual stok IWAN & RIZKY.
+     * Dashboard terpisah untuk reseller / monitoring visual sebaran stok IWAN & RIZKY, produk terlaris, dan varian ready.
      */
     public function resellerStocks(Request $request): View
     {
-        $iwan = Location::where('name', 'IWAN')->first();
-        $rizky = Location::where('name', 'RIZKY')->first();
+        $locations = Location::with(['stocks.product'])->orderBy('name')->get();
+        $iwan = $locations->firstWhere('name', 'IWAN');
+        $rizky = $locations->firstWhere('name', 'RIZKY');
 
         $query = Product::where('is_active', true)->with(['stocks.location'])->orderBy('name');
 
@@ -237,43 +238,194 @@ class StockController extends Controller
 
         $allProducts = $query->get();
 
-        // Siapkan data per varian parfum
-        $productStockData = $allProducts->map(function ($product) use ($iwan, $rizky) {
-            $stockIwan = $iwan ? (int) $product->stocks->firstWhere('location_id', $iwan->id)?->qty : 0;
-            $stockRizky = $rizky ? (int) $product->stocks->firstWhere('location_id', $rizky->id)?->qty : 0;
-            $totalStock = $stockIwan + $stockRizky;
+        // 1. Data stok per produk di setiap pemegang stok
+        $productStockData = $allProducts->map(function ($product) {
+            $totalStock = (int) $product->stocks->sum('qty');
 
             return [
                 'product' => $product,
-                'stock_iwan' => $stockIwan,
-                'stock_rizky' => $stockRizky,
                 'total_stock' => $totalStock,
+                'is_ready' => $totalStock > 0,
                 'is_out_of_stock' => $totalStock === 0,
             ];
         });
 
-        // Filter jika user hanya ingin melihat stok yang habis
-        if ($request->boolean('out_of_stock')) {
+        // 2. Filter Status: 'ready' (Hanya Stok Ready), 'empty' (Hanya Stok Habis), atau 'all'
+        $filterStatus = $request->get('filter_status', 'all');
+        if ($filterStatus === 'ready' || $request->boolean('ready_only')) {
+            $productStockData = $productStockData->filter(fn ($item) => $item['is_ready']);
+        } elseif ($filterStatus === 'empty' || $request->boolean('out_of_stock')) {
             $productStockData = $productStockData->filter(fn ($item) => $item['is_out_of_stock']);
         }
+
+        // 3. Sebaran Stok: Siapa saja & Dimana saja
+        $holdersDistribution = $locations->map(function ($loc) {
+            $totalQty = (int) $loc->stocks->sum('qty');
+            $readySkus = $loc->stocks->where('qty', '>', 0)->count();
+
+            return [
+                'id' => $loc->id,
+                'name' => $loc->name,
+                'type' => $loc->type,
+                'total_qty' => $totalQty,
+                'ready_skus' => $readySkus,
+                'location' => $loc,
+                'palette' => $loc->getColorPalette(),
+            ];
+        });
+
+        // 4. Stok Parfum Paling Laris (Best Sellers dari Invoice)
+        $bestSellers = \App\Models\Invoice::select(
+                'product_id',
+                DB::raw('SUM(qty) as total_sold'),
+                DB::raw('SUM(total_price) as total_omset')
+            )
+            ->groupBy('product_id')
+            ->orderByDesc('total_sold')
+            ->with('product')
+            ->take(5)
+            ->get();
+
+        $outOfStockProducts = $allProducts->filter(function ($p) {
+            return (int) $p->stocks->sum('qty') === 0;
+        })->values();
 
         $metrics = [
             'total_iwan_stock' => $iwan ? (int) Stock::where('location_id', $iwan->id)->sum('qty') : 0,
             'total_rizky_stock' => $rizky ? (int) Stock::where('location_id', $rizky->id)->sum('qty') : 0,
             'total_combined_stock' => Stock::sum('qty'),
-            'out_of_stock_count' => $productStockData->where('is_out_of_stock', true)->count(),
+            'ready_variants_count' => $allProducts->filter(function ($p) {
+                return (int) $p->stocks->sum('qty') > 0;
+            })->count(),
+            'out_of_stock_count' => $outOfStockProducts->count(),
         ];
 
-        $locations = Location::whereIn('name', ['IWAN', 'RIZKY'])->get();
         $products = Product::where('is_active', true)->orderBy('name')->get();
 
         return view('stocks.reseller_dashboard', compact(
             'productStockData',
+            'holdersDistribution',
+            'bestSellers',
             'metrics',
+            'filterStatus',
             'iwan',
             'rizky',
             'locations',
-            'products'
+            'products',
+            'outOfStockProducts'
+        ));
+    }
+
+    /**
+     * Dashboard publik khusus reseller (dapat diakses tanpa login).
+     * Berisi: Peringatan Stok Menipis (<3 pcs), Distribusi Stok (Iwan & Rizky),
+     * Varian Parfum Terlaris, Daftar Stok Ready, dan Antrean Produk PO (Stok Pending),
+     * tanpa mengekspos data laporan keuangan.
+     */
+    public function publicResellerDashboard(Request $request): View
+    {
+        $locations = Location::with(['stocks.product'])->orderBy('name')->get();
+        $iwan = $locations->firstWhere('name', 'IWAN');
+        $rizky = $locations->firstWhere('name', 'RIZKY');
+
+        $query = Product::where('is_active', true)->with(['stocks.location'])->orderBy('name');
+
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', $search)->orWhere('code', 'like', $search);
+            });
+        }
+
+        $allProducts = $query->get();
+
+        // 1. Data Stok Parfum & Ketersediaan Ready
+        $productStockData = $allProducts->map(function ($product) {
+            $totalStock = (int) $product->stocks->sum('qty');
+
+            return [
+                'product' => $product,
+                'total_stock' => $totalStock,
+                'is_ready' => $totalStock > 0,
+                'is_out_of_stock' => $totalStock === 0,
+            ];
+        });
+
+        // Filter tab: 'ready' (Hanya Ready), 'empty' (Hanya Habis), 'all' (Semua)
+        $filterStatus = $request->get('filter_status', 'all');
+        if ($filterStatus === 'ready' || $request->boolean('ready_only')) {
+            $productStockData = $productStockData->filter(fn ($item) => $item['is_ready']);
+        } elseif ($filterStatus === 'empty' || $request->boolean('out_of_stock')) {
+            $productStockData = $productStockData->filter(fn ($item) => $item['is_out_of_stock']);
+        }
+
+        // 2. Sebaran Stok Fisik: Siapa saja & Dimana saja
+        $holdersDistribution = $locations->map(function ($loc) {
+            $totalQty = (int) $loc->stocks->sum('qty');
+            $readySkus = $loc->stocks->where('qty', '>', 0)->count();
+
+            return [
+                'id' => $loc->id,
+                'name' => $loc->name,
+                'type' => $loc->type,
+                'total_qty' => $totalQty,
+                'ready_skus' => $readySkus,
+                'location' => $loc,
+                'palette' => $loc->getColorPalette(),
+            ];
+        });
+
+        // 3. Peringatan Stok Menipis (< 3 pcs)
+        $criticalStocks = Stock::with(['product', 'location'])
+            ->where('qty', '<', 3)
+            ->whereHas('product', fn ($p) => $p->where('is_active', true))
+            ->orderBy('qty', 'asc')
+            ->take(12)
+            ->get();
+
+        // 4. Varian Parfum Terlaris (Best Seller) - hanya volume penjualan pcs, tanpa data keuangan
+        $bestSellers = \App\Models\Invoice::select(
+                'product_id',
+                DB::raw('SUM(qty) as total_sold')
+            )
+            ->groupBy('product_id')
+            ->orderByDesc('total_sold')
+            ->with('product')
+            ->take(5)
+            ->get();
+
+        // 5. Antrean Produk PO (Stok Pending yang sedang diproduksi)
+        $pendingPreOrders = \App\Models\PreOrder::with(['product', 'location'])
+            ->where('status', \App\Models\PreOrder::STATUS_PENDING)
+            ->latest()
+            ->get();
+
+        $outOfStockProducts = $allProducts->filter(function ($p) {
+            return (int) $p->stocks->sum('qty') === 0;
+        })->values();
+
+        $metrics = [
+            'total_iwan_stock' => $iwan ? (int) Stock::where('location_id', $iwan->id)->sum('qty') : 0,
+            'total_rizky_stock' => $rizky ? (int) Stock::where('location_id', $rizky->id)->sum('qty') : 0,
+            'total_combined_stock' => Stock::sum('qty'),
+            'ready_variants_count' => $allProducts->filter(fn ($p) => (int) $p->stocks->sum('qty') > 0)->count(),
+            'critical_count' => $criticalStocks->count(),
+            'total_po_pending_qty' => (int) $pendingPreOrders->sum('qty'),
+            'out_of_stock_count' => $outOfStockProducts->count(),
+        ];
+
+        return view('stocks.public_reseller_dashboard', compact(
+            'productStockData',
+            'holdersDistribution',
+            'criticalStocks',
+            'bestSellers',
+            'pendingPreOrders',
+            'metrics',
+            'filterStatus',
+            'locations',
+            'outOfStockProducts',
+            'iwan',
+            'rizky'
         ));
     }
 }

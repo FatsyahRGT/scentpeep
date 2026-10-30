@@ -17,7 +17,7 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 - **`products`**: `id` (PK), `name`, `code` (nullable SKU), `cost_price` (modal), `sell_price` (jual), `is_active` (boolean), `timestamps`.
 - **`locations`**: `id` (PK), `name` (`IWAN`, `RIZKY`), `type`, `timestamps`. (Toko GPI telah dibersihkan).
 - **`stocks`**: `id` (PK), `location_id` (FK -> locations.id), `product_id` (FK -> products.id), `qty` (integer), `UNIQUE(location_id, product_id)`.
-- **`invoices`**: `id` (PK), `invoice_no` (custom string), `sales_name` (`RIZKY`, `IWAN`, `VANNY`), `customer_name`, `product_id` (FK), `qty`, `location_id` (FK: Iwan/Rizky), `total_price` (custom/diskon), `payment_status` (`BELUM LUNAS`, `LUNAS`), `notes`, `created_by` (FK), `timestamps`.
+- **`invoices`**: `id` (PK), `invoice_no` (custom string), `sales_name` (string dinamis terintegrasi Master User), `customer_name`, `product_id` (FK), `qty`, `location_id` (FK: Iwan/Rizky), `total_price` (custom/diskon), `payment_status` (`BELUM LUNAS`, `LUNAS`), `notes`, `created_by` (FK), `timestamps`.
 - **`pre_orders`**: `id` (PK), `po_number`, `product_id` (FK), `location_id` (FK), `qty`, `status` (`PENDING`, `SELESAI`), `customer_name`, `notes`, `created_by`, `completed_at`, `timestamps`.
 - **`raw_materials`**: `id` (PK), `name` (e.g. Box Packaging, Botol Kaca), `category` (`BOX`, `BOTOL`, `LAINNYA`), `stock_qty`, `min_stock`, `timestamps`.
 - **`raw_material_mutations`**: `id` (PK), `raw_material_id` (FK), `type` (`IN`, `OUT`), `qty`, `amount` (biaya), `supplier`, `note`, `created_by`, `timestamps`.
@@ -38,11 +38,33 @@ Aplikasi ini mencakup kebutuhan operasional harian:
    - Modul khusus memantau stok fisik Box Packaging dan Botol Kaca.
    - Setiap pengadaan (IN) dapat mencatat biaya belanja yang langsung tersinkronisasi ke Buku Kas (Pengeluaran Bahan Baku).
    - Pemantauan real-time ditampilkan di Dashboard Utama dengan alert stok menipis.
-4. **Dashboard Reseller (Iwan & Rizky)**:
-   - Halaman khusus monitoring stok dengan pembeda visual: **IWAN** (Emerald/Hijau) vs **RIZKY** (Sapphire/Biru).
-   - Fitur filter langsung untuk melihat varian parfum yang stoknya habis.
-   - Tombol cepat untuk tambah manual stok sehabis produksi parfum.
-5. **Dashboard Utama**:
+4. **Dashboard & Sebaran Stok Reseller (Internal & Publik)**:
+   - **Internal Reseller Monitor (`/stocks/reseller`)**: Halaman monitoring stok internal dengan pembeda visual warna dinamis, sebaran stok per pemegang, leaderboard varian terlaris, filter ready/habis, dan tombol tambah stok manual sehabis produksi.
+   - **Katalog Publik Reseller (`/stok-reseller` & `/katalog-stok`)**: Halaman publik responsif tanpa login khusus reseller untuk melihat:
+     1. Peringatan Stok Menipis (< 3 pcs).
+     2. Distribusi Stok (Ada di siapa saja & dimana saja).
+     3. Varian Parfum Terlaris (Best Seller - volume pcs saja tanpa ekspos keuangan/margin).
+     4. Antrean Produk yang sedang dalam proses Pre-Order (PO / Stok Pending).
+     5. Katalog lengkap ketersediaan parfum ready stock dengan filter status.
+5. **Palet Warna Otomatis Berbasis HSL Golden Angle (`Location::getColorPalette()` & `Location::paletteForName()`):**
+   - Sistem matematis murni (PHP native standard library, tanpa ketergantungan paket JS/NPM pihak ketiga) menggunakan rumus HSL dan sudut emas phyllotaxis (Golden Angle $137.507764^\circ$):
+     - `IWAN`: Emerald Green ($145.0^\circ$, `#0c6f37` badge text, `#dcf5e5` badge bg, `#f0faf3` tint).
+     - `RIZKY`: Sapphire Blue ($215.0^\circ$, `#0c436f` badge text, `#dcebf5` badge bg, `#f0f5fa` tint).
+     - `VANNY`: Ruby Crimson ($345.0^\circ$, `#6f0c24` badge text, `#f5dce2` badge bg, `#faf0f2` tint).
+     - Lokasi / Sales Tambahan Baru: Otomatis dihitung secara deterministik dan non-clashing melintasi seluruh spektrum warna ($H = ((id - 1) \times 137.507764 + 45.0) \pmod{360}$) dengan kompensasi kontras WCAG AAA (penyesuaian khusus lightness pada zona kuning/amber $35^\circ - 65^\circ$).
+   - Terkoneksi menyeluruh di seluruh modul aplikasi:
+     - Matriks & Sebaran Stok (`/stocks`)
+     - Dashboard Reseller Internal & Publik (`/stocks/reseller`, `/stok-reseller`)
+     - Master Lokasi (`/locations`)
+     - Invoice & Riwayat Penjualan Sales (`/invoices`)
+     - Dashboard Utama (Distribusi Penjualan per Sales, Stok Menipis, Riwayat Transaksi, Sebaran Stok) (`/dashboard`)
+     - Riwayat Transfer Stok Multi-Lokasi (`/stocks/transfers`)
+     - Riwayat Transaksi Buku Kas (`/transactions`)
+     - Master User & Akun Reseller (`/users`)
+     - Pre-Order (`/pre-orders`)
+6. **Sidebar Navigation Dropdown Segment**:
+   - Pengelompokan menu sidebar menggunakan Bootstrap 5 collapse accordion dengan chevron berputar antara Master Fitur dan Sub-Fitur (Penjualan/Invoice, Stok & PO, Barang Mentah, Keuangan/Buku Kas, Master Data).
+7. **Dashboard Utama**:
    - Ringkasan Saldo Uang Kas (Pemasukan, Pengeluaran, Saldo Real).
    - Widget Monitoring Barang Mentah (Stok Box & Botol).
    - Distribusi Penjualan per Sales (`IWAN`, `RIZKY`, `VANNY`).

@@ -50,15 +50,16 @@ class InvoiceController extends Controller
         ];
 
         $locations = Location::orderBy('name')->get();
+        $salesOptions = Invoice::getSalesOptions();
 
-        return view('invoices.index', compact('invoices', 'metrics', 'locations'));
+        return view('invoices.index', compact('invoices', 'metrics', 'locations', 'salesOptions'));
     }
 
     public function create(): View
     {
         $products = Product::where('is_active', true)->orderBy('name')->get();
         $locations = Location::orderBy('name')->get();
-        $salesOptions = Invoice::SALES_OPTIONS;
+        $salesOptions = Invoice::getSalesOptions();
 
         return view('invoices.create', compact('products', 'locations', 'salesOptions'));
     }
@@ -67,7 +68,7 @@ class InvoiceController extends Controller
     {
         $validated = $request->validate([
             'invoice_no' => 'nullable|string|max:100',
-            'sales_name' => 'required|in:RIZKY,IWAN,VANNY',
+            'sales_name' => 'required|string|max:100',
             'customer_name' => 'required|string|max:255',
             'product_id' => 'required|exists:products,id',
             'qty' => 'required|integer|min:1',

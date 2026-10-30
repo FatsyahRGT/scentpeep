@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\RawMaterial;
 use App\Models\Stock;
 use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -81,6 +82,7 @@ class DashboardController extends Controller
                 'type' => $loc->type,
                 'total_qty' => $sumQty,
                 'sku_count' => $loc->stocks->where('qty', '>', 0)->count(),
+                'palette' => $loc->getColorPalette(),
             ];
             $totalSystemStock += $sumQty;
         }
@@ -169,19 +171,23 @@ class DashboardController extends Controller
         $rawMaterialBotolStock = (int) RawMaterial::where('category', RawMaterial::CATEGORY_BOTOL)->sum('stock_qty');
         $rawMaterialsList = RawMaterial::orderBy('category')->orderBy('name')->get();
 
-        // 8. Distribusi Penjualan Sales (IWAN, RIZKY, VANNY)
+        // 8. Distribusi Penjualan Sales (Dinamis dari User aktif & Invoice)
         $salesStats = Invoice::selectRaw('sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as invoice_count')
             ->groupBy('sales_name')
             ->get()
             ->keyBy('sales_name');
 
-        $salesDistribution = collect(Invoice::SALES_OPTIONS)->map(function ($name) use ($salesStats) {
+        $activeSalesNames = User::where('is_active', true)->pluck('name');
+        $allSalesNames = $activeSalesNames->merge($salesStats->keys())->unique()->values();
+
+        $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats) {
             $stat = $salesStats->get($name);
             return [
                 'name' => $name,
                 'total_qty' => (int) ($stat->total_qty ?? 0),
                 'total_omset' => (float) ($stat->total_omset ?? 0),
                 'invoice_count' => (int) ($stat->invoice_count ?? 0),
+                'palette' => Location::paletteForName($name),
             ];
         });
 

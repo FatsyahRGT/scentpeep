@@ -106,7 +106,7 @@
                 <form method="GET" action="{{ route('dashboard') }}" class="d-flex align-items-center gap-2">
                     <label class="small fw-semibold text-muted text-nowrap mb-0"><i class="bi bi-funnel me-1"></i>Filter Berdasarkan Lokasi:</label>
                     <select name="location_id" class="form-select form-select-sm" style="min-width: 240px; border-radius: 8px;" onchange="this.form.submit()">
-                        <option value="">Semua Lokasi Stok (Pusat & Reseller)</option>
+                        <option value="">Semua Lokasi Stok</option>
                         @foreach($allLocations as $loc)
                             <option value="{{ $loc->id }}" {{ $selectedLocationId == $loc->id ? 'selected' : '' }}>
                                 {{ $loc->name }} ({{ $loc->type === 'reseller' ? 'Reseller' : 'Gudang' }})
@@ -180,15 +180,20 @@
             </div>
             <div class="card-body p-3">
                 <div class="row g-2">
-                    @foreach($salesDistribution as $sales)
-                    <div class="col-4">
-                        <div class="p-2 p-md-3 rounded-3 text-center" style="background-color: var(--color-surface-hover, #f4f3f0); border: 1px solid var(--color-border, #e8e6e1);">
-                            <div class="fw-bold text-dark small">{{ $sales['name'] }}</div>
-                            <div class="font-serif fs-4 fw-bold text-dark my-1">{{ $sales['total_qty'] }} <span class="fs-6 text-muted font-sans fw-normal">pcs</span></div>
-                            <div class="text-muted font-mono" style="font-size: 0.75rem;">Rp {{ number_format($sales['total_omset'], 0, ',', '.') }}</div>
+                    @forelse($salesDistribution as $sales)
+                    @php $spal = $sales['palette'] ?? \App\Models\Location::paletteForName($sales['name']); @endphp
+                    <div class="col-6 col-sm-4">
+                        <div class="p-2 p-md-3 rounded-3 text-center h-100" style="background-color: {{ $spal['bg'] }}; border: 1px solid {{ $spal['border'] }};">
+                            <span class="badge mb-1 px-2 py-1" style="background-color: {{ $spal['badge_bg'] }}; color: {{ $spal['badge_text'] }}; border: 1px solid {{ $spal['border'] }}; font-weight: 700; font-size: 0.78rem;">
+                                <i class="bi bi-person-fill me-1"></i>{{ $sales['name'] }}
+                            </span>
+                            <div class="font-serif fs-4 fw-bold my-1" style="color: {{ $spal['text'] }};">{{ $sales['total_qty'] }} <span class="fs-6 text-muted font-sans fw-normal">pcs</span></div>
+                            <div class="font-mono fw-semibold" style="color: {{ $spal['text'] }}; font-size: 0.75rem;">Rp {{ number_format($sales['total_omset'], 0, ',', '.') }}</div>
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    <div class="col-12 text-center text-muted py-3">Belum ada data penjualan per sales.</div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -209,14 +214,21 @@
             <div class="card-body p-3">
                 <div class="row g-3">
                     @forelse($locationStockSummaries as $loc)
+                    @php $pal = $loc['palette'] ?? null; @endphp
                     <div class="col-sm-6">
-                        <div class="p-3 rounded-3" style="background-color: var(--color-surface-hover, #f4f3f0); border: 1px solid var(--color-border, #e8e6e1);">
+                        <div class="p-3 rounded-3" style="background-color: {{ $pal ? $pal['bg'] : 'var(--color-surface-hover, #f4f3f0)' }}; border: 1px solid {{ $pal ? $pal['border'] : 'var(--color-border, #e8e6e1)' }};">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="fw-semibold text-dark">{{ $loc['name'] }}</span>
-                                <span class="badge bg-white text-muted border" style="font-size: 0.7rem;">{{ $loc['sku_count'] }} SKU</span>
+                                <span class="fw-semibold" style="color: {{ $pal ? $pal['text'] : 'var(--scent-dark, #121212)' }};">
+                                    <span class="badge me-1" style="background-color: {{ $pal ? $pal['badge_bg'] : '#f4f3f0' }}; color: {{ $pal ? $pal['badge_text'] : '#121212' }}; border: 1px solid {{ $pal ? $pal['border'] : '#e8e6e1' }}; font-weight: 700;">
+                                        <i class="bi bi-geo-alt-fill me-1"></i>{{ $loc['name'] }}
+                                    </span>
+                                </span>
+                                <span class="badge bg-white border" style="font-size: 0.7rem; color: {{ $pal ? $pal['text'] : '#6c757d' }}; border-color: {{ $pal ? $pal['border'] : '#e8e6e1' }} !important;">
+                                    {{ $loc['sku_count'] }} SKU
+                                </span>
                             </div>
-                            <div class="d-flex align-items-baseline gap-1">
-                                <span class="font-serif fs-2 fw-bold text-dark">{{ $loc['total_qty'] }}</span>
+                            <div class="d-flex align-items-baseline gap-1 mt-2">
+                                <span class="font-serif fs-2 fw-bold" style="color: {{ $pal ? $pal['text'] : 'var(--scent-dark, #121212)' }};">{{ number_format($loc['total_qty']) }}</span>
                                 <span class="text-muted small">pcs parfum</span>
                             </div>
                         </div>
@@ -258,7 +270,16 @@
                                         <span class="badge bg-light text-muted border ms-1" style="font-size: 0.68rem;">{{ $item->product->code }}</span>
                                     @endif
                                 </td>
-                                <td class="text-muted small py-2 px-3">{{ $item->location->name }}</td>
+                                <td class="py-2 px-3">
+                                    @if($item->location)
+                                        @php $csPal = $item->location->getColorPalette(); @endphp
+                                        <span class="badge" style="background-color: {{ $csPal['badge_bg'] }}; color: {{ $csPal['badge_text'] }}; border: 1px solid {{ $csPal['border'] }}; font-weight: 600;">
+                                            {{ $item->location->name }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
                                 <td class="text-end py-2 px-3">
                                     <span class="badge {{ $item->qty == 0 ? 'bg-danger text-white' : 'bg-warning text-dark' }} px-2 py-1">
                                         {{ $item->qty }} pcs
@@ -429,9 +450,14 @@
                                 <td class="py-2 px-3 text-dark">{{ $inv->product->name ?? '-' }}</td>
                                 <td class="py-2 px-3 text-center fw-bold">{{ $inv->qty }} pcs</td>
                                 <td class="py-2 px-3 text-center">
-                                    <span class="badge {{ ($inv->location->name ?? '') === 'IWAN' ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary' }}">
-                                        {{ $inv->location->name ?? '-' }}
-                                    </span>
+                                    @if($inv->location)
+                                        @php $invPal = $inv->location->getColorPalette(); @endphp
+                                        <span class="badge" style="background-color: {{ $invPal['badge_bg'] }}; color: {{ $invPal['badge_text'] }}; border: 1px solid {{ $invPal['border'] }}; font-weight: 600;">
+                                            {{ $inv->location->name }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-light text-muted border">-</span>
+                                    @endif
                                 </td>
                                 <td class="py-2 px-3 text-end font-mono fw-bold">Rp {{ number_format($inv->total_price, 0, ',', '.') }}</td>
                                 <td class="py-2 px-3 text-center">
@@ -507,7 +533,13 @@
                                             <span class="badge {{ $tx->stock_effect === 'IN' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-dark' }}">
                                                 {{ $tx->stock_effect === 'IN' ? '+' : '-' }}{{ $tx->qty }} pcs
                                             </span>
-                                            <span class="text-muted ms-1">{{ $tx->product->name }} ({{ $tx->location?->name }})</span>
+                                            <span class="text-dark fw-semibold ms-1">{{ $tx->product->name }}</span>
+                                            @if($tx->location)
+                                                @php $txLocPal = $tx->location->getColorPalette(); @endphp
+                                                <span class="badge ms-1" style="background-color: {{ $txLocPal['badge_bg'] }}; color: {{ $txLocPal['badge_text'] }}; border: 1px solid {{ $txLocPal['border'] }}; font-size: 0.7rem;">
+                                                    <i class="bi bi-geo-alt"></i> {{ $tx->location->name }}
+                                                </span>
+                                            @endif
                                         </div>
                                     @else
                                         <span class="text-muted small">&mdash;</span>

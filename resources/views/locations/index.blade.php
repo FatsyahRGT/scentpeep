@@ -43,9 +43,14 @@
                         <tr>
                             <td class="text-muted small py-2 px-3">{{ $locations->firstItem() + $index }}</td>
                             <td class="py-2 px-3">
-                                <div class="fw-semibold text-dark fs-6">{{ $loc->name }}</div>
+                                @php $pal = $loc->getColorPalette(); @endphp
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge" style="background-color: {{ $pal['badge_bg'] }}; color: {{ $pal['badge_text'] }}; border: 1px solid {{ $pal['border'] }}; font-weight: 700; font-size: 0.85rem;">
+                                        <i class="bi bi-geo-alt-fill me-1"></i>{{ $loc->name }}
+                                    </span>
+                                </div>
                                 @if($loc->user)
-                                    <div class="text-muted small" style="font-size: 0.72rem;">
+                                    <div class="text-muted small mt-1" style="font-size: 0.72rem;">
                                         <i class="bi bi-person me-1"></i>Reseller: {{ $loc->user->name }} ({{ $loc->user->email }})
                                     </div>
                                 @endif

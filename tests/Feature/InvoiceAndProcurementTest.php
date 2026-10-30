@@ -82,6 +82,34 @@ class InvoiceAndProcurementTest extends TestCase
         $this->assertEquals(8, Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first()->qty);
     }
 
+    public function test_can_create_invoice_with_any_dynamic_user_as_sales(): void
+    {
+        $newSalesUser = User::factory()->create([
+            'name' => 'Sarah Sales Team',
+            'role' => 'staff',
+            'is_active' => true,
+        ]);
+
+        $this->assertTrue(Invoice::getSalesOptions()->contains('Sarah Sales Team'));
+
+        $response = $this->actingAs($this->admin)->post(route('invoices.store'), [
+            'invoice_no' => 'INV-SARAH-01',
+            'sales_name' => 'Sarah Sales Team',
+            'customer_name' => 'Customer Sarah',
+            'product_id' => $this->product->id,
+            'qty' => 1,
+            'location_id' => $this->iwan->id,
+            'total_price' => 180000,
+            'payment_status' => 'BELUM LUNAS',
+        ]);
+
+        $response->assertRedirect(route('invoices.index'));
+        $this->assertDatabaseHas('invoices', [
+            'invoice_no' => 'INV-SARAH-01',
+            'sales_name' => 'Sarah Sales Team',
+        ]);
+    }
+
     public function test_invoice_creation_fails_if_stock_insufficient(): void
     {
         $response = $this->actingAs($this->admin)->post(route('invoices.store'), [

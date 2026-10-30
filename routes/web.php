@@ -13,6 +13,10 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+// Public Reseller Stock Dashboard (Dapat diakses langsung tanpa login)
+Route::get('/stok-reseller', [StockController::class, 'publicResellerDashboard'])->name('stocks.publicReseller');
+Route::get('/katalog-stok', fn () => redirect()->route('stocks.publicReseller'));
+
 // Guest Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

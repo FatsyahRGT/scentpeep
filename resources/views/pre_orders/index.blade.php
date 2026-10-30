@@ -81,10 +81,13 @@
                         </td>
                         <td class="py-2 px-3 text-center fw-bold">{{ $po->qty }} pcs</td>
                         <td class="py-2 px-3 text-center">
-                            @if(($po->location->name ?? '') === 'IWAN')
-                            <span class="badge" style="background:#e8f5e9; color:#1b5e20; border:1px solid #c8e6c9;">IWAN</span>
+                            @if($po->location)
+                                @php $poPal = $po->location->getColorPalette(); @endphp
+                                <span class="badge" style="background-color: {{ $poPal['badge_bg'] }}; color: {{ $poPal['badge_text'] }}; border: 1px solid {{ $poPal['border'] }}; font-weight: 600;">
+                                    {{ $po->location->name }}
+                                </span>
                             @else
-                            <span class="badge" style="background:#e3f2fd; color:#0d47a1; border:1px solid #bbdefb;">RIZKY</span>
+                                <span class="badge bg-light text-muted border">-</span>
                             @endif
                         </td>
                         <td class="py-2 px-3">
