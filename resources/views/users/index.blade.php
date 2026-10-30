@@ -90,7 +90,7 @@
                             </td>
                             <td class="text-end py-2 px-3">
                                 <div class="dropdown">
-                                    <button class="btn btn-sm btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" title="Menu Aksi">
+                                    <button type="button" class="btn btn-sm btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-expanded="false" title="Menu Aksi">
                                         <i class="bi bi-three-dots-vertical"></i>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">

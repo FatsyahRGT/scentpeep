@@ -470,9 +470,9 @@
         <!-- Mobile Top Navbar (< 992px) -->
         <header class="d-lg-none sticky-top py-2 px-3" style="background-color: var(--scent-dark); border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 1040;">
             <div class="container-fluid p-0 d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-sm text-white border-0 p-1" type="button" onclick="toggleMobileSidebar()" aria-label="Toggle Sidebar">
-                        <i class="bi bi-list fs-3"></i>
+                <div class="d-flex align-items-center gap-1">
+                    <button class="btn text-white border-0 d-inline-flex align-items-center justify-content-center p-0" type="button" onclick="toggleMobileSidebar()" aria-label="Toggle Sidebar" style="width: 44px; height: 44px;">
+                        <i class="bi bi-list fs-2"></i>
                     </button>
                     <a href="{{ route('dashboard') }}" class="scent-brand text-white text-decoration-none" style="font-size:1.15rem;">
                         Scentpeep<span class="text-white-50">.</span>
@@ -482,10 +482,10 @@
                     <span class="user-avatar-circle bg-white text-dark" style="width:28px;height:28px;font-size:0.7rem;">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </span>
-                    <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    <form action="{{ route('logout') }}" method="POST" class="m-0" onsubmit="return confirm('Keluar dari sesi Scentpeep?');">
                         @csrf
-                        <button type="submit" class="btn btn-sm text-white border-0 p-1" title="Keluar">
-                            <i class="bi bi-box-arrow-right"></i>
+                        <button type="submit" class="btn text-white border-0 d-inline-flex align-items-center justify-content-center p-0" title="Keluar" aria-label="Keluar" style="width: 44px; height: 44px;">
+                            <i class="bi bi-box-arrow-right fs-5"></i>
                         </button>
                     </form>
                 </div>
@@ -613,7 +613,7 @@
                                 <i class="bi bi-arrow-left-right"></i>
                                 <span>Transfer Stok Antar Lokasi</span>
                             </a>
-                            <a class="nav-side-link text-primary fw-semibold" href="{{ route('stocks.publicReseller') }}" target="_blank" title="Buka dashboard stok versi reseller tanpa login">
+                            <a class="nav-side-link fw-semibold" style="color: var(--scent-dark);" href="{{ route('stocks.publicReseller') }}" target="_blank" title="Buka dashboard stok versi reseller tanpa login">
                                 <i class="bi bi-box-arrow-up-right"></i>
                                 <span>Buka Link Publik Reseller</span>
                             </a>
@@ -714,9 +714,9 @@
                                 <div class="text-muted text-truncate" style="font-size:0.68rem;">{{ ucfirst(Auth::user()->role) }}</div>
                             </div>
                         </div>
-                        <form action="{{ route('logout') }}" method="POST" class="m-0 flex-shrink-0">
+                        <form action="{{ route('logout') }}" method="POST" class="m-0 flex-shrink-0" onsubmit="return confirm('Keluar dari sesi Scentpeep?');">
                             @csrf
-                            <button type="submit" class="btn btn-sm text-danger border-0 p-1" title="Keluar">
+                            <button type="submit" class="btn btn-sm text-danger border-0 p-1" title="Keluar" aria-label="Keluar">
                                 <i class="bi bi-box-arrow-right fs-5"></i>
                             </button>
                         </form>

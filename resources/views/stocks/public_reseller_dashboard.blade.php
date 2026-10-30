@@ -83,14 +83,14 @@
             </div>
         </div>
         <div class="d-flex align-items-center flex-wrap gap-2 text-muted small">
-            <span class="d-inline-flex align-items-center gap-1 badge bg-light text-dark border px-2 py-1">
-                <span class="d-inline-block rounded-circle bg-success me-1" style="width: 7px; height: 7px;"></span>
+            <div class="d-inline-flex flex-wrap align-items-center gap-1 rounded bg-light text-dark border px-2 py-1" style="font-size: 0.78rem;">
+                <span class="d-inline-block rounded-circle bg-success me-1 flex-shrink-0" style="width: 7px; height: 7px;"></span>
                 <span class="text-muted">Mutasi Stok Terakhir:</span>
                 <strong class="font-mono text-dark" id="lastStockActivityTime" data-iso="{{ $lastStockActivity->toIso8601String() }}">
                     {{ $lastStockActivity->translatedFormat('d M Y, H:i') }} WIB
                 </strong>
                 <span class="text-secondary fw-normal ms-1" id="relativeStockTime">({{ $lastStockActivity->diffForHumans() }})</span>
-            </span>
+            </div>
         </div>
     </div>
 

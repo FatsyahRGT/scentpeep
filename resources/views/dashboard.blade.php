@@ -96,7 +96,7 @@
                     <i class="bi bi-arrow-left-right me-1"></i> Transfer Stok
                 </a>
                 @endif
-                <a href="{{ route('stocks.index') }}" class="btn btn-outline-secondary rounded-pill px-3 py-1 fw-semibold small">
+                <a href="{{ route('stocks.index') }}" class="btn btn-scent-outline fw-semibold">
                     <i class="bi bi-box-seam me-1"></i> Ringkasan Stok
                 </a>
             </div>
@@ -114,7 +114,7 @@
                         @endforeach
                     </select>
                     @if($selectedLocationId)
-                        <a href="{{ route('dashboard') }}" class="btn btn-sm btn-light border text-danger rounded-pill px-3">Reset</a>
+                        <a href="{{ route('dashboard') }}" class="btn btn-sm btn-light border text-danger px-3">Reset</a>
                     @endif
                 </form>
                 @if($selectedLocationId)

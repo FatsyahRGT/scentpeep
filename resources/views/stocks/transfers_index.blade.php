@@ -16,7 +16,7 @@
                 <i class="bi bi-arrow-left-right me-1"></i> Buat Transfer Baru
             </a>
             @endif
-            <a href="{{ route('stocks.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+            <a href="{{ route('stocks.index') }}" class="btn btn-sm btn-scent-outline fw-semibold">
                 <i class="bi bi-box-seam me-1"></i> Ringkasan Stok
             </a>
             <form method="GET" action="{{ route('stocks.transfers') }}" class="d-inline-block">

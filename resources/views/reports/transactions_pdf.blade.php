@@ -20,10 +20,10 @@
             <small class="text-muted">Gunakan tombol cetak untuk menyimpan sebagai PDF dokumen resmi</small>
         </div>
         <div class="d-flex gap-2">
-            <button onclick="window.print()" class="btn btn-primary btn-sm">
-                Cetak / Simpan PDF
+            <button type="button" onclick="window.print()" class="btn btn-dark btn-sm fw-semibold" style="background: #121212; border-color: #121212;">
+                <i class="bi bi-printer me-1"></i> Cetak / Simpan PDF
             </button>
-            <button onclick="window.close()" class="btn btn-outline-secondary btn-sm">
+            <button type="button" onclick="window.close()" class="btn btn-outline-secondary btn-sm">
                 Tutup
             </button>
         </div>

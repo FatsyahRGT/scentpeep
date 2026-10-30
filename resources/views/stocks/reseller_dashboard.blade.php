@@ -61,8 +61,8 @@
                             <i class="bi bi-exclamation-circle me-1"></i>{{ $oosp->name }}
                         </span>
                         @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
-                        <button type="button" class="btn btn-xs btn-outline-danger py-0 px-1 fw-semibold text-nowrap" style="font-size: 0.68rem;" onclick="openQuickRestock({{ $oosp->id }}, '{{ addslashes($oosp->name) }}')" title="Tambah Stok Produksi">
-                            + Restock
+                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold text-nowrap d-inline-flex align-items-center" style="font-size: 0.72rem; min-height: 26px;" onclick="openQuickRestock({{ $oosp->id }}, '{{ addslashes($oosp->name) }}')" title="Tambah Stok Produksi">
+                            <i class="bi bi-plus me-1"></i> Restock
                         </button>
                         @endif
                     </div>
@@ -297,8 +297,9 @@
                         @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
                         <!-- Aksi Cepat Restock -->
                         <td class="py-2 px-3 text-end">
-                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" onclick="openQuickRestock({{ $item['product']->id }}, '{{ addslashes($item['product']->name) }}')" title="Restock Produksi">
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 d-inline-flex align-items-center gap-1" onclick="openQuickRestock({{ $item['product']->id }}, '{{ addslashes($item['product']->name) }}')" title="Restock Produksi" aria-label="Restock Produksi">
                                 <i class="bi bi-plus-circle"></i>
+                                <span class="d-none d-md-inline" style="font-size: 0.75rem;">Restock</span>
                             </button>
                         </td>
                         @endif
