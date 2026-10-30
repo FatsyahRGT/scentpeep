@@ -30,9 +30,9 @@
     "semantic_hash": "f24a5a18af93e5af038a957a3f3e809e"
   },
   "app/Http/Controllers/StockController.php": {
-    "mtime": 1793363481.7065108,
-    "seen": 1793364003.9655647,
-    "ast_hash": "43a325b5752ad095e1131cb26cecf135",
+    "mtime": 1793370036.1396518,
+    "seen": 1793370110.453615,
+    "ast_hash": "418bbbfcdc4acc81d0c641f0dcb64f13",
     "semantic_hash": ""
   },
   "app/Http/Requests/StoreLocationRequest.php": {
@@ -342,9 +342,9 @@
     "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
   },
   "routes/web.php": {
-    "mtime": 1793367901.5511549,
-    "seen": 1793368115.7163944,
-    "ast_hash": "765d17bbdb1adf6dc2404ddb67bd7b5b",
+    "mtime": 1793369815.5287354,
+    "seen": 1793370110.453615,
+    "ast_hash": "e169077d7d31119bd427a96c0175d935",
     "semantic_hash": ""
   },
   "tests/Feature/ExampleTest.php": {
@@ -492,15 +492,15 @@
     "semantic_hash": ""
   },
   "resources/views/stocks/transfer.blade.php": {
-    "mtime": 1793200733.5867245,
-    "seen": 1793361746.6697118,
-    "ast_hash": "62f41c0c93521f9c99eee95c139125dc",
+    "mtime": 1793369915.090212,
+    "seen": 1793370110.453615,
+    "ast_hash": "1244866216c3f260696e8a6026d19936",
     "semantic_hash": ""
   },
   "resources/views/stocks/transfers_index.blade.php": {
-    "mtime": 1793365329.1400578,
-    "seen": 1793365460.1876948,
-    "ast_hash": "63766afd0d2a3c22d1d199ec989f6f67",
+    "mtime": 1793369987.6279905,
+    "seen": 1793370110.453615,
+    "ast_hash": "42420ea2a1e75178827a4d5f8b8d9c63",
     "semantic_hash": ""
   },
   "resources/views/transactions/create.blade.php": {
@@ -570,9 +570,9 @@
     "semantic_hash": "2dac99251c2df7a915333f6567241be8"
   },
   "tests/Feature/TransactionAndStockTest.php": {
-    "mtime": 1793369219.49735,
-    "seen": 1793369270.4397264,
-    "ast_hash": "f28fa8df68307358f83aaf80842e569a",
+    "mtime": 1793370055.6563463,
+    "seen": 1793370110.453615,
+    "ast_hash": "7ac4ea45ad66cd38523972a53e876b57",
     "semantic_hash": ""
   },
   "tests/Feature/WebRoutesRenderingTest.php": {
@@ -804,9 +804,9 @@
     "semantic_hash": ""
   },
   "KESIMPULAN_PROJEK.md": {
-    "mtime": 1793369258.9430711,
-    "seen": 1793369270.4397264,
-    "ast_hash": "d7f6ef6995171e1923ee54050d0d5126",
+    "mtime": 1793370095.4258053,
+    "seen": 1793370110.453615,
+    "ast_hash": "a9732988998667fcf016bc13e8b49234",
     "semantic_hash": ""
   },
   "PANDUAN_SESI_BARU_GRAPHIFY.md": {
@@ -897,6 +897,12 @@
     "mtime": 1793368073.407335,
     "seen": 1793368115.7163944,
     "ast_hash": "0fcfc50a8c9a064330e99c2c5a7e273e",
+    "semantic_hash": ""
+  },
+  "resources/views/stocks/transfer_edit.blade.php": {
+    "mtime": 1793369942.8797457,
+    "seen": 1793370110.453615,
+    "ast_hash": "0d21b9494b073b1ee363ce7bb72a26cb",
     "semantic_hash": ""
   }
 }

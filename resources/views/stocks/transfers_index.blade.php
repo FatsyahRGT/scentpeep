@@ -52,6 +52,7 @@
                         <th class="py-2 px-3 text-muted small fw-semibold">Varian Produk</th>
                         <th class="text-center py-2 px-3 text-muted small fw-semibold" style="width: 100px;">Jumlah</th>
                         <th class="py-2 px-3 text-muted small fw-semibold">Catatan & Diproses Oleh</th>
+                        <th class="text-end py-2 px-3 text-muted small fw-semibold" style="width: 100px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -104,10 +105,51 @@
                                 <i class="bi bi-person me-1"></i>{{ $trf->creator?->name ?? 'Sistem' }}
                             </div>
                         </td>
+                        <td class="text-end py-2 px-3">
+                            @if(!Auth::user()->isReseller())
+                            <div class="d-inline-flex gap-1 align-items-center">
+                                <a href="{{ route('stocks.transfer.edit', $trf) }}" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Edit Transfer">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" data-bs-toggle="modal" data-bs-target="#modalDeleteTransfer{{ $trf->id }}" title="Batalkan & Hapus Transfer">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+
+                            <!-- Modal Konfirmasi Hapus Transfer -->
+                            <div class="modal fade" id="modalDeleteTransfer{{ $trf->id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <form action="{{ route('stocks.transfer.destroy', $trf) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <div class="modal-content text-start">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title font-serif fw-bold text-danger">Batalkan Transfer #{{ $trf->transfer_no }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p class="mb-2">Apakah Anda yakin ingin membatalkan dan menghapus data transfer ini?</p>
+                                                <div class="alert alert-warning py-2 px-3 small mb-0">
+                                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                                    Stok <strong>{{ $trf->qty }} pcs {{ $trf->product?->name }}</strong> akan ditarik kembali dari <strong>{{ $trf->toLocation?->name }}</strong> dan dikembalikan ke <strong>{{ $trf->fromLocation?->name }}</strong>.
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
+                                                <button type="submit" class="btn btn-sm btn-danger fw-semibold">Batalkan & Kembalikan Stok</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            @else
+                            <span class="text-muted small">-</span>
+                            @endif
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="text-center py-5 text-muted">
+                        <td colspan="10" class="text-center py-5 text-muted">
                             <i class="bi bi-arrow-left-right fs-1 d-block mb-2"></i>
                             Belum ada riwayat transfer stok yang tercatat.
                         </td>

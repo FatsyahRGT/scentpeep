@@ -52,7 +52,13 @@ Aplikasi ini mencakup kebutuhan operasional harian:
      3. Varian Parfum Terlaris (Best Seller - volume pcs saja tanpa ekspos keuangan/margin).
      4. Antrean Produk yang sedang dalam proses Pre-Order (PO / Stok Pending).
      5. Katalog lengkap ketersediaan parfum ready stock dengan filter status.
-5. **Palet Warna Otomatis Berbasis HSL Golden Angle (`Location::getColorPalette()` & `Location::paletteForName()`):**
+5. **Transfer Stok Antar Lokasi (Full CRUD & Kalkulator Stok Real-Time)**:
+   - **Kalkulator Stok Realtime Akurat**: Menyinkronkan ketersediaan stok fisik riil per varian produk di lokasi asal terpilih secara otomatis (mencegah bug stok 0 pcs). Opsi lokasi tujuan otomatis menonaktifkan lokasi asal agar tidak terjadi pemilihan lokasi yang sama.
+   - **CRUD Transfer Stok Atomik**:
+     - *Create*: Memotong stok asal dan menambah stok tujuan dalam satu `DB::transaction` dengan pencatatan audit trail nomor transfer otomatis (`TRF/YYYYMMDD/xxxx`).
+     - *Edit & Update (`/stocks/transfer/{id}/edit`)*: Membalikkan efek transfer lama, memverifikasi ketersediaan stok di lokasi baru, lalu menerapkan transfer baru secara atomik tanpa risiko stok minus.
+     - *Delete / Batalkan Transfer*: Menarik kembali stok dari lokasi tujuan dan mengembalikannya ke lokasi asal secara aman (dilengkapi validasi jika stok di tujuan sudah terjual/kurang).
+6. **Palet Warna Otomatis Berbasis HSL Golden Angle (`Location::getColorPalette()` & `Location::paletteForName()`):**
    - Sistem matematis murni (PHP native standard library, tanpa ketergantungan paket JS/NPM pihak ketiga) menggunakan rumus HSL dan sudut emas phyllotaxis (Golden Angle $137.507764^\circ$):
      - `IWAN`: Emerald Green ($145.0^\circ$, `#0c6f37` badge text, `#dcf5e5` badge bg, `#f0faf3` tint).
      - `RIZKY`: Sapphire Blue ($215.0^\circ$, `#0c436f` badge text, `#dcebf5` badge bg, `#f0f5fa` tint).

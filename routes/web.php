@@ -63,6 +63,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/transfers', [StockController::class, 'transfers'])->name('transfers');
         Route::get('/transfer', [StockController::class, 'createTransfer'])->name('transfer.create');
         Route::post('/transfer', [StockController::class, 'storeTransfer'])->name('transfer.store');
+        Route::get('/transfer/{stockTransfer}/edit', [StockController::class, 'editTransfer'])->name('transfer.edit');
+        Route::put('/transfer/{stockTransfer}', [StockController::class, 'updateTransfer'])->name('transfer.update');
+        Route::delete('/transfer/{stockTransfer}', [StockController::class, 'destroyTransfer'])->name('transfer.destroy');
     });
 
     // Reports Export (Excel & PDF)

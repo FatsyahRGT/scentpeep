@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Location;
 use App\Models\Product;
 use App\Models\Stock;
+use App\Models\StockTransfer;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -254,6 +255,81 @@ class TransactionAndStockTest extends TestCase
             'product_id' => $this->product->id,
             'qty' => 5,
         ]);
+    }
+
+    public function test_transfer_stock_edit_view_and_update_atomically(): void
+    {
+        // Initial: GPI = 20, RIZKY = 0
+        Stock::create([
+            'location_id' => $this->tokoGpi->id,
+            'product_id' => $this->product->id,
+            'qty' => 20,
+        ]);
+
+        // 1. Buat transfer 5 pcs
+        $this->actingAs($this->admin)->post(route('stocks.transfer.store'), [
+            'from_location_id' => $this->tokoGpi->id,
+            'to_location_id' => $this->rizky->id,
+            'product_id' => $this->product->id,
+            'qty' => 5,
+            'notes' => 'Transfer awal',
+        ]);
+
+        $transfer = StockTransfer::latest('id')->first();
+        $this->assertNotNull($transfer);
+
+        // Render edit view
+        $editView = $this->actingAs($this->admin)->get(route('stocks.transfer.edit', $transfer));
+        $editView->assertOk();
+        $editView->assertSee('Edit Transfer Stok');
+
+        // 2. Update transfer menjadi 8 pcs
+        $updateResponse = $this->actingAs($this->admin)->put(route('stocks.transfer.update', $transfer), [
+            'from_location_id' => $this->tokoGpi->id,
+            'to_location_id' => $this->rizky->id,
+            'product_id' => $this->product->id,
+            'qty' => 8,
+            'notes' => 'Transfer diedit jadi 8 pcs',
+        ]);
+
+        $updateResponse->assertRedirect(route('stocks.transfers'));
+
+        // Stock GPI harus berkurang 8 (20 - 8 = 12), Stock RIZKY harus jadi 8
+        $this->assertEquals(12, Stock::where('location_id', $this->tokoGpi->id)->where('product_id', $this->product->id)->first()->qty);
+        $this->assertEquals(8, Stock::where('location_id', $this->rizky->id)->where('product_id', $this->product->id)->first()->qty);
+        $this->assertEquals(8, $transfer->fresh()->qty);
+    }
+
+    public function test_transfer_stock_destroy_restores_stocks(): void
+    {
+        // Initial: GPI = 10, RIZKY = 0
+        Stock::create([
+            'location_id' => $this->tokoGpi->id,
+            'product_id' => $this->product->id,
+            'qty' => 10,
+        ]);
+
+        // Transfer 4 pcs
+        $this->actingAs($this->admin)->post(route('stocks.transfer.store'), [
+            'from_location_id' => $this->tokoGpi->id,
+            'to_location_id' => $this->rizky->id,
+            'product_id' => $this->product->id,
+            'qty' => 4,
+            'notes' => 'Transfer untuk dihapus',
+        ]);
+
+        $transfer = StockTransfer::latest('id')->first();
+        $this->assertEquals(6, Stock::where('location_id', $this->tokoGpi->id)->where('product_id', $this->product->id)->first()->qty);
+        $this->assertEquals(4, Stock::where('location_id', $this->rizky->id)->where('product_id', $this->product->id)->first()->qty);
+
+        // Batalkan transfer
+        $destroyResponse = $this->actingAs($this->admin)->delete(route('stocks.transfer.destroy', $transfer));
+        $destroyResponse->assertRedirect(route('stocks.transfers'));
+
+        // Stok harus kembali utuh: GPI = 10, RIZKY = 0
+        $this->assertEquals(10, Stock::where('location_id', $this->tokoGpi->id)->where('product_id', $this->product->id)->first()->qty);
+        $this->assertEquals(0, Stock::where('location_id', $this->rizky->id)->where('product_id', $this->product->id)->first()->qty);
+        $this->assertDatabaseMissing('stock_transfers', ['id' => $transfer->id]);
     }
 
     public function test_role_middleware_restricts_staff_from_master_data_and_users(): void

@@ -90,6 +90,7 @@ class StockController extends Controller
         $stocks = Stock::all();
         $stocksMap = [];
         foreach ($stocks as $stk) {
+            $stocksMap[$stk->location_id][$stk->product_id] = (int) $stk->qty;
             $stocksMap["{$stk->location_id}_{$stk->product_id}"] = (int) $stk->qty;
         }
 
@@ -100,6 +101,149 @@ class StockController extends Controller
             'selectedProductId',
             'stocksMap'
         ));
+    }
+
+    /**
+     * Show the form for editing an existing stock transfer.
+     */
+    public function editTransfer(StockTransfer $stockTransfer): View|RedirectResponse
+    {
+        if (Auth::user()->isReseller()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Akses ditolak. Fitur transfer stok hanya dapat dilakukan oleh Administrator.');
+        }
+
+        $locations = Location::orderBy('name')->get();
+        $products = Product::where('is_active', true)->orderBy('name')->get();
+
+        $stocks = Stock::all();
+        $stocksMap = [];
+        foreach ($stocks as $stk) {
+            $stocksMap[$stk->location_id][$stk->product_id] = (int) $stk->qty;
+            $stocksMap["{$stk->location_id}_{$stk->product_id}"] = (int) $stk->qty;
+        }
+
+        return view('stocks.transfer_edit', compact(
+            'stockTransfer',
+            'locations',
+            'products',
+            'stocksMap'
+        ));
+    }
+
+    /**
+     * Update an existing stock transfer with atomic reversal and reapplication.
+     */
+    public function updateTransfer(TransferStockRequest $request, StockTransfer $stockTransfer): RedirectResponse
+    {
+        if (Auth::user()->isReseller()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Akses ditolak. Fitur transfer stok hanya dapat dilakukan oleh Administrator.');
+        }
+
+        DB::transaction(function () use ($request, $stockTransfer) {
+            // 1. Validasi & Balikkan efek transfer lama
+            $oldDestStock = Stock::where('location_id', $stockTransfer->to_location_id)
+                ->where('product_id', $stockTransfer->product_id)
+                ->lockForUpdate()
+                ->first();
+
+            $oldDestQty = $oldDestStock ? (int) $oldDestStock->qty : 0;
+            if ($oldDestQty < $stockTransfer->qty) {
+                $toLocName = $stockTransfer->toLocation?->name ?? 'Lokasi Tujuan Lama';
+                $prodName = $stockTransfer->product?->name ?? 'Produk';
+                throw ValidationException::withMessages([
+                    'qty' => "Tidak dapat mengubah transfer: stok {$prodName} di lokasi tujuan lama ({$toLocName}) saat ini tersisa {$oldDestQty} pcs, kurang dari {$stockTransfer->qty} pcs untuk pengembalian.",
+                ]);
+            }
+
+            // Kembalikan ke asal lama dan kurangi dari tujuan lama
+            $oldDestStock->decrement('qty', $stockTransfer->qty);
+
+            $oldSourceStock = Stock::firstOrCreate(
+                ['location_id' => $stockTransfer->from_location_id, 'product_id' => $stockTransfer->product_id],
+                ['qty' => 0]
+            );
+            $oldSourceStock->increment('qty', $stockTransfer->qty);
+
+            // 2. Validasi ketersediaan stok di lokasi asal baru
+            $newSourceStock = Stock::where('location_id', $request->from_location_id)
+                ->where('product_id', $request->product_id)
+                ->lockForUpdate()
+                ->first();
+
+            $newAvailable = $newSourceStock ? (int) $newSourceStock->qty : 0;
+            if ($newAvailable < $request->qty) {
+                $fromLocName = Location::find($request->from_location_id)?->name ?? 'Lokasi Asal';
+                $prodName = Product::find($request->product_id)?->name ?? 'Produk';
+                throw ValidationException::withMessages([
+                    'qty' => "Stok {$prodName} di {$fromLocName} tidak mencukupi (Tersedia: {$newAvailable} pcs, Diminta: {$request->qty} pcs).",
+                ]);
+            }
+
+            // Potong dari asal baru & tambahkan ke tujuan baru
+            $newSourceStock->decrement('qty', $request->qty);
+
+            $newDestStock = Stock::firstOrCreate(
+                ['location_id' => $request->to_location_id, 'product_id' => $request->product_id],
+                ['qty' => 0]
+            );
+            $newDestStock->increment('qty', $request->qty);
+
+            // 3. Update record StockTransfer
+            $stockTransfer->update([
+                'from_location_id' => $request->from_location_id,
+                'to_location_id' => $request->to_location_id,
+                'product_id' => $request->product_id,
+                'qty' => $request->qty,
+                'notes' => $request->notes,
+            ]);
+        });
+
+        return redirect()->route('stocks.transfers')
+            ->with('success', "Transfer stok {$stockTransfer->transfer_no} berhasil diperbarui!");
+    }
+
+    /**
+     * Delete/cancel a stock transfer and restore stock units atomically.
+     */
+    public function destroyTransfer(StockTransfer $stockTransfer): RedirectResponse
+    {
+        if (Auth::user()->isReseller()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Akses ditolak.');
+        }
+
+        DB::transaction(function () use ($stockTransfer) {
+            $destStock = Stock::where('location_id', $stockTransfer->to_location_id)
+                ->where('product_id', $stockTransfer->product_id)
+                ->lockForUpdate()
+                ->first();
+
+            $destQty = $destStock ? (int) $destStock->qty : 0;
+            if ($destQty < $stockTransfer->qty) {
+                $toLocName = $stockTransfer->toLocation?->name ?? 'Lokasi Tujuan';
+                $prodName = $stockTransfer->product?->name ?? 'Produk';
+                throw ValidationException::withMessages([
+                    'error' => "Transfer {$stockTransfer->transfer_no} tidak dapat dibatalkan: stok {$prodName} di lokasi tujuan ({$toLocName}) tersisa {$destQty} pcs, kurang dari kuantitas transfer ({$stockTransfer->qty} pcs) untuk dikembalikan.",
+                ]);
+            }
+
+            // Kurangi dari tujuan
+            $destStock->decrement('qty', $stockTransfer->qty);
+
+            // Kembalikan ke asal
+            $sourceStock = Stock::firstOrCreate(
+                ['location_id' => $stockTransfer->from_location_id, 'product_id' => $stockTransfer->product_id],
+                ['qty' => 0]
+            );
+            $sourceStock->increment('qty', $stockTransfer->qty);
+
+            $stockTransfer->delete();
+        });
+
+        return redirect()->route('stocks.transfers')
+            ->with('success', "Transfer stok {$stockTransfer->transfer_no} berhasil dibatalkan dan stok dikembalikan ke lokasi asal!");
     }
 
     /**
