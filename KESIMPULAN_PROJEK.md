@@ -42,8 +42,14 @@ Aplikasi ini menggabungkan 2 kebutuhan operasional harian:
 
 ---
 
-## 5. Tech Stack
-- **Backend Framework**: Laravel 13 (PHP 8.2+)
+## 5. Tech Stack & Default Skills
+- **Backend Framework**: Laravel 12 (PHP 8.2+)
 - **Database**: SQLite / MySQL (PDO)
-- **Frontend**: Blade Views + Tabler Core (CDN) + Bootstrap 5 (CDN) + Bootstrap Icons + SweetAlert2 (CDN) + Chart.js (CDN)
+- **Frontend**: Blade Views + Bootstrap 5.3.3 (CDN) + AdminLTE 4 Components + Bootstrap Icons + SweetAlert2 (CDN) + Chart.js (CDN)
 - **Testing**: PHPUnit / Laravel TestSuite (100% Passed)
+- **Default Agent Skills & Memory**:
+  - `graphify`: Persistent knowledge graph di `graphify-out/`, auto-update setiap ada perubahan file.
+  - `ponytail`: Minimalist & KISS, tanpa dependensi berlebih, solusi native paling sederhana.
+  - `db-perf` & `n1`: Anti N+1 query, mandatory eager loading (`with()`), performa kueri database optimal.
+  - `clean-code-principles` & `code-slop`: Clean code, SOLID, anti komentar AI-slop, dan arsitektur tanpa abstraksi prematur.
+  - `antislop`: Luxury Monochrome UI styling bebas visual/CSS slop.
