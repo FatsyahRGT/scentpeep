@@ -84,49 +84,58 @@
 
 <div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
     <!-- Header & Action Buttons -->
-    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3 py-3 bg-white border-bottom">
-        <div>
-            <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Katalog & Ketersediaan Stok Parfum</h3>
-            <small class="text-muted d-block">Data stok fisik real-time hasil sinkronisasi transaksi, invoice, dan transfer multi-lokasi.</small>
+    <div class="card-header py-3 bg-white border-bottom">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Katalog &amp; Ketersediaan Stok Parfum</h3>
+                <small class="text-muted d-block">Data stok fisik real-time hasil sinkronisasi transaksi, invoice, dan transfer multi-lokasi.</small>
+            </div>
         </div>
-        <div class="card-tools d-flex flex-wrap align-items-center gap-2">
-            <!-- Quick Filter Status -->
-            <div class="btn-group btn-group-sm" role="group" id="stockStatusFilterGroup">
-                <button type="button" class="btn btn-outline-secondary active" data-filter="all">Semua</button>
-                <button type="button" class="btn btn-outline-success" data-filter="ready"><i class="bi bi-check-circle me-1"></i> Ready</button>
-                <button type="button" class="btn btn-outline-warning" data-filter="low"><i class="bi bi-exclamation-triangle me-1"></i> Menipis</button>
-                <button type="button" class="btn btn-outline-danger" data-filter="empty"><i class="bi bi-x-circle me-1"></i> Habis</button>
+
+        <!-- Toolbar Container: Filter lalu Tombol Aksi di kiri, Search di kanan (ms-auto) -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <!-- Quick Filter Status -->
+                <div class="btn-group btn-group-sm" role="group" id="stockStatusFilterGroup">
+                    <button type="button" class="btn btn-outline-secondary active" data-filter="all">Semua</button>
+                    <button type="button" class="btn btn-outline-success" data-filter="ready"><i class="bi bi-check-circle me-1"></i> Ready</button>
+                    <button type="button" class="btn btn-outline-warning" data-filter="low"><i class="bi bi-exclamation-triangle me-1"></i> Menipis</button>
+                    <button type="button" class="btn btn-outline-danger" data-filter="empty"><i class="bi bi-x-circle me-1"></i> Habis</button>
+                </div>
+
+                @if(!Auth::user()->isReseller())
+                <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-scent-outline fw-semibold">
+                    <i class="bi bi-arrow-left-right me-1"></i> Transfer Stok
+                </a>
+                @endif
+                <a href="{{ route('transactions.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                    <i class="bi bi-plus-circle me-1"></i> Catat Transaksi
+                </a>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-download me-1"></i> Ekspor
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('reports.stocks.excel') }}">
+                                <i class="bi bi-file-earmark-excel text-success me-2"></i> Unduh Excel (.csv)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('reports.stocks.pdf') }}" target="_blank">
+                                <i class="bi bi-file-earmark-pdf text-danger me-2"></i> Cetak / Unduh PDF
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="input-group input-group-sm" style="width: 15rem">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                <input type="search" id="liveStockSearch" class="form-control border-start-0 ps-0" placeholder="Filter nama parfum/SKU&hellip;" aria-label="Filter rows">
+            <div class="ms-auto">
+                <div class="input-group input-group-sm" style="width: 15rem">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="search" id="liveStockSearch" class="form-control border-start-0 ps-0" placeholder="Filter nama parfum/SKU&hellip;" aria-label="Filter rows">
+                </div>
             </div>
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-download me-1"></i> Ekspor
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
-                    <li>
-                        <a class="dropdown-item" href="{{ route('reports.stocks.excel') }}">
-                            <i class="bi bi-file-earmark-excel text-success me-2"></i> Unduh Excel (.csv)
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="{{ route('reports.stocks.pdf') }}" target="_blank">
-                            <i class="bi bi-file-earmark-pdf text-danger me-2"></i> Cetak / Unduh PDF
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            @if(!Auth::user()->isReseller())
-            <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-scent-outline fw-semibold">
-                <i class="bi bi-arrow-left-right me-1"></i> Transfer Stok
-            </a>
-            @endif
-            <a href="{{ route('transactions.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                <i class="bi bi-plus-circle me-1"></i> Catat Transaksi
-            </a>
         </div>
     </div>
 

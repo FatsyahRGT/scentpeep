@@ -5,25 +5,35 @@
 
 @section('content')
 <div class="card mb-4">
-    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
-        <div>
-            <h3 class="card-title mb-1 font-serif fw-bold text-dark">Daftar Pengguna Sistem</h3>
-            <small class="text-muted d-block">Kelola akun pengguna, penugasan role (Admin / Staff), dan kontrol status aktif.</small>
+    <div class="card-header py-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Daftar Pengguna Sistem</h3>
+                <small class="text-muted d-block">Kelola akun pengguna, penugasan role (Admin / Staff), dan kontrol status aktif.</small>
+            </div>
         </div>
-        <div class="card-tools d-flex flex-wrap align-items-center gap-2">
-            <a href="{{ route('users.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                <i class="bi bi-person-plus me-1"></i> Tambah Pengguna
-            </a>
-            <form method="GET" action="{{ route('users.index') }}" class="d-inline-block">
-                <select name="role" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">-- Semua Role --</option>
-                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                    <option value="staff" {{ request('role') === 'staff' ? 'selected' : '' }}>Staff</option>
-                </select>
-            </form>
-            <div class="input-group input-group-sm" style="width: 16rem">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                <input type="search" id="liveUserSearch" name="search" class="form-control border-start-0 ps-0" placeholder="Filter baris pengguna&hellip;" value="{{ request('search') }}" aria-label="Filter rows">
+
+        <!-- Toolbar Container: Filter lalu Tombol Tambah di kiri, Search di kanan (ms-auto) -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <form method="GET" action="{{ route('users.index') }}" class="m-0">
+                    <select name="role" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">-- Semua Role --</option>
+                        <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="staff" {{ request('role') === 'staff' ? 'selected' : '' }}>Staff</option>
+                    </select>
+                </form>
+
+                <a href="{{ route('users.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                    <i class="bi bi-person-plus me-1"></i> Tambah Pengguna
+                </a>
+            </div>
+
+            <div class="ms-auto">
+                <div class="input-group input-group-sm" style="width: 16rem">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="search" id="liveUserSearch" name="search" class="form-control border-start-0 ps-0" placeholder="Filter baris pengguna&hellip;" value="{{ request('search') }}" aria-label="Filter rows">
+                </div>
             </div>
         </div>
     </div>

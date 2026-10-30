@@ -57,46 +57,44 @@
 
 <div class="card mb-4">
     <!-- Header & Action Bar -->
-    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3 py-3">
-        <div>
-            <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Daftar Transaksi Kas & Stok</h3>
-            <small class="text-muted d-block">Total {{ $transactions->total() }} baris transaksi tercatat dalam sistem</small>
-        </div>
-        <div class="card-tools d-flex flex-wrap align-items-center gap-2">
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-download me-1"></i> Ekspor
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
-                    <li>
-                        <a class="dropdown-item" href="{{ route('reports.transactions.excel', request()->all()) }}">
-                            <i class="bi bi-file-earmark-excel text-success me-2"></i> Unduh Excel (.csv)
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="{{ route('reports.transactions.pdf', request()->all()) }}" target="_blank">
-                            <i class="bi bi-file-earmark-pdf text-danger me-2"></i> Cetak / Unduh PDF
-                        </a>
-                    </li>
-                </ul>
+    <div class="card-header py-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Daftar Transaksi Kas &amp; Stok</h3>
+                <small class="text-muted d-block">Total {{ $transactions->total() }} baris transaksi tercatat dalam sistem</small>
             </div>
-            <a href="{{ route('transactions.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                <i class="bi bi-plus-circle me-1"></i> Catat Transaksi
-            </a>
+        </div>
+
+        <!-- Toolbar Container: Tombol Aksi di kiri -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <a href="{{ route('transactions.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                    <i class="bi bi-plus-circle me-1"></i> Catat Transaksi
+                </a>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-download me-1"></i> Ekspor
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('reports.transactions.excel', request()->all()) }}">
+                                <i class="bi bi-file-earmark-excel text-success me-2"></i> Unduh Excel (.csv)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('reports.transactions.pdf', request()->all()) }}" target="_blank">
+                                <i class="bi bi-file-earmark-pdf text-danger me-2"></i> Cetak / Unduh PDF
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Filter Bar (1 Baris Ringkas Kesamping) -->
     <div class="card-body p-3" style="background-color: var(--color-surface-hover, #f4f3f0); border-bottom: 1px solid var(--color-border, #e8e6e1);">
         <form action="{{ route('transactions.index') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
-            <!-- Cari Keterangan / Ref -->
-            <div style="flex: 1 1 170px; min-width: 140px;">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Keterangan / ref..." value="{{ request('search') }}">
-                </div>
-            </div>
-
             <!-- Tipe Arus Kas -->
             <div style="flex: 0 1 125px; min-width: 105px;">
                 <select name="type" class="form-select form-select-sm">
@@ -136,7 +134,7 @@
             </div>
 
             <!-- Tombol Filter & Reset -->
-            <div class="d-flex align-items-center gap-1 ms-auto">
+            <div class="d-flex align-items-center gap-1">
                 <button type="submit" class="btn btn-sm btn-scent px-3" title="Terapkan Filter">
                     <i class="bi bi-funnel me-1"></i> Filter
                 </button>
@@ -145,6 +143,14 @@
                         <i class="bi bi-arrow-counterclockwise"></i>
                     </a>
                 @endif
+            </div>
+
+            <!-- Cari Keterangan / Ref (di posisi kanan dengan ms-auto) -->
+            <div class="ms-auto" style="flex: 0 1 200px; min-width: 150px;">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Keterangan / ref..." value="{{ request('search') }}">
+                </div>
             </div>
         </form>
     </div>

@@ -361,40 +361,46 @@
 
     <!-- Main Table: Katalog Lengkap & Filter Stok Ready -->
     <div class="card bg-white shadow-sm mb-4">
-        <div class="card-header bg-transparent py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <div>
-                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan &amp; Sebaran Stok Parfum</h3>
-                <small class="text-muted">Pantau parfum apa saja yang ready, jumlahnya, dan siapa yang memegang stoknya.</small>
+        <div class="card-header bg-transparent py-3 border-bottom">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan &amp; Sebaran Stok Parfum</h3>
+                    <small class="text-muted">Pantau parfum apa saja yang ready, jumlahnya, dan siapa yang memegang stoknya.</small>
+                </div>
             </div>
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <!-- Filter Tabs -->
-                <div class="btn-group btn-group-sm" role="group">
-                    <a href="{{ route('stocks.publicReseller', ['filter_status' => 'all', 'search' => request('search')]) }}" 
-                       class="btn btn-outline-secondary {{ ($filterStatus ?? 'all') === 'all' ? 'active' : '' }}">
-                        Semua
-                    </a>
-                    <a href="{{ route('stocks.publicReseller', ['filter_status' => 'ready', 'search' => request('search')]) }}" 
-                       class="btn btn-outline-success {{ ($filterStatus ?? '') === 'ready' ? 'active' : '' }}">
-                        <i class="bi bi-check-circle me-1"></i> Ready Stock
-                    </a>
-                    <a href="{{ route('stocks.publicReseller', ['filter_status' => 'low', 'search' => request('search')]) }}" 
-                       class="btn btn-outline-warning {{ in_array(($filterStatus ?? ''), ['low', 'menipis']) ? 'active' : '' }}">
-                        <i class="bi bi-exclamation-triangle me-1"></i> Menipis
-                        @if(($metrics['low_stock_count'] ?? 0) > 0)
-                        <span class="badge bg-warning text-dark rounded-pill ms-1">{{ $metrics['low_stock_count'] }}</span>
-                        @endif
-                    </a>
-                    <a href="{{ route('stocks.publicReseller', ['filter_status' => 'empty', 'search' => request('search')]) }}" 
-                       class="btn btn-outline-danger {{ ($filterStatus ?? '') === 'empty' ? 'active' : '' }}">
-                        <i class="bi bi-x-circle me-1"></i> Habis
-                        @if(($metrics['out_of_stock_count'] ?? 0) > 0)
-                        <span class="badge bg-danger text-white rounded-pill ms-1">{{ $metrics['out_of_stock_count'] }}</span>
-                        @endif
-                    </a>
+
+            <!-- Toolbar Container: Filter di kiri, Search di kanan (ms-auto) -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <!-- Filter Tabs -->
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="{{ route('stocks.publicReseller', ['filter_status' => 'all', 'search' => request('search')]) }}" 
+                           class="btn btn-outline-secondary {{ ($filterStatus ?? 'all') === 'all' ? 'active' : '' }}">
+                            Semua
+                        </a>
+                        <a href="{{ route('stocks.publicReseller', ['filter_status' => 'ready', 'search' => request('search')]) }}" 
+                           class="btn btn-outline-success {{ ($filterStatus ?? '') === 'ready' ? 'active' : '' }}">
+                            <i class="bi bi-check-circle me-1"></i> Ready Stock
+                        </a>
+                        <a href="{{ route('stocks.publicReseller', ['filter_status' => 'low', 'search' => request('search')]) }}" 
+                           class="btn btn-outline-warning {{ in_array(($filterStatus ?? ''), ['low', 'menipis']) ? 'active' : '' }}">
+                            <i class="bi bi-exclamation-triangle me-1"></i> Menipis
+                            @if(($metrics['low_stock_count'] ?? 0) > 0)
+                            <span class="badge bg-warning text-dark rounded-pill ms-1">{{ $metrics['low_stock_count'] }}</span>
+                            @endif
+                        </a>
+                        <a href="{{ route('stocks.publicReseller', ['filter_status' => 'empty', 'search' => request('search')]) }}" 
+                           class="btn btn-outline-danger {{ ($filterStatus ?? '') === 'empty' ? 'active' : '' }}">
+                            <i class="bi bi-x-circle me-1"></i> Habis
+                            @if(($metrics['out_of_stock_count'] ?? 0) > 0)
+                            <span class="badge bg-danger text-white rounded-pill ms-1">{{ $metrics['out_of_stock_count'] }}</span>
+                            @endif
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Search Input -->
-                <form method="GET" action="{{ route('stocks.publicReseller') }}" class="m-0">
+                <form method="GET" action="{{ route('stocks.publicReseller') }}" class="ms-auto m-0">
                     <input type="hidden" name="filter_status" value="{{ $filterStatus ?? 'all' }}">
                     <div class="input-group input-group-sm" style="width: 15rem;">
                         <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>

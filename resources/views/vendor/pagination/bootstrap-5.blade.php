@@ -1,10 +1,10 @@
 @if ($paginator->hasPages())
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 w-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 pt-2 border-top w-100">
         <div class="small text-muted">
             Menampilkan <span class="fw-semibold text-dark">{{ $paginator->firstItem() }}</span> sampai <span class="fw-semibold text-dark">{{ $paginator->lastItem() }}</span> dari <span class="fw-semibold text-dark">{{ $paginator->total() }}</span> data
         </div>
         <div>
-            <ul class="pagination pagination-sm m-0">
+            <ul class="pagination pagination-sm gap-1 mb-0">
                 {{-- Previous Page Link --}}
                 @if ($paginator->onFirstPage())
                     <li class="page-item disabled" aria-disabled="true">

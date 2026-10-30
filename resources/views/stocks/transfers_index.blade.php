@@ -5,26 +5,35 @@
 
 @section('content')
 <div class="card mb-4">
-    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
-        <div>
-            <h3 class="card-title mb-1 font-serif fw-bold text-dark">Log Riwayat Transfer Stok</h3>
-            <small class="text-muted d-block">Catatan mutasi pergerakan unit parfum dari gudang ke gudang atau ke reseller</small>
+    <div class="card-header py-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Log Riwayat Transfer Stok</h3>
+                <small class="text-muted d-block">Catatan mutasi pergerakan unit parfum dari gudang ke gudang atau ke reseller</small>
+            </div>
         </div>
-        <div class="card-tools d-flex flex-wrap align-items-center gap-2">
-            @if(!Auth::user()->isReseller())
-            <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                <i class="bi bi-arrow-left-right me-1"></i> Buat Transfer Baru
-            </a>
-            @endif
-            <a href="{{ route('stocks.index') }}" class="btn btn-sm btn-scent-outline fw-semibold">
-                <i class="bi bi-box-seam me-1"></i> Ringkasan Stok
-            </a>
-            <form method="GET" action="{{ route('stocks.transfers') }}" class="d-inline-block">
-                <div class="input-group input-group-sm" style="width: 16rem">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="search" class="form-control border-start-0 ps-0" name="search" value="{{ request('search') }}" placeholder="Filter baris transfer&hellip;" aria-label="Filter rows">
-                </div>
-            </form>
+
+        <!-- Toolbar Container: Tombol Aksi di kiri, Search di kanan (ms-auto) -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                @if(!Auth::user()->isReseller())
+                <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                    <i class="bi bi-arrow-left-right me-1"></i> Buat Transfer Baru
+                </a>
+                @endif
+                <a href="{{ route('stocks.index') }}" class="btn btn-sm btn-scent-outline fw-semibold">
+                    <i class="bi bi-box-seam me-1"></i> Ringkasan Stok
+                </a>
+            </div>
+
+            <div class="ms-auto">
+                <form method="GET" action="{{ route('stocks.transfers') }}" class="m-0">
+                    <div class="input-group input-group-sm" style="width: 16rem">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="search" class="form-control border-start-0 ps-0" name="search" value="{{ request('search') }}" placeholder="Filter baris transfer&hellip;" aria-label="Filter rows">
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

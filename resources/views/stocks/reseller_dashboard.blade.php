@@ -183,21 +183,17 @@
 
 <!-- Main Table: Katalog Sebaran Stok & Filter Ready -->
 <div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important;">
-    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-3 bg-white border-bottom">
-        <div>
-            <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan &amp; Sebaran Stok Parfum</h3>
-            <small class="text-muted d-block">Pantau parfum apa saja yang ready, jumlahnya, dan siapa yang memegang stoknya.</small>
+    <div class="card-header py-3 bg-white border-bottom">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan &amp; Sebaran Stok Parfum</h3>
+                <small class="text-muted d-block">Pantau parfum apa saja yang ready, jumlahnya, dan siapa yang memegang stoknya.</small>
+            </div>
         </div>
-        <div class="card-tools d-flex flex-wrap align-items-center gap-2">
-            @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
-            <button type="button" class="btn btn-sm btn-scent fw-semibold" data-bs-toggle="modal" data-bs-target="#modalManualRestock">
-                <i class="bi bi-plus-lg me-1"></i> Tambah Stok Produksi
-            </button>
-            @endif
 
-            <!-- Filter Status Tab & Search -->
-            <form method="GET" action="{{ route('stocks.reseller') }}" class="d-flex flex-wrap align-items-center gap-2 m-0">
-                <input type="hidden" name="filter_status" value="{{ $filterStatus ?? 'all' }}">
+        <!-- Toolbar Container: Filter lalu Tombol Tambah di kiri, Search di kanan (ms-auto) -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
+            <div class="d-flex flex-wrap align-items-center gap-3">
                 <div class="btn-group btn-group-sm" role="group">
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'all', 'search' => request('search')]) }}" 
                        class="btn btn-outline-secondary {{ ($filterStatus ?? 'all') === 'all' ? 'active' : '' }}">
@@ -223,6 +219,15 @@
                     </a>
                 </div>
 
+                @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
+                <button type="button" class="btn btn-sm btn-scent fw-semibold" data-bs-toggle="modal" data-bs-target="#modalManualRestock">
+                    <i class="bi bi-plus-lg me-1"></i> Tambah Stok Produksi
+                </button>
+                @endif
+            </div>
+
+            <form method="GET" action="{{ route('stocks.reseller') }}" class="ms-auto m-0">
+                <input type="hidden" name="filter_status" value="{{ $filterStatus ?? 'all' }}">
                 <div class="input-group input-group-sm" style="width: 14rem;">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="search" name="search" class="form-control border-start-0 ps-0" placeholder="Cari varian/SKU&hellip;" value="{{ request('search') }}">

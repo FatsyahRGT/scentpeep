@@ -37,33 +37,49 @@
 </div>
 
 <div class="card mb-4">
-    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
-        <div>
-            <h3 class="card-title mb-1 font-serif fw-bold text-dark">Data Invoice Penjualan</h3>
-            <small class="text-muted d-block">Penjualan produk per varian parfum dengan pemotongan stok fisik otomatis.</small>
+    <div class="card-header py-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Data Invoice Penjualan</h3>
+                <small class="text-muted d-block">Penjualan produk per varian parfum dengan pemotongan stok fisik otomatis.</small>
+            </div>
         </div>
-        <div class="card-tools d-flex flex-wrap align-items-center gap-2">
-            <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                <i class="bi bi-plus-lg me-1"></i> Buat Invoice
-            </a>
-            <form method="GET" action="{{ route('invoices.index') }}" class="d-flex flex-wrap align-items-center gap-2 m-0">
-                <select name="sales_name" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
-                    <option value="">-- Semua Sales --</option>
-                    @foreach($salesOptions as $s)
-                    <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
-                    @endforeach
-                </select>
-                <select name="payment_status" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
-                    <option value="">-- Status Bayar --</option>
-                    <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
-                    <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
-                </select>
-                <select name="location_id" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
-                    <option value="">-- Lokasi Stok --</option>
-                    @foreach($locations as $loc)
-                    <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
-                    @endforeach
-                </select>
+
+        <!-- Toolbar Container: Filter lalu Tombol Buat Invoice di kiri, Search di kanan (ms-auto) -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <form method="GET" action="{{ route('invoices.index') }}" class="d-flex flex-wrap align-items-center gap-2 m-0" id="filterInvoicesForm">
+                    <select name="sales_name" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        <option value="">-- Semua Sales --</option>
+                        @foreach($salesOptions as $s)
+                        <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
+                        @endforeach
+                    </select>
+                    <select name="payment_status" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        <option value="">-- Status Bayar --</option>
+                        <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
+                        <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
+                    </select>
+                    <select name="location_id" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        <option value="">-- Lokasi Stok --</option>
+                        @foreach($locations as $loc)
+                        <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
+                        @endforeach
+                    </select>
+                    @if(request('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                </form>
+
+                <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                    <i class="bi bi-plus-lg me-1"></i> Buat Invoice
+                </a>
+            </div>
+
+            <form method="GET" action="{{ route('invoices.index') }}" class="ms-auto m-0">
+                @if(request('sales_name'))<input type="hidden" name="sales_name" value="{{ request('sales_name') }}">@endif
+                @if(request('payment_status'))<input type="hidden" name="payment_status" value="{{ request('payment_status') }}">@endif
+                @if(request('location_id'))<input type="hidden" name="location_id" value="{{ request('location_id') }}">@endif
                 <div class="input-group input-group-sm" style="width: 14rem;">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="search" name="search" class="form-control border-start-0 ps-0" placeholder="Cari invoice/customer&hellip;" value="{{ request('search') }}">
