@@ -67,17 +67,6 @@
                 <span class="d-block small text-muted font-serif">Katalog Ketersediaan & Sebaran Stok Reseller</span>
             </div>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            @auth
-            <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-dark fw-semibold">
-                <i class="bi bi-speedometer2 me-1"></i> Dashboard Sistem
-            </a>
-            @else
-            <a href="{{ route('login') }}" class="btn btn-sm btn-outline-secondary fw-semibold">
-                <i class="bi bi-box-arrow-in-right me-1"></i> Login Pengurus
-            </a>
-            @endauth
-        </div>
     </div>
 </header>
 
@@ -94,7 +83,7 @@
             </div>
         </div>
         <div class="text-muted small">
-            Update: <span class="font-mono fw-semibold text-dark">{{ now()->translatedFormat('d M Y, H:i') }} WIB</span>
+            Update: <span class="font-mono fw-semibold text-dark" id="clientUpdateTime">{{ now()->translatedFormat('d M Y, H:i') }} WIB</span>
         </div>
     </div>
 
@@ -490,5 +479,35 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const updateEl = document.getElementById('clientUpdateTime');
+        if (!updateEl) return;
+
+        const now = new Date();
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+        const day = now.getDate();
+        const month = months[now.getMonth()];
+        const year = now.getFullYear();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        // Deteksi zona waktu lokal pembuka web (WIB / WITA / WIT / GMT offset)
+        const offsetMinutes = now.getTimezoneOffset(); // -420 = UTC+7 (WIB), -480 = UTC+8 (WITA), -540 = UTC+9 (WIT)
+        let tzLabel = '';
+        if (offsetMinutes === -420) {
+            tzLabel = 'WIB';
+        } else if (offsetMinutes === -480) {
+            tzLabel = 'WITA';
+        } else if (offsetMinutes === -540) {
+            tzLabel = 'WIT';
+        } else {
+            const tzParts = Intl.DateTimeFormat('id-ID', { timeZoneName: 'short' }).formatToParts(now);
+            tzLabel = tzParts.find(p => p.type === 'timeZoneName')?.value || ('GMT' + (offsetMinutes <= 0 ? '+' : '-') + Math.abs(Math.floor(offsetMinutes / 60)));
+        }
+
+        updateEl.textContent = `${day} ${month} ${year}, ${hours}:${minutes} ${tzLabel}`;
+    })();
+</script>
 </body>
 </html>
