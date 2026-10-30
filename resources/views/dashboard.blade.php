@@ -33,7 +33,7 @@
                     </span>
                     <div class="overflow-hidden">
                         <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pemasukan</div>
-                        <div class="font-serif fw-bold fs-4 text-success text-truncate">+Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
+                        <div class="font-serif fw-bold fs-4 text-success text-truncate">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
                     </div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                     </span>
                     <div class="overflow-hidden">
                         <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pengeluaran</div>
-                        <div class="font-serif fw-bold fs-4 text-danger text-truncate">-Rp {{ number_format($totalOutcome, 0, ',', '.') }}</div>
+                        <div class="font-serif fw-bold fs-4 text-danger text-truncate">Rp {{ number_format($totalOutcome, 0, ',', '.') }}</div>
                     </div>
                 </div>
             </div>
@@ -252,7 +252,10 @@
                     <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
                     <h4 class="font-serif card-title mb-0 fw-bold fs-5">Peringatan Stok Menipis (&lt; 3 pcs)</h4>
                 </div>
-                <span class="badge bg-warning-subtle text-warning border px-2 py-1">{{ $criticalStocks->count() }} Varian Menipis</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-warning-subtle text-warning border px-2 py-1">{{ $criticalStocks->count() }} Varian Menipis</span>
+                    <a href="{{ route('stocks.reseller', ['filter_status' => 'low']) }}" class="small text-muted text-decoration-none">Lihat di Katalog &rarr;</a>
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">

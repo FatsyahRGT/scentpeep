@@ -79,7 +79,7 @@
             </span>
             <div>
                 <div class="fw-bold text-dark">Informasi Real-Time Stok Reseller</div>
-                <small class="text-muted">Halaman ini menampilkan sebaran stok parfum di Iwan & Rizky, varian ready, dan antrean PO yang sedang diproduksi.</small>
+                <small class="text-muted">Sebaran stok parfum di gudang.</small>
             </div>
         </div>
         <div class="d-flex align-items-center flex-wrap gap-2 text-muted small">
@@ -363,8 +363,8 @@
     <div class="card bg-white shadow-sm mb-4">
         <div class="card-header bg-transparent py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
             <div>
-                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan Semua Parfum Scentpeep</h3>
-                <small class="text-muted">Cek parfum yang ready stock untuk langsung dipesan atau dijual kepada pelanggan.</small>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan &amp; Sebaran Stok Parfum</h3>
+                <small class="text-muted">Pantau parfum apa saja yang ready, jumlahnya, dan siapa yang memegang stoknya.</small>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <!-- Filter Tabs -->
@@ -376,6 +376,13 @@
                     <a href="{{ route('stocks.publicReseller', ['filter_status' => 'ready', 'search' => request('search')]) }}" 
                        class="btn btn-outline-success {{ ($filterStatus ?? '') === 'ready' ? 'active' : '' }}">
                         <i class="bi bi-check-circle me-1"></i> Ready Stock
+                    </a>
+                    <a href="{{ route('stocks.publicReseller', ['filter_status' => 'low', 'search' => request('search')]) }}" 
+                       class="btn btn-outline-warning {{ in_array(($filterStatus ?? ''), ['low', 'menipis']) ? 'active' : '' }}">
+                        <i class="bi bi-exclamation-triangle me-1"></i> Menipis
+                        @if(($metrics['low_stock_count'] ?? 0) > 0)
+                        <span class="badge bg-warning text-dark rounded-pill ms-1">{{ $metrics['low_stock_count'] }}</span>
+                        @endif
                     </a>
                     <a href="{{ route('stocks.publicReseller', ['filter_status' => 'empty', 'search' => request('search')]) }}" 
                        class="btn btn-outline-danger {{ ($filterStatus ?? '') === 'empty' ? 'active' : '' }}">

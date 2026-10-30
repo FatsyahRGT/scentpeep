@@ -246,14 +246,17 @@ class StockController extends Controller
                 'product' => $product,
                 'total_stock' => $totalStock,
                 'is_ready' => $totalStock > 0,
+                'is_low_stock' => $totalStock > 0 && $totalStock <= 2,
                 'is_out_of_stock' => $totalStock === 0,
             ];
         });
 
-        // 2. Filter Status: 'ready' (Hanya Stok Ready), 'empty' (Hanya Stok Habis), atau 'all'
+        // 2. Filter Status: 'ready' (Hanya Stok Ready), 'low' (Stok Menipis <= 2 pcs), 'empty' (Hanya Stok Habis), atau 'all'
         $filterStatus = $request->get('filter_status', 'all');
         if ($filterStatus === 'ready' || $request->boolean('ready_only')) {
             $productStockData = $productStockData->filter(fn ($item) => $item['is_ready']);
+        } elseif ($filterStatus === 'low' || $filterStatus === 'menipis') {
+            $productStockData = $productStockData->filter(fn ($item) => $item['is_low_stock']);
         } elseif ($filterStatus === 'empty' || $request->boolean('out_of_stock')) {
             $productStockData = $productStockData->filter(fn ($item) => $item['is_out_of_stock']);
         }
@@ -296,6 +299,10 @@ class StockController extends Controller
             'total_combined_stock' => Stock::sum('qty'),
             'ready_variants_count' => $allProducts->filter(function ($p) {
                 return (int) $p->stocks->sum('qty') > 0;
+            })->count(),
+            'low_stock_count' => $allProducts->filter(function ($p) {
+                $qty = (int) $p->stocks->sum('qty');
+                return $qty > 0 && $qty <= 2;
             })->count(),
             'out_of_stock_count' => $outOfStockProducts->count(),
         ];
@@ -347,14 +354,17 @@ class StockController extends Controller
                 'product' => $product,
                 'total_stock' => $totalStock,
                 'is_ready' => $totalStock > 0,
+                'is_low_stock' => $totalStock > 0 && $totalStock <= 2,
                 'is_out_of_stock' => $totalStock === 0,
             ];
         });
 
-        // Filter tab: 'ready' (Hanya Ready), 'empty' (Hanya Habis), 'all' (Semua)
+        // Filter tab: 'ready' (Hanya Ready), 'low' (Stok Menipis <= 2 pcs), 'empty' (Hanya Habis), 'all' (Semua)
         $filterStatus = $request->get('filter_status', 'all');
         if ($filterStatus === 'ready' || $request->boolean('ready_only')) {
             $productStockData = $productStockData->filter(fn ($item) => $item['is_ready']);
+        } elseif ($filterStatus === 'low' || $filterStatus === 'menipis') {
+            $productStockData = $productStockData->filter(fn ($item) => $item['is_low_stock']);
         } elseif ($filterStatus === 'empty' || $request->boolean('out_of_stock')) {
             $productStockData = $productStockData->filter(fn ($item) => $item['is_out_of_stock']);
         }
@@ -419,6 +429,10 @@ class StockController extends Controller
             'total_rizky_stock' => $rizky ? (int) Stock::where('location_id', $rizky->id)->sum('qty') : 0,
             'total_combined_stock' => Stock::sum('qty'),
             'ready_variants_count' => $allProducts->filter(fn ($p) => (int) $p->stocks->sum('qty') > 0)->count(),
+            'low_stock_count' => $allProducts->filter(function ($p) {
+                $qty = (int) $p->stocks->sum('qty');
+                return $qty > 0 && $qty <= 2;
+            })->count(),
             'critical_count' => $criticalStocks->count(),
             'total_po_pending_qty' => (int) $pendingPreOrders->sum('qty'),
             'out_of_stock_count' => $outOfStockProducts->count(),

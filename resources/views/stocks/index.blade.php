@@ -90,6 +90,14 @@
             <small class="text-muted d-block">Data stok fisik real-time hasil sinkronisasi transaksi, invoice, dan transfer multi-lokasi.</small>
         </div>
         <div class="card-tools d-flex flex-wrap align-items-center gap-2">
+            <!-- Quick Filter Status -->
+            <div class="btn-group btn-group-sm" role="group" id="stockStatusFilterGroup">
+                <button type="button" class="btn btn-outline-secondary active" data-filter="all">Semua</button>
+                <button type="button" class="btn btn-outline-success" data-filter="ready"><i class="bi bi-check-circle me-1"></i> Ready</button>
+                <button type="button" class="btn btn-outline-warning" data-filter="low"><i class="bi bi-exclamation-triangle me-1"></i> Menipis</button>
+                <button type="button" class="btn btn-outline-danger" data-filter="empty"><i class="bi bi-x-circle me-1"></i> Habis</button>
+            </div>
+
             <div class="input-group input-group-sm" style="width: 15rem">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                 <input type="search" id="liveStockSearch" class="form-control border-start-0 ps-0" placeholder="Filter nama parfum/SKU&hellip;" aria-label="Filter rows">
@@ -147,7 +155,7 @@
                         }
                         $hasLocStock = false;
                     @endphp
-                    <tr>
+                    <tr data-stock-status="{{ $rowTotal <= 0 ? 'empty' : ($rowTotal < 3 ? 'low' : 'ready') }}" class="{{ $rowTotal <= 0 ? 'table-danger-subtle' : '' }}">
                         <td class="text-muted small text-center py-2 px-3">{{ $index + 1 }}</td>
                         <td class="py-2 px-3">
                             <div class="fw-semibold text-dark">{{ $prod->name }}</div>
@@ -188,7 +196,7 @@
 
                         <!-- Total Stok -->
                         <td class="text-center py-2 px-3 font-mono-num fw-bold">
-                            <span class="badge {{ $rowTotal <= 0 ? 'bg-danger text-white' : ($rowTotal <= 3 ? 'bg-warning text-dark' : 'bg-dark text-white') }} px-3 py-1 font-mono-num fw-bold">
+                            <span class="badge {{ $rowTotal <= 0 ? 'bg-danger text-white' : ($rowTotal < 3 ? 'bg-warning text-dark' : 'bg-dark text-white') }} px-3 py-1 font-mono-num fw-bold">
                                 {{ $rowTotal }} pcs
                             </span>
                         </td>
@@ -199,7 +207,7 @@
                                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
                                     <i class="bi bi-x-circle me-1"></i> HABIS
                                 </span>
-                            @elseif($rowTotal <= 3)
+                            @elseif($rowTotal < 3)
                                 <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">
                                     MENIPIS
                                 </span>
@@ -281,7 +289,7 @@
                             $rowTotal += $stockMatrix[$prod->id][$loc->id] ?? 0;
                         }
                     @endphp
-                    <tr>
+                    <tr data-stock-status="{{ $rowTotal <= 0 ? 'empty' : ($rowTotal < 3 ? 'low' : 'ready') }}" class="{{ $rowTotal <= 0 ? 'table-danger-subtle' : '' }}">
                         <td class="text-muted small text-center py-2 px-3">{{ $index + 1 }}</td>
                         <td class="py-2 px-3" style="position: sticky; left: 0; background: #ffffff; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.04);">
                             <div class="fw-semibold text-dark">{{ $prod->name }}</div>
@@ -366,12 +374,12 @@
         <div class="d-flex align-items-center gap-4 flex-wrap">
             <div class="fw-semibold text-muted small text-uppercase" style="letter-spacing: 0.05em;">Keterangan Status Stok:</div>
             <div class="d-flex align-items-center gap-2">
-                <span class="stock-pill stock-safe">>3</span>
+                <span class="stock-pill stock-safe">&ge;3</span>
                 <span class="small text-muted">Stok Aman (Ready)</span>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <span class="stock-pill stock-warning">1-3</span>
-                <span class="small text-muted">Stok Menipis</span>
+                <span class="stock-pill stock-warning">&lt;3</span>
+                <span class="small text-muted">Stok Menipis (1-2 pcs)</span>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="stock-pill stock-danger">0</span>
@@ -409,19 +417,35 @@
         const savedView = localStorage.getItem('scentpeep_stock_view') || 'list';
         toggleStockView(savedView);
 
-        // Setup live search on both views
+        let activeStatusFilter = 'all';
         const searchInput = document.getElementById('liveStockSearch');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const query = this.value.toLowerCase().trim();
-                const rowsList = document.querySelectorAll('#stockTableBodyList tr');
-                const rowsMatrix = document.querySelectorAll('#stockTableBodyMatrix tr');
 
-                [...rowsList, ...rowsMatrix].forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(query) ? '' : 'none';
-                });
+        function applyStockFilters() {
+            const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+            const rows = document.querySelectorAll('#stockTableBodyList tr, #stockTableBodyMatrix tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const matchesSearch = !query || text.includes(query);
+                const status = row.getAttribute('data-stock-status');
+                const matchesStatus = (activeStatusFilter === 'all') || (status === activeStatusFilter);
+
+                row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
             });
+        }
+
+        const filterBtns = document.querySelectorAll('#stockStatusFilterGroup button');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                activeStatusFilter = this.getAttribute('data-filter') || 'all';
+                applyStockFilters();
+            });
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applyStockFilters);
         }
     });
 </script>

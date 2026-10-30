@@ -317,4 +317,101 @@ class TransactionAndStockTest extends TestCase
             'amount' => 360000,
         ]);
     }
+
+    public function test_reseller_stock_dashboard_filters_low_stock(): void
+    {
+        $prodReady = Product::create([
+            'name' => 'Parfum Ready Banyak',
+            'code' => 'READY-01',
+            'is_active' => true,
+        ]);
+        Stock::create([
+            'product_id' => $prodReady->id,
+            'location_id' => $this->tokoGpi->id,
+            'qty' => 10,
+        ]);
+
+        $prodLow = Product::create([
+            'name' => 'Parfum Menipis Banget',
+            'code' => 'LOW-01',
+            'is_active' => true,
+        ]);
+        Stock::create([
+            'product_id' => $prodLow->id,
+            'location_id' => $this->tokoGpi->id,
+            'qty' => 2,
+        ]);
+
+        $prodEmpty = Product::create([
+            'name' => 'Parfum Habis Total',
+            'code' => 'EMPTY-01',
+            'is_active' => true,
+        ]);
+        Stock::create([
+            'product_id' => $prodEmpty->id,
+            'location_id' => $this->tokoGpi->id,
+            'qty' => 0,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('stocks.reseller', ['filter_status' => 'low']));
+
+        $response->assertOk();
+        $response->assertSee('Parfum Menipis Banget');
+        $response->assertSee('Menipis');
+
+        $filteredData = $response->viewData('productStockData');
+        $this->assertTrue($filteredData->contains(fn ($item) => $item['product']->id === $prodLow->id));
+        $this->assertFalse($filteredData->contains(fn ($item) => $item['product']->id === $prodReady->id));
+        $this->assertFalse($filteredData->contains(fn ($item) => $item['product']->id === $prodEmpty->id));
+        $this->assertEquals(1, $response->viewData('metrics')['low_stock_count']);
+    }
+
+    public function test_public_reseller_dashboard_filters_low_stock(): void
+    {
+        $prodReady = Product::create([
+            'name' => 'Publik Ready Banyak',
+            'code' => 'PUB-READY-01',
+            'is_active' => true,
+        ]);
+        Stock::create([
+            'product_id' => $prodReady->id,
+            'location_id' => $this->tokoGpi->id,
+            'qty' => 8,
+        ]);
+
+        $prodLow = Product::create([
+            'name' => 'Publik Menipis Banget',
+            'code' => 'PUB-LOW-01',
+            'is_active' => true,
+        ]);
+        Stock::create([
+            'product_id' => $prodLow->id,
+            'location_id' => $this->tokoGpi->id,
+            'qty' => 1,
+        ]);
+
+        $prodEmpty = Product::create([
+            'name' => 'Publik Habis Total',
+            'code' => 'PUB-EMPTY-01',
+            'is_active' => true,
+        ]);
+        Stock::create([
+            'product_id' => $prodEmpty->id,
+            'location_id' => $this->tokoGpi->id,
+            'qty' => 0,
+        ]);
+
+        $response = $this->get(route('stocks.publicReseller', ['filter_status' => 'low']));
+
+        $response->assertOk();
+        $response->assertSee('Katalog Ketersediaan & Sebaran Stok Parfum');
+        $response->assertSee('Pantau parfum apa saja yang ready, jumlahnya, dan siapa yang memegang stoknya.');
+        $response->assertSee('Publik Menipis Banget');
+
+        $filteredData = $response->viewData('productStockData');
+        $this->assertTrue($filteredData->contains(fn ($item) => $item['product']->id === $prodLow->id));
+        $this->assertFalse($filteredData->contains(fn ($item) => $item['product']->id === $prodReady->id));
+        $this->assertFalse($filteredData->contains(fn ($item) => $item['product']->id === $prodEmpty->id));
+        $this->assertEquals(1, $response->viewData('metrics')['low_stock_count']);
+    }
 }

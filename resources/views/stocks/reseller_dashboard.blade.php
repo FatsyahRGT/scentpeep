@@ -185,7 +185,7 @@
 <div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important;">
     <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-3 bg-white border-bottom">
         <div>
-            <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan & Sebaran Stok Parfum</h3>
+            <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan &amp; Sebaran Stok Parfum</h3>
             <small class="text-muted d-block">Pantau parfum apa saja yang ready, jumlahnya, dan siapa yang memegang stoknya.</small>
         </div>
         <div class="card-tools d-flex flex-wrap align-items-center gap-2">
@@ -197,6 +197,7 @@
 
             <!-- Filter Status Tab & Search -->
             <form method="GET" action="{{ route('stocks.reseller') }}" class="d-flex flex-wrap align-items-center gap-2 m-0">
+                <input type="hidden" name="filter_status" value="{{ $filterStatus ?? 'all' }}">
                 <div class="btn-group btn-group-sm" role="group">
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'all', 'search' => request('search')]) }}" 
                        class="btn btn-outline-secondary {{ ($filterStatus ?? 'all') === 'all' ? 'active' : '' }}">
@@ -205,6 +206,13 @@
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'ready', 'search' => request('search')]) }}" 
                        class="btn btn-outline-success {{ ($filterStatus ?? '') === 'ready' ? 'active' : '' }}">
                         <i class="bi bi-check-circle me-1"></i> Hanya Ready
+                    </a>
+                    <a href="{{ route('stocks.reseller', ['filter_status' => 'low', 'search' => request('search')]) }}" 
+                       class="btn btn-outline-warning {{ in_array(($filterStatus ?? ''), ['low', 'menipis']) ? 'active' : '' }}">
+                        <i class="bi bi-exclamation-triangle me-1"></i> Menipis
+                        @if(($metrics['low_stock_count'] ?? 0) > 0)
+                        <span class="badge bg-warning text-dark rounded-pill ms-1">{{ $metrics['low_stock_count'] }}</span>
+                        @endif
                     </a>
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'empty', 'search' => request('search')]) }}" 
                        class="btn btn-outline-danger {{ ($filterStatus ?? '') === 'empty' ? 'active' : '' }}">
