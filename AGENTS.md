@@ -11,7 +11,7 @@ Setiap sesi pengerjaan AI wajib mematuhi standar skill berikut secara default ta
 1. **`graphify` (Architecture & Context Memory)**:
    - Sebelum membuat/mengubah fitur, telusuri keterkaitan model, controller, dan view melalui graph arsitektur.
    - Setiap kali menambah/mengubah file atau logika, wajib perbarui knowledge graph dengan perintah:
-     `& (Get-Content graphify-out\.graphify_python) -m graphify.cli . --update`
+     `& (Get-Content graphify-out\.graphify_python) -m graphify update .`
 2. **`ponytail` (Minimalist, KISS & YAGNI)**:
    - Prioritaskan solusi paling ringkas dan sederhana yang terbukti bekerja (*the laziest solution that actually works*).
    - Maksimalkan fitur native Laravel 12, PHP 8.2+, dan standard library sebelum menambah paket/dependensi baru.
