@@ -180,6 +180,8 @@ class DashboardController extends Controller
         // Prioritas nama sales: tim lapangan / reseller / staff non-admin + nama invoice aktif
         $staffUserNames = User::where('is_active', true)
             ->where('role', '!=', User::ROLE_ADMIN)
+            ->whereNotIn('email', ['staff@scentpeep.com', 'admin@scentpeep.com'])
+            ->whereNotIn('name', ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff'])
             ->pluck('name');
 
         $locationTeamNames = Location::pluck('name');
@@ -187,13 +189,9 @@ class DashboardController extends Controller
         $allSalesNames = $staffUserNames
             ->merge($locationTeamNames)
             ->merge($salesStats->keys())
+            ->reject(fn($n) => in_array($n, ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff']))
             ->unique()
             ->values();
-
-        // Jika admin belum punya penjualan, jangan penuhi kartu dengan akun admin sistem
-        if (!$salesStats->has('Admin Scentpeep') && $allSalesNames->count() > 1) {
-            $allSalesNames = $allSalesNames->reject(fn($n) => $n === 'Admin Scentpeep' || $n === 'admin')->values();
-        }
 
         $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats) {
             $stat = $salesStats->get($name);

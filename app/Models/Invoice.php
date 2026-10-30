@@ -15,12 +15,22 @@ class Invoice extends Model
 
     /**
      * Dapatkan daftar nama sales dinamis dari pengguna (User) yang aktif.
+     * Mengambil staf & reseller lapangan aktif (mengecualikan akun admin dan akun placeholder generik).
      */
     public static function getSalesOptions(): \Illuminate\Support\Collection
     {
-        return User::where('is_active', true)
+        $sales = User::where('is_active', true)
+            ->whereIn('role', [User::ROLE_STAFF, User::ROLE_RESELLER])
+            ->whereNotIn('email', ['admin@scentpeep.com', 'staff@scentpeep.com'])
+            ->whereNotIn('name', ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff'])
             ->orderBy('name')
             ->pluck('name');
+
+        if ($sales->isEmpty()) {
+            return Location::orderBy('name')->pluck('name');
+        }
+
+        return $sales;
     }
 
     protected $fillable = [
