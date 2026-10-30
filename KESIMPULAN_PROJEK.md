@@ -67,7 +67,9 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 7. **Dashboard Utama**:
    - Ringkasan Saldo Uang Kas (Pemasukan, Pengeluaran, Saldo Real).
    - Widget Monitoring Barang Mentah (Stok Box & Botol).
-   - Distribusi Penjualan per Sales (`IWAN`, `RIZKY`, `VANNY`).
+   - **Distribusi Penjualan per Sales** dengan tata letak CSS Grid anti-overflow (`repeat(auto-fit, minmax(130px, 1fr))`), kartu rapi, dan badge yang tidak saling bertumpuk.
+   - **Tren Penjualan per Seller (6 Bulan Terakhir)**: Grafik garis komparasi multi-seller interaktif (Chart.js) dengan rona warna default masing-masing seller (`RIZKY` Sapphire Blue, `IWAN` Emerald Green, `VANNY` Ruby Crimson), toggle metric *Volume (Pcs)* vs *Omzet (Rp)*, strip ringkasan total penjualan, dan badge Top Seller.
+   - **Grafik Distribusi Stok (Donut Chart)** dengan segmen warna yang terikat dinamis ke palet HSL lokasi masing-masing.
    - Riwayat Invoice Terbaru (Lunas vs Belum Lunas).
    - Riwayat Kas Terkini.
 

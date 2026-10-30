@@ -171,14 +171,29 @@ class DashboardController extends Controller
         $rawMaterialBotolStock = (int) RawMaterial::where('category', RawMaterial::CATEGORY_BOTOL)->sum('stock_qty');
         $rawMaterialsList = RawMaterial::orderBy('category')->orderBy('name')->get();
 
-        // 8. Distribusi Penjualan Sales (Dinamis dari User aktif & Invoice)
+        // 8. Distribusi Penjualan Sales (Dinamis dari User aktif, Lokasi, & Invoice)
         $salesStats = Invoice::selectRaw('sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as invoice_count')
             ->groupBy('sales_name')
             ->get()
             ->keyBy('sales_name');
 
-        $activeSalesNames = User::where('is_active', true)->pluck('name');
-        $allSalesNames = $activeSalesNames->merge($salesStats->keys())->unique()->values();
+        // Prioritas nama sales: tim lapangan / reseller / staff non-admin + nama invoice aktif
+        $staffUserNames = User::where('is_active', true)
+            ->where('role', '!=', User::ROLE_ADMIN)
+            ->pluck('name');
+
+        $locationTeamNames = Location::pluck('name');
+
+        $allSalesNames = $staffUserNames
+            ->merge($locationTeamNames)
+            ->merge($salesStats->keys())
+            ->unique()
+            ->values();
+
+        // Jika admin belum punya penjualan, jangan penuhi kartu dengan akun admin sistem
+        if (!$salesStats->has('Admin Scentpeep') && $allSalesNames->count() > 1) {
+            $allSalesNames = $allSalesNames->reject(fn($n) => $n === 'Admin Scentpeep' || $n === 'admin')->values();
+        }
 
         $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats) {
             $stat = $salesStats->get($name);
@@ -189,9 +204,74 @@ class DashboardController extends Controller
                 'invoice_count' => (int) ($stat->invoice_count ?? 0),
                 'palette' => Location::paletteForName($name),
             ];
-        });
+        })->sortByDesc('total_qty')->values();
 
-        // 9. Riwayat Invoice Terbaru
+        // 9. Tren Penjualan per Seller (6 Bulan Terakhir untuk Komparasi Performa Multi-Seller)
+        $invoiceDateFormat = DB::connection()->getDriverName() === 'sqlite'
+            ? "strftime('%Y-%m', created_at)"
+            : "DATE_FORMAT(created_at, '%Y-%m')";
+
+        $monthlyInvoices = Invoice::where('created_at', '>=', $sixMonthsAgo->toDateTimeString())
+            ->selectRaw("{$invoiceDateFormat} as ym, sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset")
+            ->groupBy('ym', 'sales_name')
+            ->orderBy('ym')
+            ->get();
+
+        $sellerTrendMonths = [];
+        $sellerYmKeys = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = Carbon::now()->subMonths($i);
+            $ym = $m->format('Y-m');
+            $sellerYmKeys[] = $ym;
+            $sellerTrendMonths[] = $m->translatedFormat('M Y');
+        }
+
+        // Tampilkan penjual utama (maksimal 6 seller teratas)
+        $chartSellers = $salesDistribution->take(6);
+        $sellerDatasets = [];
+
+        foreach ($chartSellers as $seller) {
+            $sellerName = $seller['name'];
+            $palette = $seller['palette'];
+            $qtySeries = [];
+            $omsetSeries = [];
+            $totalPeriodQty = 0;
+            $totalPeriodOmset = 0;
+
+            foreach ($sellerYmKeys as $ym) {
+                $rec = $monthlyInvoices->first(fn ($item) => $item->ym === $ym && strcasecmp($item->sales_name, $sellerName) === 0);
+                $qty = (int) ($rec?->total_qty ?? 0);
+                $omset = (float) ($rec?->total_omset ?? 0);
+                $qtySeries[] = $qty;
+                $omsetSeries[] = $omset;
+                $totalPeriodQty += $qty;
+                $totalPeriodOmset += $omset;
+            }
+
+            $sellerDatasets[] = [
+                'name' => $sellerName,
+                'qty' => $qtySeries,
+                'omset' => $omsetSeries,
+                'total_qty' => $totalPeriodQty,
+                'total_omset' => $totalPeriodOmset,
+                'color' => $palette['pill_bg'],
+                'text_color' => $palette['badge_text'],
+                'badge_bg' => $palette['badge_bg'],
+                'border' => $palette['border'],
+                'bg' => $palette['bg'],
+            ];
+        }
+
+        $topSeller = $chartSellers->first();
+
+        $sellerTrendData = [
+            'labels' => $sellerTrendMonths,
+            'datasets' => $sellerDatasets,
+            'has_data' => $monthlyInvoices->isNotEmpty(),
+            'total_volume' => (int) $monthlyInvoices->sum('total_qty'),
+        ];
+
+        // 10. Riwayat Invoice Terbaru
         $recentInvoices = Invoice::with(['product', 'location'])
             ->latest()
             ->take(6)
@@ -218,7 +298,9 @@ class DashboardController extends Controller
             'rawMaterialBotolStock',
             'rawMaterialsList',
             'salesDistribution',
-            'recentInvoices'
+            'recentInvoices',
+            'sellerTrendData',
+            'topSeller'
         ));
     }
 }

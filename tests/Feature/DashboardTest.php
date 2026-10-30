@@ -122,4 +122,48 @@ class DashboardTest extends TestCase
         $response->assertSee('5 pcs');
         $response->assertSee('1.000.000');
     }
+
+    public function test_dashboard_renders_seller_sales_trend_chart_with_multi_seller_datasets(): void
+    {
+        \App\Models\Invoice::create([
+            'invoice_no' => 'INV-TEST-001',
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Budi',
+            'product_id' => $this->product->id,
+            'qty' => 15,
+            'location_id' => $this->gudang->id,
+            'total_price' => 2500000,
+            'payment_status' => 'LUNAS',
+            'created_at' => now()->subMonth(),
+        ]);
+
+        \App\Models\Invoice::create([
+            'invoice_no' => 'INV-TEST-002',
+            'sales_name' => 'IWAN',
+            'customer_name' => 'Citra',
+            'product_id' => $this->product->id,
+            'qty' => 10,
+            'location_id' => $this->gudang->id,
+            'total_price' => 1800000,
+            'payment_status' => 'LUNAS',
+            'created_at' => now()->subMonth(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('dashboard'));
+        $response->assertOk();
+        $response->assertSee('Tren Penjualan per Seller');
+        $response->assertSee('RIZKY');
+        $response->assertSee('IWAN');
+        $response->assertViewHas('sellerTrendData');
+        
+        $trendData = $response->viewData('sellerTrendData');
+        $this->assertArrayHasKey('labels', $trendData);
+        $this->assertArrayHasKey('datasets', $trendData);
+        $this->assertTrue($trendData['has_data']);
+
+        $rizkyDs = collect($trendData['datasets'])->firstWhere('name', 'RIZKY');
+        $this->assertNotNull($rizkyDs);
+        $this->assertEquals(15, $rizkyDs['total_qty']);
+        $this->assertEquals(\App\Models\Location::paletteForName('RIZKY')['pill_bg'], $rizkyDs['color']);
+    }
 }

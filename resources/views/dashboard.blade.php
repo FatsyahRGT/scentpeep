@@ -179,20 +179,27 @@
                 <a href="{{ route('invoices.index') }}" class="small text-muted text-decoration-none">Semua Invoice &rarr;</a>
             </div>
             <div class="card-body p-3">
-                <div class="row g-2">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.65rem;">
                     @forelse($salesDistribution as $sales)
                     @php $spal = $sales['palette'] ?? \App\Models\Location::paletteForName($sales['name']); @endphp
-                    <div class="col-6 col-sm-4">
-                        <div class="p-2 p-md-3 rounded-3 text-center h-100" style="background-color: {{ $spal['bg'] }}; border: 1px solid {{ $spal['border'] }};">
-                            <span class="badge mb-1 px-2 py-1" style="background-color: {{ $spal['badge_bg'] }}; color: {{ $spal['badge_text'] }}; border: 1px solid {{ $spal['border'] }}; font-weight: 700; font-size: 0.78rem;">
-                                <i class="bi bi-person-fill me-1"></i>{{ $sales['name'] }}
-                            </span>
-                            <div class="font-serif fs-4 fw-bold my-1" style="color: {{ $spal['text'] }};">{{ $sales['total_qty'] }} <span class="fs-6 text-muted font-sans fw-normal">pcs</span></div>
-                            <div class="font-mono fw-semibold" style="color: {{ $spal['text'] }}; font-size: 0.75rem;">Rp {{ number_format($sales['total_omset'], 0, ',', '.') }}</div>
+                    <div class="p-2 p-md-3 rounded-3 text-center d-flex flex-column justify-content-between h-100 shadow-sm" style="background-color: {{ $spal['bg'] }}; border: 1px solid {{ $spal['border'] }}; min-width: 0; overflow: hidden;">
+                        <span class="badge mb-1 px-2 py-1 text-truncate w-100 d-inline-block" style="background-color: {{ $spal['badge_bg'] }}; color: {{ $spal['badge_text'] }}; border: 1px solid {{ $spal['border'] }}; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.02em;" title="{{ $sales['name'] }}">
+                            <i class="bi bi-person-fill me-1"></i>{{ $sales['name'] }}
+                        </span>
+                        <div class="my-1">
+                            <div class="font-serif fs-4 fw-bold text-truncate" style="color: {{ $spal['text'] }}; line-height: 1.2;">{{ number_format($sales['total_qty']) }} <span class="fs-6 text-muted font-sans fw-normal">pcs</span></div>
+                            <div class="font-mono fw-semibold text-truncate" style="color: {{ $spal['text'] }}; font-size: 0.72rem;">Rp {{ number_format($sales['total_omset'], 0, ',', '.') }}</div>
                         </div>
+                        @if(($sales['invoice_count'] ?? 0) > 0)
+                            <span class="badge bg-white border text-truncate mt-1" style="font-size: 0.65rem; color: {{ $spal['text'] }}; border-color: {{ $spal['border'] }} !important;">
+                                {{ $sales['invoice_count'] }} trx
+                            </span>
+                        @else
+                            <span class="text-muted" style="font-size: 0.65rem;">0 trx</span>
+                        @endif
                     </div>
                     @empty
-                    <div class="col-12 text-center text-muted py-3">Belum ada data penjualan per sales.</div>
+                    <div class="text-center text-muted py-3">Belum ada data penjualan per sales.</div>
                     @endforelse
                 </div>
             </div>
@@ -212,29 +219,25 @@
                 <a href="{{ route('stocks.index') }}" class="small text-muted text-decoration-none">Lihat Matriks &rarr;</a>
             </div>
             <div class="card-body p-3">
-                <div class="row g-3">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 0.65rem;">
                     @forelse($locationStockSummaries as $loc)
                     @php $pal = $loc['palette'] ?? null; @endphp
-                    <div class="col-sm-6">
-                        <div class="p-3 rounded-3" style="background-color: {{ $pal ? $pal['bg'] : 'var(--color-surface-hover, #f4f3f0)' }}; border: 1px solid {{ $pal ? $pal['border'] : 'var(--color-border, #e8e6e1)' }};">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="fw-semibold" style="color: {{ $pal ? $pal['text'] : 'var(--scent-dark, #121212)' }};">
-                                    <span class="badge me-1" style="background-color: {{ $pal ? $pal['badge_bg'] : '#f4f3f0' }}; color: {{ $pal ? $pal['badge_text'] : '#121212' }}; border: 1px solid {{ $pal ? $pal['border'] : '#e8e6e1' }}; font-weight: 700;">
-                                        <i class="bi bi-geo-alt-fill me-1"></i>{{ $loc['name'] }}
-                                    </span>
-                                </span>
-                                <span class="badge bg-white border" style="font-size: 0.7rem; color: {{ $pal ? $pal['text'] : '#6c757d' }}; border-color: {{ $pal ? $pal['border'] : '#e8e6e1' }} !important;">
-                                    {{ $loc['sku_count'] }} SKU
-                                </span>
-                            </div>
-                            <div class="d-flex align-items-baseline gap-1 mt-2">
-                                <span class="font-serif fs-2 fw-bold" style="color: {{ $pal ? $pal['text'] : 'var(--scent-dark, #121212)' }};">{{ number_format($loc['total_qty']) }}</span>
-                                <span class="text-muted small">pcs parfum</span>
-                            </div>
+                    <div class="p-3 rounded-3 shadow-sm d-flex flex-column justify-content-between" style="background-color: {{ $pal ? $pal['bg'] : 'var(--color-surface-hover, #f4f3f0)' }}; border: 1px solid {{ $pal ? $pal['border'] : 'var(--color-border, #e8e6e1)' }}; min-width: 0; overflow: hidden;">
+                        <div class="d-flex justify-content-between align-items-center mb-2 gap-1">
+                            <span class="badge text-truncate" style="background-color: {{ $pal ? $pal['badge_bg'] : '#f4f3f0' }}; color: {{ $pal ? $pal['badge_text'] : '#121212' }}; border: 1px solid {{ $pal ? $pal['border'] : '#e8e6e1' }}; font-weight: 700; font-size: 0.75rem; max-width: 70%;" title="{{ $loc['name'] }}">
+                                <i class="bi bi-geo-alt-fill me-1"></i>{{ $loc['name'] }}
+                            </span>
+                            <span class="badge bg-white border" style="font-size: 0.68rem; color: {{ $pal ? $pal['text'] : '#6c757d' }}; border-color: {{ $pal ? $pal['border'] : '#e8e6e1' }} !important;">
+                                {{ $loc['sku_count'] }} SKU
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-baseline gap-1 mt-2">
+                            <span class="font-serif fs-3 fw-bold" style="color: {{ $pal ? $pal['text'] : 'var(--scent-dark, #121212)' }};">{{ number_format($loc['total_qty']) }}</span>
+                            <span class="text-muted small">pcs</span>
                         </div>
                     </div>
                     @empty
-                    <div class="col-12 text-center text-muted py-3">Belum ada lokasi terdaftar.</div>
+                    <div class="text-center text-muted py-3">Belum ada lokasi terdaftar.</div>
                     @endforelse
                 </div>
             </div>
@@ -338,6 +341,62 @@
             </div>
             <div class="card-body p-3 d-flex align-items-center justify-content-center">
                 <canvas id="stockPieChart" style="max-height: 280px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tren Penjualan per Seller (Multi-Seller Performance Comparison) -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-bottom: 1px solid var(--color-border-subtle, #f0eee9);">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; background-color: rgba(18, 18, 18, 0.06); color: var(--scent-dark, #121212);">
+                        <i class="bi bi-graph-up text-dark fs-5"></i>
+                    </span>
+                    <div>
+                        <h4 class="font-serif card-title mb-0 fw-bold fs-5">Tren Penjualan per Seller (6 Bulan Terakhir)</h4>
+                        <small class="text-muted">Komparasi volume penjualan (pcs) antar reseller & tim sales berdasarkan warna default identitas</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    @if($topSeller && $topSeller['total_qty'] > 0)
+                        @php $topPal = $topSeller['palette']; @endphp
+                        <span class="badge d-none d-md-inline-flex align-items-center gap-1 px-2 py-1" style="background-color: {{ $topPal['badge_bg'] }}; color: {{ $topPal['badge_text'] }}; border: 1px solid {{ $topPal['border'] }}; font-size: 0.78rem;">
+                            <i class="bi bi-trophy-fill text-warning me-1"></i> Top Seller: <strong>{{ $topSeller['name'] }}</strong> ({{ number_format($topSeller['total_qty']) }} pcs)
+                        </span>
+                    @endif
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Seller Metric Type">
+                        <button type="button" class="btn btn-outline-dark active fw-semibold" onclick="switchSellerMetric('qty')" id="btnSellerQty">
+                            <i class="bi bi-box-seam me-1"></i> Volume (Pcs)
+                        </button>
+                        <button type="button" class="btn btn-outline-dark fw-semibold" onclick="switchSellerMetric('omset')" id="btnSellerOmset">
+                            <i class="bi bi-cash me-1"></i> Omzet (Rp)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-3">
+                <!-- Seller Quick Summary Badges Strip -->
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom">
+                    <span class="small fw-bold text-muted text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">
+                        <i class="bi bi-people-fill me-1"></i> Komparasi Seller:
+                    </span>
+                    @forelse($sellerTrendData['datasets'] as $ds)
+                        <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1" style="background-color: {{ $ds['badge_bg'] }}; color: {{ $ds['text_color'] }}; border: 1px solid {{ $ds['border'] }}; font-size: 0.78rem;">
+                            <span class="rounded-circle d-inline-block" style="width: 8px; height: 8px; background-color: {{ $ds['color'] }};"></span>
+                            <strong>{{ $ds['name'] }}:</strong> {{ number_format($ds['total_qty']) }} pcs
+                            <span class="opacity-75 ms-1 font-mono">(Rp {{ number_format($ds['total_omset'], 0, ',', '.') }})</span>
+                        </span>
+                    @empty
+                        <span class="text-muted small">Belum ada data seller terdaftar.</span>
+                    @endforelse
+                </div>
+
+                <div style="position: relative; height: 280px; width: 100%;">
+                    <canvas id="sellerSalesChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -567,7 +626,11 @@
 <script>
     let cashflowChart = null;
     let stockPieChart = null;
+    let sellerSalesChart = null;
     let currentChartType = 'bar';
+    let currentSellerMetric = 'qty';
+
+    const sellerTrendRaw = {!! json_encode($sellerTrendData) !!};
 
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize Cashflow Trend Chart
@@ -575,6 +638,9 @@
         
         // Initialize Stock Distribution Pie Chart
         initStockPieChart();
+
+        // Initialize Seller Sales Trend Chart
+        initSellerSalesChart();
     });
 
     function initCashflowChart() {
@@ -701,10 +767,8 @@
         const labels = stockData.map(item => item.name);
         const quantities = stockData.map(item => item.total_qty);
         
-        const colors = [
-            '#121212', '#b38b4d', '#2fb344', '#d63939', '#5c5c5c',
-            '#8a8a86', '#e83e8c', '#fd7e14', '#20c997', '#6610f2'
-        ];
+        // Dynamic colors using each location's native HSL palette
+        const colors = stockData.map(item => item.palette?.pill_bg || item.palette?.badge_text || '#121212');
 
         const ctx = document.getElementById('stockPieChart').getContext('2d');
         
@@ -739,7 +803,7 @@
                                     return data.labels.map((label, i) => {
                                         const value = data.datasets[0].data[i];
                                         const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
                                         return {
                                             text: `${label}: ${value} pcs (${percentage}%)`,
                                             fillStyle: data.datasets[0].backgroundColor[i],
@@ -760,9 +824,128 @@
                                 const label = context.label || '';
                                 const value = context.raw;
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((value / total) * 100).toFixed(1);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
                                 return `${label}: ${value} pcs (${percentage}%)`;
                             }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function initSellerSalesChart() {
+        const canvas = document.getElementById('sellerSalesChart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (sellerSalesChart) {
+            sellerSalesChart.destroy();
+        }
+
+        const labels = sellerTrendRaw.labels || [];
+        const datasets = (sellerTrendRaw.datasets || []).map(ds => {
+            const dataSeries = currentSellerMetric === 'qty' ? ds.qty : ds.omset;
+            return {
+                label: ds.name,
+                data: dataSeries,
+                borderColor: ds.color,
+                backgroundColor: ds.color + '15',
+                fill: false,
+                tension: 0.35,
+                borderWidth: 2.5,
+                pointBackgroundColor: ds.color,
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4.5,
+                pointHoverRadius: 7,
+                qtyData: ds.qty,
+                omsetData: ds.omset
+            };
+        });
+
+        sellerSalesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15,
+                            font: {
+                                family: "'Plus Jakarta Sans', sans-serif",
+                                size: 11,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(18, 18, 18, 0.92)',
+                        padding: 12,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        callbacks: {
+                            label: function(context) {
+                                const ds = context.dataset;
+                                const idx = context.dataIndex;
+                                const q = ds.qtyData ? ds.qtyData[idx] : 0;
+                                const o = ds.omsetData ? ds.omsetData[idx] : 0;
+                                if (currentSellerMetric === 'qty') {
+                                    return ds.label + ': ' + new Intl.NumberFormat('id-ID').format(q) + ' pcs (Rp ' + new Intl.NumberFormat('id-ID').format(o) + ')';
+                                } else {
+                                    return ds.label + ': Rp ' + new Intl.NumberFormat('id-ID').format(o) + ' (' + new Intl.NumberFormat('id-ID').format(q) + ' pcs)';
+                                }
+                            },
+                            footer: function(tooltipItems) {
+                                let totalQty = 0;
+                                let totalOmset = 0;
+                                tooltipItems.forEach(item => {
+                                    const ds = item.dataset;
+                                    totalQty += ds.qtyData ? ds.qtyData[item.dataIndex] || 0 : 0;
+                                    totalOmset += ds.omsetData ? ds.omsetData[item.dataIndex] || 0 : 0;
+                                });
+                                return 'Total: ' + new Intl.NumberFormat('id-ID').format(totalQty) + ' pcs | Rp ' + new Intl.NumberFormat('id-ID').format(totalOmset);
+                            }
+                        },
+                        footerFont: { size: 11, weight: 'bold' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                if (currentSellerMetric === 'qty') {
+                                    return value + ' pcs';
+                                } else {
+                                    if (value >= 1000000) return (value / 1000000).toFixed(1) + ' Jt';
+                                    if (value >= 1000) return (value / 1000).toFixed(0) + ' Rb';
+                                    return value;
+                                }
+                            },
+                            font: { size: 11 }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: { size: 11 }
                         }
                     }
                 }
@@ -777,6 +960,13 @@
         document.getElementById('btnLine').classList.toggle('active', type === 'line');
         
         initCashflowChart();
+    }
+
+    function switchSellerMetric(metric) {
+        currentSellerMetric = metric;
+        document.getElementById('btnSellerQty').classList.toggle('active', metric === 'qty');
+        document.getElementById('btnSellerOmset').classList.toggle('active', metric === 'omset');
+        initSellerSalesChart();
     }
 </script>
 @endpush
