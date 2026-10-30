@@ -141,13 +141,8 @@
     </div>
 
     @if($preOrders->hasPages())
-    <div class="card-footer bg-white border-top py-2 px-3 d-flex flex-wrap justify-content-between align-items-center">
-        <div class="text-muted small">
-            Menampilkan {{ $preOrders->firstItem() ?? 0 }} - {{ $preOrders->lastItem() ?? 0 }} dari {{ $preOrders->total() }} pesanan PO
-        </div>
-        <div>
-            {{ $preOrders->links() }}
-        </div>
+    <div class="card-footer bg-white border-top py-2 px-3">
+        {{ $preOrders->links('vendor.pagination.bootstrap-5') }}
     </div>
     @endif
 </div>

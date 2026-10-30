@@ -164,13 +164,8 @@
     </div>
 
     @if($invoices->hasPages())
-    <div class="card-footer bg-white border-top py-2 px-3 d-flex flex-wrap justify-content-between align-items-center">
-        <div class="text-muted small">
-            Menampilkan {{ $invoices->firstItem() ?? 0 }} - {{ $invoices->lastItem() ?? 0 }} dari {{ $invoices->total() }} invoice
-        </div>
-        <div>
-            {{ $invoices->links() }}
-        </div>
+    <div class="card-footer bg-white border-top py-2 px-3">
+        {{ $invoices->links('vendor.pagination.bootstrap-5') }}
     </div>
     @endif
 </div>
