@@ -732,9 +732,6 @@
             <!-- Desktop Topbar (>= 992px) -->
             <header class="page-topbar d-none d-lg-flex align-items-center justify-content-between bg-white border-hairline-b sticky-top py-2 px-4">
                 <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-sm border-0 text-muted p-1" type="button" onclick="toggleDesktopSidebar()" title="Perkecil / Perluas Sidebar">
-                        <i class="bi bi-layout-sidebar-inset fs-4"></i>
-                    </button>
                     <h4 class="mb-0 fw-bold font-serif" style="color: var(--scent-dark);">@yield('page-header', 'Scentpeep Management System')</h4>
                 </div>
                 <div class="d-flex align-items-center gap-3">
@@ -771,21 +768,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Desktop Collapse / Mini Sidebar Toggle (>= 992px)
-        function toggleDesktopSidebar() {
-            document.body.classList.toggle('sidebar-collapsed');
-            const isCollapsed = document.body.classList.contains('sidebar-collapsed');
-            try { localStorage.setItem('scentpeep_sidebar_collapsed', isCollapsed ? '1' : '0'); } catch(e) {}
-        }
-
-        // Restore sidebar collapsed state on desktop load
-        document.addEventListener('DOMContentLoaded', function() {
-            try {
-                if (window.innerWidth >= 992 && localStorage.getItem('scentpeep_sidebar_collapsed') === '1') {
-                    document.body.classList.add('sidebar-collapsed');
-                }
-            } catch(e) {}
-        });
+        // Bersihkan state collapsed desktop jika pernah tersimpan di cache browser
+        try { localStorage.removeItem('scentpeep_sidebar_collapsed'); } catch(e) {}
+        document.body.classList.remove('sidebar-collapsed');
 
         // Mobile Offcanvas Drawer Sidebar (< 992px)
         function toggleMobileSidebar(forceState = null) {

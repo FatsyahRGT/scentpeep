@@ -134,7 +134,7 @@ class DashboardTest extends TestCase
             'location_id' => $this->gudang->id,
             'total_price' => 2500000,
             'payment_status' => 'LUNAS',
-            'created_at' => now()->subMonth(),
+            'created_at' => now()->startOfMonth()->subMonth(),
         ]);
 
         \App\Models\Invoice::create([
@@ -146,7 +146,7 @@ class DashboardTest extends TestCase
             'location_id' => $this->gudang->id,
             'total_price' => 1800000,
             'payment_status' => 'LUNAS',
-            'created_at' => now()->subMonth(),
+            'created_at' => now()->startOfMonth()->subMonth(),
         ]);
 
         $response = $this->actingAs($this->admin)->get(route('dashboard'));

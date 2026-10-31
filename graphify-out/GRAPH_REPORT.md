@@ -1,17 +1,17 @@
-# Graph Report - scentpeep-management-system  (2026-10-30)
+# Graph Report - scentpeep-management-system  (2026-10-31)
 
 ## Corpus Check
-- 149 files · ~78,504 words
+- 149 files · ~78,448 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: (none) 18, .example 2, .conf 2)
 
 ## Summary
-- 794 nodes · 1321 edges · 99 communities (21 shown, 78 thin omitted)
+- 793 nodes · 1320 edges · 99 communities (21 shown, 78 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 16 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `80cfced2`
+- Built from commit: `a2dd94d9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -26,10 +26,9 @@
 - Location
 - Dashboard Analytics
 - User Management
-- Product Catalog
-- Invoice
-- Report Generation
-- UserFactory.php
+- Illuminate\Foundation\Testing\RefreshDatabase
+- Product
+- RawMaterialCrudTest
 - Unit & Feature Tests
 - Frontend Assets
 - Configuration Files
@@ -80,7 +79,6 @@
 - 2026_10_30_000002_create_pre_orders_table.php
 - Laporan Verifikasi 10 Kriteria Lulus — Scentpeep Management System
 - 02 - PERIODE FEBRUARI PENJUALAN_c5efdcb3.md
-- ERD.md
 - INCOME - OUTCOME SCENTPEEP_3c9954ec.md
 - invoices/create.blade.php
 - invoices/edit.blade.php
@@ -143,28 +141,28 @@ Cohesion: 0.09
 Nodes (7): {closure#5}(), {closure#6}(), {closure#7}(), TransactionController, StoreTransactionRequest, UpdateTransactionRequest, Transaction
 
 ### Community 5 - "Illuminate\Database\Seeder"
-Cohesion: 0.08
-Nodes (8): {closure#6}(), DatabaseSeeder, InitialStockSeeder, InvoiceSeeder, LocationSeeder, ProductSeeder, RawMaterialSeeder, UserSeeder
+Cohesion: 0.07
+Nodes (8): UserFactory, DatabaseSeeder, InitialStockSeeder, InvoiceSeeder, LocationSeeder, ProductSeeder, RawMaterialSeeder, UserSeeder
 
 ### Community 7 - "Location"
-Cohesion: 0.07
-Nodes (9): {closure#1}(), {closure#2}(), PreOrder, RawMaterial, RawMaterialCategory, RawMaterialMutation, Stock, StockTransfer (+1 more)
+Cohesion: 0.08
+Nodes (12): {closure#2}(), {closure#3}(), {closure#4}(), {closure#1}(), {closure#2}(), Invoice, PreOrder, RawMaterial (+4 more)
 
 ### Community 8 - "Dashboard Analytics"
 Cohesion: 0.10
 Nodes (20): devDependencies, concurrently, laravel-vite-plugin, tailwindcss, @tailwindcss/vite, vite, optionalDependencies, @laravel/multiplex (+12 more)
 
-### Community 11 - "Invoice"
-Cohesion: 0.16
-Nodes (5): {closure#2}(), {closure#3}(), {closure#4}(), InvoiceController, Invoice
-
 ### Community 16 - "Configuration Files"
 Cohesion: 0.32
 Nodes (3): {closure#1}(), {closure#2}(), {closure#3}()
 
+### Community 17 - "Location"
+Cohesion: 0.14
+Nodes (3): {closure#6}(), Location, DashboardTest
+
 ### Community 20 - "TestCase"
-Cohesion: 0.16
-Nodes (4): ExampleTest, ExportReportsTest, SecurityHeadersTest, TestCase
+Cohesion: 0.17
+Nodes (4): ExampleTest, ResellerLifecycleTest, SecurityHeadersTest, TestCase
 
 ### Community 53 - "1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)"
 Cohesion: 0.12
@@ -208,23 +206,23 @@ Nodes (3): {closure#1}(), {closure#2}(), {closure#3}()
 
 ## Knowledge Gaps
 - **30 isolated node(s):** `concurrently`, `tailwindcss`, `@laravel/multiplex`, `layouts.app`, `layouts.app` (+25 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 417 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 416 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **78 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Location` connect `Location` to `Illuminate\Http\RedirectResponse`, `Form Request Validation`, `Blade View Templates`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `Location`, `InvoiceAndProcurementTest`, `User Management`, `Product Catalog`, `Invoice`, `Report Generation`, `Unit & Feature Tests`, `TransactionAndStockTest.php`, `TestCase`, `ReportController.php`, `Product`, `Illuminate\Database\Migrations\Migration`?**
+- **Why does `Location` connect `Location` to `Illuminate\Http\RedirectResponse`, `Form Request Validation`, `Blade View Templates`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `Location`, `InvoiceAndProcurementTest`, `User Management`, `Illuminate\Foundation\Testing\RefreshDatabase`, `Product`, `DashboardController.php`, `Unit & Feature Tests`, `TransactionAndStockTest.php`, `TestCase`, `ReportController.php`, `Product`, `Illuminate\Database\Migrations\Migration`?**
   _High betweenness centrality (0.118) - this node is a cross-community bridge._
 - **What connects `concurrently`, `tailwindcss`, `@laravel/multiplex` to the rest of the system?**
   _30 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Illuminate\Http\RedirectResponse` be split into smaller, more focused modules?**
   _Cohesion score 0.05052125100240577 - nodes in this community are weakly interconnected._
-- **Why does `User` connect `User Management` to `Illuminate\Http\RedirectResponse`, `Form Request Validation`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `Location`, `InvoiceAndProcurementTest`, `Product Catalog`, `Report Generation`, `UserFactory.php`, `Unit & Feature Tests`, `Location`, `TransactionAndStockTest.php`, `TestCase`, `Product`?**
+- **Why does `User` connect `User Management` to `Illuminate\Http\RedirectResponse`, `Form Request Validation`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `Location`, `InvoiceAndProcurementTest`, `Illuminate\Foundation\Testing\RefreshDatabase`, `Product`, `RawMaterialCrudTest`, `DashboardController.php`, `Unit & Feature Tests`, `Location`, `TransactionAndStockTest.php`, `TestCase`, `Product`?**
   _High betweenness centrality (0.086) - this node is a cross-community bridge._
 - **Should `Eloquent Models` be split into smaller, more focused modules?**
   _Cohesion score 0.041666666666666664 - nodes in this community are weakly interconnected._
-- **Why does `Product` connect `Product` to `Illuminate\Http\RedirectResponse`, `Blade View Templates`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `Location`, `InvoiceAndProcurementTest`, `User Management`, `Invoice`, `Report Generation`, `Unit & Feature Tests`, `Location`, `TransactionAndStockTest.php`, `TestCase`, `ReportController.php`, `Panduan Pemanggilan Graphify pada Sesi Baru / Ganti Model AI`?**
+- **Why does `Product` connect `Product` to `Illuminate\Http\RedirectResponse`, `Blade View Templates`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `Location`, `InvoiceAndProcurementTest`, `User Management`, `Illuminate\Foundation\Testing\RefreshDatabase`, `DashboardController.php`, `Unit & Feature Tests`, `Location`, `TransactionAndStockTest.php`, `ReportController.php`, `Product`, `Panduan Pemanggilan Graphify pada Sesi Baru / Ganti Model AI`?**
   _High betweenness centrality (0.059) - this node is a cross-community bridge._
 - **Should `Form Request Validation` be split into smaller, more focused modules?**
   _Cohesion score 0.05975609756097561 - nodes in this community are weakly interconnected._

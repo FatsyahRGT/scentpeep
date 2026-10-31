@@ -134,7 +134,7 @@ class DashboardController extends Controller
             ->get();
 
         // 6. Monthly Cashflow Trend (Last 6 Months) - Optimized single query with cross-DB compatibility
-        $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth();
+        $sixMonthsAgo = Carbon::now()->startOfMonth()->subMonths(5);
         $dateFormat = DB::connection()->getDriverName() === 'sqlite' 
             ? "strftime('%Y-%m', tanggal)" 
             : "DATE_FORMAT(tanggal, '%Y-%m')";
@@ -149,7 +149,7 @@ class DashboardController extends Controller
         
         $monthlyTrend = [];
         for ($i = 5; $i >= 0; $i--) {
-            $monthDate = Carbon::now()->subMonths($i);
+            $monthDate = Carbon::now()->startOfMonth()->subMonths($i);
             $monthKey = $monthDate->format('Y-m');
             $monthGroup = $trendData->get($monthKey, collect());
             
@@ -218,7 +218,7 @@ class DashboardController extends Controller
         $sellerTrendMonths = [];
         $sellerYmKeys = [];
         for ($i = 5; $i >= 0; $i--) {
-            $m = Carbon::now()->subMonths($i);
+            $m = Carbon::now()->startOfMonth()->subMonths($i);
             $ym = $m->format('Y-m');
             $sellerYmKeys[] = $ym;
             $sellerTrendMonths[] = $m->translatedFormat('M Y');

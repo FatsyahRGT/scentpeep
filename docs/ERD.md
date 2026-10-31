@@ -1,4 +1,4 @@
-# Entity-Relationship Diagram (ERD) — Scentpeep Management System
+]# Entity-Relationship Diagram (ERD) — Scentpeep Management System
 
 Diagram relasi entitas diturunkan langsung dari skema database aktual hasil refaktor:
 
