@@ -93,7 +93,7 @@
             <table class="table table-sm align-middle table-hover m-0" style="font-size: 0.82rem; min-width: 860px;">
                 <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
                     <tr>
-                        <th class="py-2 px-2 text-muted small fw-semibold" style="width: 105px;">No. Invoice</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold" style="width: 130px;">No. Invoice</th>
                         <th class="py-2 px-2 text-muted small fw-semibold" style="width: 85px;">Tanggal</th>
                         <th class="py-2 px-2 text-muted small fw-semibold" style="width: 115px;">Customer</th>
                         <th class="py-2 px-2 text-muted small fw-semibold" style="width: 80px;">Sales</th>
@@ -109,7 +109,7 @@
                     @forelse($invoices as $inv)
                     <tr>
                         <td class="py-2 px-2">
-                            <span class="font-mono fw-bold text-dark text-nowrap" style="font-size: 0.78rem;">{{ $inv->invoice_no }}</span>
+                            <span class="badge bg-light text-dark border font-mono-num">{{ $inv->invoice_no }}</span>
                         </td>
                         <td class="py-2 px-2 text-muted text-nowrap" style="font-size: 0.72rem;">
                             {{ $inv->created_at->format('d/m/y H:i') }}

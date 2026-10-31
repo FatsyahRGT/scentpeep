@@ -201,7 +201,7 @@
                             @endif
                             @if($tx->invoice_no || $tx->note)
                                 <div class="text-muted" style="font-size: 0.72rem;">
-                                    @if($tx->invoice_no)<span class="badge bg-light text-muted border me-1">{{ $tx->invoice_no }}</span>@endif
+                                    @if($tx->invoice_no)<span class="badge bg-light text-dark border font-mono-num me-1">{{ $tx->invoice_no }}</span>@endif
                                     @if($tx->note)<span class="text-muted">{{ $tx->note }}</span>@endif
                                 </div>
                             @endif

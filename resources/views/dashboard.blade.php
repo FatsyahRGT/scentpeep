@@ -509,7 +509,9 @@
                         <tbody>
                             @forelse($recentInvoices as $inv)
                             <tr>
-                                <td class="py-2 px-3 font-mono fw-semibold text-dark">{{ $inv->invoice_no }}</td>
+                                <td class="py-2 px-3">
+                                    <span class="badge bg-light text-dark border font-mono-num">{{ $inv->invoice_no }}</span>
+                                </td>
                                 <td class="py-2 px-3 fw-semibold text-dark">{{ $inv->customer_name }}</td>
                                 <td class="py-2 px-3"><span class="badge bg-light text-dark border">{{ $inv->sales_name }}</span></td>
                                 <td class="py-2 px-3 text-dark">{{ $inv->product->name ?? '-' }}</td>
