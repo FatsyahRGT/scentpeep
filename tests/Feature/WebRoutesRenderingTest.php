@@ -89,16 +89,29 @@ class WebRoutesRenderingTest extends TestCase
 
     public function test_reseller_can_render_reseller_views(): void
     {
-        $routes = [
-            '/dashboard',
-            '/transactions',
-            '/transactions/create?mode=stock',
+        $resellerRoutes = [
+            '/stocks/reseller',
             '/stocks',
+            '/invoices',
+            '/invoices/create',
         ];
 
-        foreach ($routes as $url) {
+        foreach ($resellerRoutes as $url) {
             $response = $this->actingAs($this->reseller)->get($url);
             $response->assertOk();
+        }
+
+        // Rute manajemen internal dialihkan
+        $internalRoutes = [
+            '/dashboard',
+            '/transactions',
+            '/transactions/create',
+            '/raw-materials',
+        ];
+
+        foreach ($internalRoutes as $url) {
+            $response = $this->actingAs($this->reseller)->get($url);
+            $response->assertRedirect(route('stocks.reseller'));
         }
     }
 

@@ -98,8 +98,10 @@ class DashboardTest extends TestCase
     public function test_reseller_dashboard_scoped_to_their_data(): void
     {
         $response = $this->actingAs($this->reseller)->get(route('dashboard'));
-        $response->assertOk();
-        $response->assertViewHas('isReseller', true);
+        $response->assertRedirect(route('stocks.reseller'));
+
+        $resellerView = $this->actingAs($this->reseller)->get(route('stocks.reseller'));
+        $resellerView->assertOk();
     }
 
     public function test_dashboard_bestsellers_calculates_based_on_product_sales_transactions(): void

@@ -197,14 +197,14 @@ class SalesAndCriteriaTest extends TestCase
             'stock_effect' => Transaction::EFFECT_NONE,
         ]);
 
-        // Reseller A mencoba edit transaksi milik Reseller B
+        // Reseller A mencoba edit transaksi milik Reseller B (diblokir middleware internal)
         $response = $this->actingAs($this->resellerA)->get(route('transactions.edit', $txB));
-        $response->assertRedirect(route('transactions.index'));
+        $response->assertRedirect(route('stocks.reseller'));
         $response->assertSessionHas('error');
 
-        // Reseller A mencoba hapus transaksi milik Reseller B
+        // Reseller A mencoba hapus transaksi milik Reseller B (diblokir middleware internal)
         $deleteResponse = $this->actingAs($this->resellerA)->delete(route('transactions.destroy', $txB));
-        $deleteResponse->assertRedirect(route('transactions.index'));
+        $deleteResponse->assertRedirect(route('stocks.reseller'));
         $deleteResponse->assertSessionHas('error');
 
         // Transaksi B tetap ada

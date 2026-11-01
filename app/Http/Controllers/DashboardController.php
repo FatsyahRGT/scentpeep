@@ -10,6 +10,7 @@ use App\Models\Stock;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,23 +21,21 @@ class DashboardController extends Controller
     /**
      * Display the main dashboard overview with role-based scoping and location filters.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         $user = Auth::user();
-        $isReseller = $user->isReseller();
-        $selectedLocationId = $isReseller ? $user->location?->id : $request->query('location_id');
+
+        // Reseller dialihkan langsung ke dashboard mandiri katalog & stok mereka
+        if ($user->isReseller()) {
+            return redirect()->route('stocks.reseller');
+        }
+
+        $isReseller = false;
+        $selectedLocationId = $request->query('location_id');
 
         // Base Query for Transactions
         $txQuery = Transaction::query();
-        if ($isReseller) {
-            $userLocId = $user->location?->id;
-            $txQuery->where(function ($q) use ($user, $userLocId) {
-                $q->where('created_by', $user->id);
-                if ($userLocId) {
-                    $q->orWhere('location_id', $userLocId);
-                }
-            });
-        } elseif ($selectedLocationId) {
+        if ($selectedLocationId) {
             $txQuery->where('location_id', $selectedLocationId);
         }
 

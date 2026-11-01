@@ -16,7 +16,7 @@ class AuthController extends Controller
     public function showLogin(): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route(Auth::user()->isReseller() ? 'stocks.reseller' : 'dashboard');
         }
 
         return view('auth.login');
@@ -60,7 +60,9 @@ class AuthController extends Controller
             Auth::login($user, $remember);
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard'))
+            $targetRoute = $user->isReseller() ? route('stocks.reseller') : route('dashboard');
+
+            return redirect()->intended($targetRoute)
                 ->with('success', 'Selamat datang kembali, ' . $user->name . '!');
         }
 
@@ -72,7 +74,7 @@ class AuthController extends Controller
     public function showRegister(): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route(Auth::user()->isReseller() ? 'stocks.reseller' : 'dashboard');
         }
 
         return view('auth.register');

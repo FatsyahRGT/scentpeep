@@ -19,9 +19,22 @@ class InvoiceController extends Controller
 {
     public function index(Request $request): View
     {
+        $user = Auth::user();
+        $isReseller = $user->isReseller();
+
         $query = Invoice::with(['product', 'location', 'creator'])->latest();
 
-        if ($request->filled('sales_name')) {
+        // Isolasi Data: Reseller HANYA bisa mengakses invoice miliknya sendiri
+        if ($isReseller) {
+            $userLocId = $user->location?->id;
+            $query->where(function ($q) use ($user, $userLocId) {
+                $q->where('sales_name', $user->name)
+                  ->orWhere('created_by', $user->id);
+                if ($userLocId) {
+                    $q->orWhere('location_id', $userLocId);
+                }
+            });
+        } elseif ($request->filled('sales_name')) {
             $query->where('sales_name', $request->sales_name);
         }
 
@@ -49,7 +62,7 @@ class InvoiceController extends Controller
             });
         }
 
-        // Filtered Metrics (menyesuaikan filter yang sedang aktif)
+        // Filtered Metrics (menyesuaikan filter yang sedang aktif & role reseller)
         $filteredMetricQuery = clone $query;
         $metrics = [
             'total_invoices' => (clone $filteredMetricQuery)->count(),
@@ -66,7 +79,18 @@ class InvoiceController extends Controller
         $thisYearQuery = Invoice::whereYear('created_at', $targetYear);
         $lastYearQuery = Invoice::whereYear('created_at', $prevYear);
 
-        if ($request->filled('sales_name')) {
+        if ($isReseller) {
+            $userLocId = $user->location?->id;
+            $resellerScope = function ($q) use ($user, $userLocId) {
+                $q->where('sales_name', $user->name)
+                  ->orWhere('created_by', $user->id);
+                if ($userLocId) {
+                    $q->orWhere('location_id', $userLocId);
+                }
+            };
+            $thisYearQuery->where($resellerScope);
+            $lastYearQuery->where($resellerScope);
+        } elseif ($request->filled('sales_name')) {
             $thisYearQuery->where('sales_name', $request->sales_name);
             $lastYearQuery->where('sales_name', $request->sales_name);
         }
@@ -127,8 +151,14 @@ class InvoiceController extends Controller
         ];
 
         $invoices = $query->paginate(15)->withQueryString();
-        $locations = Location::orderBy('name')->get();
-        $salesOptions = Invoice::getSalesOptions();
+
+        if ($isReseller) {
+            $locations = $user->location ? Location::where('id', $user->location->id)->get() : collect([]);
+            $salesOptions = collect([$user->name]);
+        } else {
+            $locations = Location::orderBy('name')->get();
+            $salesOptions = Invoice::getSalesOptions();
+        }
 
         return view('invoices.index', compact(
             'invoices',
@@ -143,9 +173,16 @@ class InvoiceController extends Controller
 
     public function create(): View
     {
+        $user = Auth::user();
         $products = Product::where('is_active', true)->orderBy('name')->get();
-        $locations = Location::orderBy('name')->get();
-        $salesOptions = Invoice::getSalesOptions();
+
+        if ($user->isReseller()) {
+            $locations = $user->location ? Location::where('id', $user->location->id)->get() : collect([]);
+            $salesOptions = collect([$user->name]);
+        } else {
+            $locations = Location::orderBy('name')->get();
+            $salesOptions = Invoice::getSalesOptions();
+        }
 
         return view('invoices.create', compact('products', 'locations', 'salesOptions'));
     }
@@ -163,6 +200,14 @@ class InvoiceController extends Controller
             'payment_status' => 'required|in:BELUM LUNAS,LUNAS',
             'notes' => 'nullable|string|max:500',
         ]);
+
+        $user = Auth::user();
+        if ($user->isReseller()) {
+            $validated['sales_name'] = $user->name;
+            if ($user->location) {
+                $validated['location_id'] = $user->location->id;
+            }
+        }
 
         DB::transaction(function () use ($validated, $request) {
             $stock = Stock::firstOrCreate(
@@ -214,15 +259,32 @@ class InvoiceController extends Controller
 
     public function edit(Invoice $invoice): View
     {
+        $user = Auth::user();
+        if ($user->isReseller()) {
+            if ($invoice->created_by !== $user->id && $invoice->sales_name !== $user->name && $invoice->location_id !== $user->location?->id) {
+                abort(403, 'Akses ditolak. Anda hanya dapat melihat invoice Anda sendiri.');
+            }
+            $locations = $user->location ? Location::where('id', $user->location->id)->get() : collect([]);
+            $salesOptions = collect([$user->name]);
+        } else {
+            $locations = Location::orderBy('name')->get();
+            $salesOptions = Invoice::getSalesOptions();
+        }
+
         $products = Product::where('is_active', true)->orWhere('id', $invoice->product_id)->orderBy('name')->get();
-        $locations = Location::orderBy('name')->get();
-        $salesOptions = Invoice::getSalesOptions();
 
         return view('invoices.edit', compact('invoice', 'products', 'locations', 'salesOptions'));
     }
 
     public function update(Request $request, Invoice $invoice): RedirectResponse
     {
+        $user = Auth::user();
+        if ($user->isReseller()) {
+            if ($invoice->created_by !== $user->id && $invoice->sales_name !== $user->name && $invoice->location_id !== $user->location?->id) {
+                abort(403, 'Akses ditolak. Anda hanya dapat mengedit invoice Anda sendiri.');
+            }
+        }
+
         $validated = $request->validate([
             'invoice_no' => 'nullable|string|max:100',
             'sales_name' => 'required|string|max:100',
@@ -234,6 +296,13 @@ class InvoiceController extends Controller
             'payment_status' => 'required|in:BELUM LUNAS,LUNAS',
             'notes' => 'nullable|string|max:500',
         ]);
+
+        if ($user->isReseller()) {
+            $validated['sales_name'] = $user->name;
+            if ($user->location) {
+                $validated['location_id'] = $user->location->id;
+            }
+        }
 
         DB::transaction(function () use ($validated, $invoice) {
             $oldProductId = $invoice->product_id;
@@ -306,6 +375,13 @@ class InvoiceController extends Controller
 
     public function markPaid(Invoice $invoice): RedirectResponse
     {
+        $user = Auth::user();
+        if ($user->isReseller()) {
+            if ($invoice->created_by !== $user->id && $invoice->sales_name !== $user->name && $invoice->location_id !== $user->location?->id) {
+                abort(403, 'Akses ditolak. Anda hanya dapat memproses invoice Anda sendiri.');
+            }
+        }
+
         if ($invoice->payment_status === Invoice::STATUS_PAID) {
             return redirect()->back()->with('info', 'Invoice ini sudah berstatus LUNAS.');
         }
@@ -331,6 +407,13 @@ class InvoiceController extends Controller
 
     public function destroy(Invoice $invoice): RedirectResponse
     {
+        $user = Auth::user();
+        if ($user->isReseller()) {
+            if ($invoice->created_by !== $user->id && $invoice->sales_name !== $user->name && $invoice->location_id !== $user->location?->id) {
+                abort(403, 'Akses ditolak. Anda hanya dapat menghapus invoice Anda sendiri.');
+            }
+        }
+
         DB::transaction(function () use ($invoice) {
             $stock = Stock::where('product_id', $invoice->product_id)
                 ->where('location_id', $invoice->location_id)

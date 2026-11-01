@@ -474,7 +474,7 @@
                     <button class="btn text-white border-0 d-inline-flex align-items-center justify-content-center p-0" type="button" onclick="toggleMobileSidebar()" aria-label="Toggle Sidebar" style="width: 44px; height: 44px;">
                         <i class="bi bi-list fs-2"></i>
                     </button>
-                    <a href="{{ route('dashboard') }}" class="scent-brand text-white text-decoration-none" style="font-size:1.15rem;">
+                    <a href="{{ Auth::user()->isReseller() ? route('stocks.reseller') : route('dashboard') }}" class="scent-brand text-white text-decoration-none" style="font-size:1.15rem;">
                         Scentpeep<span class="text-white-50">.</span>
                     </a>
                 </div>
@@ -500,7 +500,7 @@
             <div class="d-flex flex-column h-100">
                 <!-- Brand -->
                 <div class="sidebar-header-row d-flex align-items-center justify-content-between mb-2">
-                    <a href="{{ route('dashboard') }}" class="scent-brand text-decoration-none">
+                    <a href="{{ Auth::user()->isReseller() ? route('stocks.reseller') : route('dashboard') }}" class="scent-brand text-decoration-none">
                         <span>Scentpeep<span class="text-secondary">.</span></span>
                     </a>
                     <button type="button" class="btn btn-sm border-0 text-muted d-lg-none p-1" onclick="toggleMobileSidebar(false)" aria-label="Close sidebar">
@@ -513,16 +513,11 @@
 
                 <!-- Navigation Links -->
                 <div class="flex-grow-1 overflow-y-auto d-flex flex-column gap-1">
-                    <a class="nav-side-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-grid-1x2-fill"></i>
-                        <span class="nav-link-title">Dashboard</span>
-                    </a>
-
                     @if(Auth::user()->isReseller())
-                    <!-- Reseller Menu: Sebaran Stok -->
+                    <!-- Reseller Menu: Dashboard & Katalog Stok -->
                     <a class="nav-side-link {{ request()->routeIs('stocks.reseller') ? 'active' : '' }}" href="{{ route('stocks.reseller') }}" onclick="closeMobileSidebarIfOpen()">
                         <i class="bi bi-shop-window"></i>
-                        <span class="nav-link-title">Katalog & Sebaran Stok</span>
+                        <span class="nav-link-title">Dashboard &amp; Katalog Reseller</span>
                     </a>
 
                     <!-- Reseller Dropdown: Penjualan & Stok Saya -->
@@ -556,6 +551,11 @@
                     </div>
 
                     @else
+                    <a class="nav-side-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}" onclick="closeMobileSidebarIfOpen()">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span class="nav-link-title">Dashboard</span>
+                    </a>
+
                     <!-- 1. Dropdown Penjualan (Invoice) -->
                     @php $isInvoiceActive = request()->routeIs('invoices.*'); @endphp
                     <div>
