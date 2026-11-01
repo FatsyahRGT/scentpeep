@@ -286,7 +286,7 @@
         /* ==========================================================
            FORMS
            ========================================================== */
-        .form-select, .form-control {
+        .form-control {
             border-radius: 8px;
             border: 1px solid var(--color-border);
             padding: 0.55rem 0.85rem;
@@ -294,6 +294,28 @@
             background-color: #ffffff;
             color: var(--color-text-main);
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .form-select {
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+            padding: 0.55rem 2.25rem 0.55rem 0.85rem !important;
+            font-size: 0.9rem;
+            background-color: #ffffff;
+            color: var(--color-text-main);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .form-select-sm {
+            padding-top: 0.35rem !important;
+            padding-bottom: 0.35rem !important;
+            padding-left: 0.75rem !important;
+            padding-right: 2.15rem !important;
+            font-size: 0.82rem !important;
+            min-height: 32px;
+        }
+        .form-control-sm {
+            padding: 0.35rem 0.75rem !important;
+            font-size: 0.82rem !important;
+            min-height: 32px;
         }
         .form-select:focus, .form-control:focus {
             border-color: var(--scent-dark);

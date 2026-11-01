@@ -42,20 +42,26 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
             <div class="d-flex flex-wrap align-items-center gap-3">
                 <form method="GET" action="{{ route('pre-orders.index') }}" class="d-flex flex-wrap align-items-center gap-2 m-0">
-                    <select name="status" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <select name="status" class="form-select form-select-sm" style="min-width: 175px;" onchange="this.form.submit()">
                         <option value="">-- Semua Status --</option>
                         <option value="PENDING" {{ request('status') === 'PENDING' ? 'selected' : '' }}>Pending (Belum Siap)</option>
                         <option value="SELESAI" {{ request('status') === 'SELESAI' ? 'selected' : '' }}>Selesai (Sudah Masuk Stok)</option>
                     </select>
-                    <select name="location_id" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
-                        <option value="">-- Target Lokasi --</option>
+                    <select name="location_id" class="form-select form-select-sm" style="min-width: 175px;" onchange="this.form.submit()">
+                        <option value="">-- Target Lokasi Masuk --</option>
                         @foreach($locations as $loc)
                         <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
                         @endforeach
                     </select>
+
+                    @if(request()->hasAny(['status', 'location_id']))
+                    <a href="{{ route('pre-orders.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Filter">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                    </a>
+                    @endif
                 </form>
 
-                <a href="{{ route('pre-orders.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                <a href="{{ route('pre-orders.create') }}" class="btn btn-sm btn-scent fw-semibold ms-md-2">
                     <i class="bi bi-plus-lg me-1"></i> Catat PO Baru
                 </a>
             </div>

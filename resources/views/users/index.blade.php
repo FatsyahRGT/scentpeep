@@ -17,7 +17,7 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
             <div class="d-flex flex-wrap align-items-center gap-3">
                 <form method="GET" action="{{ route('users.index') }}" class="m-0">
-                    <select name="role" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <select name="role" class="form-select form-select-sm" style="min-width: 155px;" onchange="this.form.submit()">
                         <option value="">-- Semua Role --</option>
                         <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
                         <option value="staff" {{ request('role') === 'staff' ? 'selected' : '' }}>Staff</option>

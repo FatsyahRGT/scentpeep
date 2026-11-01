@@ -57,7 +57,7 @@
             <div class="d-flex flex-wrap align-items-center gap-3">
                 <form method="GET" action="{{ route('invoices.index') }}" class="d-flex flex-wrap align-items-center gap-2 m-0" id="filterInvoicesForm">
                     <!-- Filter Tahun -->
-                    <select name="year" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <select name="year" class="form-select form-select-sm" style="min-width: 135px;" onchange="this.form.submit()">
                         <option value="">-- Semua Tahun --</option>
                         @foreach($availableYears as $yr)
                         <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>Tahun {{ $yr }}</option>
@@ -65,7 +65,7 @@
                     </select>
 
                     <!-- Filter Bulan -->
-                    <select name="month" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <select name="month" class="form-select form-select-sm" style="min-width: 135px;" onchange="this.form.submit()">
                         <option value="">-- Semua Bulan --</option>
                         @foreach($months as $num => $name)
                         <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>{{ $name }}</option>
@@ -73,22 +73,24 @@
                     </select>
 
                     <!-- Filter Sales -->
-                    <select name="sales_name" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    @if(!Auth::user()->isReseller())
+                    <select name="sales_name" class="form-select form-select-sm" style="min-width: 140px;" onchange="this.form.submit()">
                         <option value="">-- Semua Sales --</option>
                         @foreach($salesOptions as $s)
                         <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
                         @endforeach
                     </select>
+                    @endif
 
                     <!-- Filter Status Bayar -->
-                    <select name="payment_status" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <select name="payment_status" class="form-select form-select-sm" style="min-width: 140px;" onchange="this.form.submit()">
                         <option value="">-- Status Bayar --</option>
                         <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
                         <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
                     </select>
 
                     <!-- Filter Lokasi -->
-                    <select name="location_id" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <select name="location_id" class="form-select form-select-sm" style="min-width: 145px;" onchange="this.form.submit()">
                         <option value="">-- Lokasi Stok --</option>
                         @foreach($locations as $loc)
                         <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
@@ -106,13 +108,15 @@
                     @endif
                 </form>
 
-                <a href="{{ route('invoices.evaluation') }}" class="btn btn-sm btn-outline-secondary" title="Buka Evaluasi Penjualan (YoY)">
-                    <i class="bi bi-graph-up-arrow me-1"></i> Evaluasi YoY
-                </a>
+                <div class="d-flex align-items-center gap-2 ms-md-2">
+                    <a href="{{ route('invoices.evaluation') }}" class="btn btn-sm btn-outline-secondary" title="Buka Evaluasi Penjualan (YoY)">
+                        <i class="bi bi-graph-up-arrow me-1"></i> Evaluasi YoY
+                    </a>
 
-                <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                    <i class="bi bi-plus-lg me-1"></i> Buat Invoice
-                </a>
+                    <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                        <i class="bi bi-plus-lg me-1"></i> Buat Invoice
+                    </a>
+                </div>
             </div>
 
             <form method="GET" action="{{ route('invoices.index') }}" class="ms-auto m-0">

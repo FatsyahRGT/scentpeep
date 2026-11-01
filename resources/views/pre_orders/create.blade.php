@@ -59,9 +59,9 @@
                         </div>
 
                         <div class="col-md-12">
-                            <label for="location_id" class="form-label small fw-semibold text-muted">Target Lokasi Masuk Stok <span class="text-danger">*</span></label>
+                            <label for="location_id" class="form-label small fw-semibold text-muted" >Target Lokasi Masuk Stok <span class="text-danger">*</span></label>
                             <select name="location_id" id="location_id" class="form-select @error('location_id') is-invalid @enderror" required>
-                                <option value="">-- Pilih Lokasi (IWAN / RIZKY) --</option>
+                                <option value="">Pilih Lokasi</option>
                                 @foreach($locations as $loc)
                                 <option value="{{ $loc->id }}" {{ old('location_id') == $loc->id ? 'selected' : '' }}>
                                     {{ $loc->name }}

@@ -94,9 +94,9 @@
 
     <!-- Filter Bar (1 Baris Ringkas Kesamping) -->
     <div class="card-body p-3" style="background-color: var(--color-surface-hover, #f4f3f0); border-bottom: 1px solid var(--color-border, #e8e6e1);">
-        <form action="{{ route('transactions.index') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
+        <form action="{{ route('transactions.index') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2 gap-md-3">
             <!-- Tipe Arus Kas -->
-            <div style="flex: 0 1 125px; min-width: 105px;">
+            <div style="flex: 0 1 145px; min-width: 140px;">
                 <select name="type" class="form-select form-select-sm">
                     <option value="">Semua Tipe</option>
                     <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
@@ -105,7 +105,7 @@
             </div>
 
             <!-- Kategori -->
-            <div style="flex: 0 1 135px; min-width: 110px;">
+            <div style="flex: 0 1 165px; min-width: 155px;">
                 <select name="category" class="form-select form-select-sm">
                     <option value="">Semua Kategori</option>
                     @foreach($categories as $cat)
@@ -116,7 +116,7 @@
 
             <!-- Lokasi (Admin Only) -->
             @if(!Auth::user()->isReseller() && isset($locations))
-            <div style="flex: 0 1 135px; min-width: 110px;">
+            <div style="flex: 0 1 165px; min-width: 150px;">
                 <select name="location_id" class="form-select form-select-sm">
                     <option value="">Semua Lokasi</option>
                     @foreach($locations as $loc)
@@ -127,14 +127,14 @@
             @endif
 
             <!-- Rentang Tanggal (Dari & Sampai 1 baris) -->
-            <div class="d-flex align-items-center gap-1" style="flex: 0 1 auto;">
-                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}" title="Dari Tanggal" style="width: 125px;">
+            <div class="d-flex align-items-center gap-2" style="flex: 0 1 auto;">
+                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}" title="Dari Tanggal" style="width: 135px;">
                 <span class="text-muted small">&ndash;</span>
-                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}" title="Sampai Tanggal" style="width: 125px;">
+                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}" title="Sampai Tanggal" style="width: 135px;">
             </div>
 
             <!-- Tombol Filter & Reset -->
-            <div class="d-flex align-items-center gap-1">
+            <div class="d-flex align-items-center gap-2">
                 <button type="submit" class="btn btn-sm btn-scent px-3" title="Terapkan Filter">
                     <i class="bi bi-funnel me-1"></i> Filter
                 </button>
@@ -146,7 +146,7 @@
             </div>
 
             <!-- Cari Keterangan / Ref (di posisi kanan dengan ms-auto) -->
-            <div class="ms-auto" style="flex: 0 1 200px; min-width: 150px;">
+            <div class="ms-auto" style="flex: 0 1 210px; min-width: 160px;">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Keterangan / ref..." value="{{ request('search') }}">

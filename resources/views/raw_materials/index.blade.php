@@ -59,7 +59,7 @@
                     </select>
 
                     <select name="status" class="form-select form-select-sm" style="min-width: 140px;" onchange="this.form.submit()">
-                        <option value="">-- Semua Status --</option>
+                        <option value="">Semua Status</option>
                         <option value="ready" {{ request('status') === 'ready' ? 'selected' : '' }}>Stok Aman</option>
                         <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Stok Menipis</option>
                     </select>
