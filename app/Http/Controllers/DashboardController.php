@@ -297,4 +297,143 @@ class DashboardController extends Controller
             'topSeller'
         ));
     }
+
+    /**
+     * Dashboard Kontrol & Monitoring Sales: performa tim penjualan, perbandingan multi-seller, dan riwayat invoice sales.
+     */
+    public function sales(Request $request): View
+    {
+        $user = Auth::user();
+
+        $sixMonthsAgo = Carbon::now()->startOfMonth()->subMonths(5);
+
+        // 1. Distribusi Penjualan Sales
+        $salesStats = Invoice::selectRaw('sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as invoice_count')
+            ->groupBy('sales_name')
+            ->get()
+            ->keyBy('sales_name');
+
+        $staffUserNames = User::where('is_active', true)
+            ->where('role', '!=', User::ROLE_ADMIN)
+            ->whereNotIn('email', ['staff@scentpeep.com', 'admin@scentpeep.com'])
+            ->whereNotIn('name', ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff'])
+            ->pluck('name');
+
+        $allSalesNames = $staffUserNames
+            ->merge($salesStats->keys())
+            ->reject(fn($n) => in_array($n, ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff']))
+            ->unique()
+            ->values();
+
+        $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats) {
+            $stat = $salesStats->get($name);
+            return [
+                'name' => $name,
+                'total_qty' => (int) ($stat->total_qty ?? 0),
+                'total_omset' => (float) ($stat->total_omset ?? 0),
+                'invoice_count' => (int) ($stat->invoice_count ?? 0),
+                'palette' => Location::paletteForName($name),
+            ];
+        })->sortByDesc('total_qty')->values();
+
+        // 2. Tren Penjualan per Seller (6 Bulan Terakhir)
+        $invoiceDateFormat = DB::connection()->getDriverName() === 'sqlite'
+            ? "strftime('%Y-%m', created_at)"
+            : "DATE_FORMAT(created_at, '%Y-%m')";
+
+        $monthlyInvoices = Invoice::where('created_at', '>=', $sixMonthsAgo->toDateTimeString())
+            ->selectRaw("{$invoiceDateFormat} as ym, sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset")
+            ->groupBy('ym', 'sales_name')
+            ->orderBy('ym')
+            ->get();
+
+        $sellerTrendMonths = [];
+        $sellerYmKeys = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = Carbon::now()->startOfMonth()->subMonths($i);
+            $ym = $m->format('Y-m');
+            $sellerYmKeys[] = $ym;
+            $sellerTrendMonths[] = $m->translatedFormat('M Y');
+        }
+
+        $chartSellers = $salesDistribution->take(8);
+        $sellerDatasets = [];
+
+        foreach ($chartSellers as $seller) {
+            $sellerName = $seller['name'];
+            $palette = $seller['palette'];
+            $qtySeries = [];
+            $omsetSeries = [];
+            $totalPeriodQty = 0;
+            $totalPeriodOmset = 0;
+
+            foreach ($sellerYmKeys as $ym) {
+                $rec = $monthlyInvoices->first(fn ($item) => $item->ym === $ym && strcasecmp($item->sales_name, $sellerName) === 0);
+                $qty = (int) ($rec?->total_qty ?? 0);
+                $omset = (float) ($rec?->total_omset ?? 0);
+                $qtySeries[] = $qty;
+                $omsetSeries[] = $omset;
+                $totalPeriodQty += $qty;
+                $totalPeriodOmset += $omset;
+            }
+
+            $sellerDatasets[] = [
+                'name' => $sellerName,
+                'qty' => $qtySeries,
+                'omset' => $omsetSeries,
+                'total_qty' => $totalPeriodQty,
+                'total_omset' => $totalPeriodOmset,
+                'color' => $palette['pill_bg'],
+                'text_color' => $palette['badge_text'],
+                'badge_bg' => $palette['badge_bg'],
+                'border' => $palette['border'],
+                'bg' => $palette['bg'],
+            ];
+        }
+
+        $topSeller = $chartSellers->first();
+
+        $sellerTrendData = [
+            'labels' => $sellerTrendMonths,
+            'datasets' => $sellerDatasets,
+            'has_data' => $monthlyInvoices->isNotEmpty(),
+            'total_volume' => (int) $monthlyInvoices->sum('total_qty'),
+        ];
+
+        // 3. Best Sellers Products
+        $bestSellers = Invoice::select(
+                'product_id',
+                DB::raw('SUM(qty) as total_sold'),
+                DB::raw('SUM(total_price) as total_revenue')
+            )
+            ->groupBy('product_id')
+            ->orderByDesc('total_sold')
+            ->with('product')
+            ->take(6)
+            ->get();
+
+        // 4. Riwayat Invoice Terbaru per Sales
+        $recentInvoices = Invoice::with(['product', 'location'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Metrik Ringkasan Sales
+        $summary = [
+            'total_sales_team' => $salesDistribution->count(),
+            'active_sellers_count' => $salesDistribution->where('total_qty', '>', 0)->count(),
+            'total_team_sold_qty' => (int) $salesDistribution->sum('total_qty'),
+            'total_team_omset' => (float) $salesDistribution->sum('total_omset'),
+            'total_team_invoices' => (int) $salesDistribution->sum('invoice_count'),
+        ];
+
+        return view('dashboards.sales', compact(
+            'salesDistribution',
+            'sellerTrendData',
+            'topSeller',
+            'bestSellers',
+            'recentInvoices',
+            'summary'
+        ));
+    }
 }

@@ -12,9 +12,9 @@
     "semantic_hash": "25a307335c0719bc9a91b3f7babd186d"
   },
   "app/Http/Controllers/DashboardController.php": {
-    "mtime": 1793529069.9640093,
-    "seen": 1793529443.5012968,
-    "ast_hash": "65f43bf2e2a2895eb2ac387ddab519bf",
+    "mtime": 1793530100.9715397,
+    "seen": 1793530221.5689962,
+    "ast_hash": "2360dfc649cf5784694857d6a7672586",
     "semantic_hash": ""
   },
   "app/Http/Controllers/LocationController.php": {
@@ -288,9 +288,9 @@
     "semantic_hash": ""
   },
   "resources/views/layouts/app.blade.php": {
-    "mtime": 1793529187.7758007,
-    "seen": 1793529443.5012968,
-    "ast_hash": "5100e047f751259a1a31bdaf8a4d57a1",
+    "mtime": 1793530175.0299132,
+    "seen": 1793530221.5689962,
+    "ast_hash": "1f63dec627e40abb15a9aa08a42d5a58",
     "semantic_hash": ""
   },
   "resources/views/locations/create.blade.php": {
@@ -342,9 +342,9 @@
     "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
   },
   "routes/web.php": {
-    "mtime": 1793529105.874198,
-    "seen": 1793529443.5012968,
-    "ast_hash": "fb414035f491b3d8ba8d37e1f4a4510d",
+    "mtime": 1793530074.9577363,
+    "seen": 1793530221.5689962,
+    "ast_hash": "5d2f22f652ce4bb12302e6a7c444df32",
     "semantic_hash": ""
   },
   "tests/Feature/ExampleTest.php": {
@@ -576,9 +576,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/WebRoutesRenderingTest.php": {
-    "mtime": 1793529414.391376,
-    "seen": 1793529443.5018318,
-    "ast_hash": "e5309284d1dfaef4fbb5222afe418844",
+    "mtime": 1793530196.645524,
+    "seen": 1793530221.5689962,
+    "ast_hash": "0a77a356303cf6d46c9bc2ab55e746a2",
     "semantic_hash": ""
   },
   "app/Http/Middleware/SecurityHeadersMiddleware.php": {
@@ -915,6 +915,12 @@
     "mtime": 1793529169.4349258,
     "seen": 1793529443.5012968,
     "ast_hash": "7b607cb5e84b218e5cffb69d1320dc29",
+    "semantic_hash": ""
+  },
+  "resources/views/dashboards/sales.blade.php": {
+    "mtime": 1793530150.2337885,
+    "seen": 1793530221.5689962,
+    "ast_hash": "c560bbbdeabe07e5d1deba47a4fa373d",
     "semantic_hash": ""
   }
 }

@@ -555,10 +555,41 @@
                     </div>
 
                     @else
-                    <a class="nav-side-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}" onclick="closeMobileSidebarIfOpen()">
-                        <i class="bi bi-grid-1x2-fill"></i>
-                        <span class="nav-link-title">Dashboard</span>
-                    </a>
+                    <!-- Dropdown Pusat Dashboard -->
+                    @php 
+                        $isDashboardActive = (request()->routeIs('dashboard') && !request()->routeIs('dashboard.sales')) || request()->routeIs('dashboard.sales') || request()->routeIs('stocks.reseller') || request()->routeIs('invoices.evaluation'); 
+                    @endphp
+                    <div>
+                        <a class="nav-side-link d-flex justify-content-between align-items-center {{ $isDashboardActive ? 'active' : '' }} {{ $isDashboardActive ? '' : 'collapsed' }}" 
+                           data-bs-toggle="collapse" 
+                           href="#menuDashboard" 
+                           role="button" 
+                           aria-expanded="{{ $isDashboardActive ? 'true' : 'false' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-grid-1x2-fill"></i>
+                                <span class="nav-link-title">Pusat Dashboard</span>
+                            </div>
+                            <i class="bi bi-chevron-down nav-chevron"></i>
+                        </a>
+                        <div class="collapse {{ $isDashboardActive ? 'show' : '' }} nav-side-sub" id="menuDashboard">
+                            <a class="nav-side-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-wallet2"></i>
+                                <span>Dashboard Kas &amp; Ledger</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('stocks.reseller') ? 'active' : '' }}" href="{{ route('stocks.reseller') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-boxes"></i>
+                                <span>Dashboard Stok &amp; Sebaran</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('invoices.evaluation') ? 'active' : '' }}" href="{{ route('invoices.evaluation') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                <span>Dashboard Penjualan (YoY)</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('dashboard.sales') ? 'active' : '' }}" href="{{ route('dashboard.sales') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-people-fill"></i>
+                                <span>Dashboard Kontrol Sales</span>
+                            </a>
+                        </div>
+                    </div>
 
                     <!-- 1. Dropdown Penjualan (Invoice) -->
                     @php $isInvoiceActive = request()->routeIs('invoices.*'); @endphp

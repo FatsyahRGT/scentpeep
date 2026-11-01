@@ -58,6 +58,7 @@ class WebRoutesRenderingTest extends TestCase
     {
         $routes = [
             '/dashboard',
+            '/dashboard/sales',
             '/invoices',
             '/invoices/create',
             '/invoices/evaluation',
@@ -106,6 +107,7 @@ class WebRoutesRenderingTest extends TestCase
         // Rute manajemen internal dialihkan
         $internalRoutes = [
             '/dashboard',
+            '/dashboard/sales',
             '/transactions',
             '/transactions/create',
             '/raw-materials',
