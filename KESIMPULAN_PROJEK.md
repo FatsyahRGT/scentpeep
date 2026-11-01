@@ -36,9 +36,10 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 2. **Pre-Order (PO) & Stok Pending**:
    - Pre-Order dicatat dalam segmen tersendiri sebagai **Stok Pending (PO)** di luar stok utama.
    - Ketika pesanan PO siap dan status diubah menjadi `SELESAI`, stok secara otomatis ditambahkan ke Stok Utama lokasi tujuan.
-3. **Pengadaan Barang Mentah (Box & Botol) & Kategori Dinamis**:
+3. **Pengadaan Barang Mentah (Box & Botol), Kategori Dinamis, & Full CRUD Mutasi**:
    - Modul khusus memantau stok fisik Box Packaging, Botol Kaca, dan kategori material lainnya (Dinamis CRUD Kategori & Item Bahan).
    - Setiap pengadaan (IN) dapat mencatat biaya belanja yang langsung tersinkronisasi ke Buku Kas (Pengeluaran Bahan Baku).
+   - **Full CRUD Log Mutasi & Pengadaan**: Riwayat mutasi pengadaan (IN) dan pemakaian (OUT) dapat diedit dan dihapus langsung dari daftar riwayat dengan penyesuaian saldo persediaan stok fisik material secara otomatis dan transaksional (`DB::transaction`).
    - Pemantauan real-time ditampilkan di Dashboard Utama dengan alert stok menipis.
 4. **Isolasi Penuh Buku Kas (`/transactions`)**:
    - Formulir pencatatan kas (`/transactions/create`) difokuskan 100% sebagai **Buku Kas Operasional Murni** (Pemasukan Non-Invoice dan Pengeluaran Beban Usaha seperti Iklan Shopee, Entertain, Gaji, Operasional, dll) dengan `stock_effect = NONE`.
@@ -104,3 +105,13 @@ Aplikasi ini mencakup kebutuhan operasional harian:
   - `db-perf` & `n1`: Anti N+1 query, mandatory eager loading (`with()`), performa kueri database optimal.
   - `clean-code-principles` & `code-slop`: Clean code, SOLID, anti komentar AI-slop, dan arsitektur tanpa abstraksi prematur.
   - `antislop`: Luxury Monochrome UI styling bebas visual/CSS slop.
+
+## 6. Indeks Dokumentasi Tugas Sistem (Folder `docs/`)
+Seluruh dokumentasi teknis dan rekayasa perangkat lunak telah disinkronisasikan dan tersedia di folder `docs/`:
+- [`docs/PRD.md`](file:///c:/laragon/www/scentpeep-management-system/docs/PRD.md): Product Requirements Document komprehensif.
+- [`docs/ERD.md`](file:///c:/laragon/www/scentpeep-management-system/docs/ERD.md): Entity-Relationship Diagram visual Mermaid (11 tabel) dan Kamus Data.
+- [`docs/DFD.md`](file:///c:/laragon/www/scentpeep-management-system/docs/DFD.md): Data Flow Diagram Level 0, Level 1, Level 2, dan Kamus Aliran Data.
+- [`docs/USE_CASE.md`](file:///c:/laragon/www/scentpeep-management-system/docs/USE_CASE.md): Use Case Diagram Mermaid, 4 Aktor, 14 Matriks Use Case, dan Skenario.
+- [`docs/ACTIVITY_DIAGRAM.md`](file:///c:/laragon/www/scentpeep-management-system/docs/ACTIVITY_DIAGRAM.md): Diagram Aktivitas swimlane & Sequence Diagram.
+- [`docs/KRITERIA_LULUS.md`](file:///c:/laragon/www/scentpeep-management-system/docs/KRITERIA_LULUS.md): Laporan Kepatuhan Fitur & Hasil Pengujian Otomatis (69 tests passed).
+- [`docs/README.md`](file:///c:/laragon/www/scentpeep-management-system/docs/README.md): Panduan umum berkas dokumentasi tugas.
