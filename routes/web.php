@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
 
         // Internal Stock Operations (Restock & Transfer Antar Lokasi)
         Route::prefix('stocks')->name('stocks.')->group(function () {
+            Route::get('/restock', [StockController::class, 'restockIndex'])->name('restock');
             Route::post('/manual-restock', [StockController::class, 'manualRestock'])->name('manualRestock');
             Route::get('/transfers', [StockController::class, 'transfers'])->name('transfers');
             Route::get('/transfer', [StockController::class, 'createTransfer'])->name('transfer.create');

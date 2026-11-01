@@ -337,6 +337,57 @@ class StockController extends Controller
     }
 
     /**
+     * Halaman Tambah Stock: Katalog ketersediaan stok lengkap dengan aksi restock produksi dan pagination.
+     */
+    public function restockIndex(Request $request): View
+    {
+        $locations = Location::with(['stocks.product'])->orderBy('name')->get();
+        $allProductsForModal = Product::where('is_active', true)->orderBy('name')->get();
+
+        $query = Product::where('is_active', true)
+            ->with(['stocks.location'])
+            ->orderBy('name');
+
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', $search)->orWhere('code', 'like', $search);
+            });
+        }
+
+        $filterStatus = $request->get('filter_status', 'all');
+        if ($filterStatus === 'ready' || $request->boolean('ready_only')) {
+            $query->whereRaw('(SELECT COALESCE(SUM(qty), 0) FROM stocks WHERE stocks.product_id = products.id) > 0');
+        } elseif ($filterStatus === 'low' || $filterStatus === 'menipis') {
+            $query->whereRaw('(SELECT COALESCE(SUM(qty), 0) FROM stocks WHERE stocks.product_id = products.id) BETWEEN 1 AND 2');
+        } elseif ($filterStatus === 'empty' || $request->boolean('out_of_stock')) {
+            $query->whereRaw('(SELECT COALESCE(SUM(qty), 0) FROM stocks WHERE stocks.product_id = products.id) <= 0');
+        }
+
+        $products = $query->paginate(15)->withQueryString();
+
+        $productStockData = $products->getCollection()->map(function ($product) {
+            $totalStock = (int) $product->stocks->sum('qty');
+
+            return [
+                'product' => $product,
+                'total_stock' => $totalStock,
+                'is_ready' => $totalStock > 0,
+                'is_low_stock' => $totalStock > 0 && $totalStock <= 2,
+                'is_out_of_stock' => $totalStock === 0,
+            ];
+        });
+
+        return view('stocks.restock', compact(
+            'products',
+            'productStockData',
+            'locations',
+            'filterStatus',
+            'allProductsForModal'
+        ));
+    }
+
+    /**
      * Tambah manual stok produk parfum (sehabis produksi parfum).
      */
     public function manualRestock(Request $request): RedirectResponse

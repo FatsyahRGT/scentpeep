@@ -1,17 +1,17 @@
 # Graph Report - scentpeep-management-system  (2026-11-01)
 
 ## Corpus Check
-- 155 files · ~92,485 words
+- 157 files · ~93,261 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: (none) 18, .example 2, .conf 2)
 
 ## Summary
-- 880 nodes · 1439 edges · 112 communities (28 shown, 84 thin omitted)
+- 892 nodes · 1461 edges · 113 communities (26 shown, 87 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 16 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b70e623a`
+- Built from commit: `c982deed`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,12 +22,11 @@
 - Illuminate\Foundation\Http\FormRequest
 - Transaction
 - Illuminate\Database\Seeder
-- Stock Management Logic
 - Dashboard Analytics
 - User
-- RawMaterialController.php
-- RawMaterialCrudTest
 - Illuminate\Http\RedirectResponse
+- RawMaterialCrudTest
+- UserFactory.php
 - Illuminate\Database\Eloquent\Relations\BelongsTo
 - Panduan Pemanggilan Graphify pada Sesi Baru / Ganti Model AI
 - Frontend Assets
@@ -73,7 +72,7 @@
 - 2026_10_17_000004_add_sales_fields_to_transactions_table.php
 - 2026_10_30_000003_create_raw_materials_table.php
 - Instruksi Projek: Scentpeep Management System
-- InvoiceController
+- InvoiceController.php
 - transfer_edit.blade.php
 - 2026_10_07_000003_create_stocks_table.php
 - 2026_10_17_000003_create_stock_transfers_table.php
@@ -90,49 +89,51 @@
 - raw_materials/index.blade.php
 - reseller_dashboard.blade.php
 - default.blade.php
-- Illuminate\Http\Request
+- UserController.php
 - WebRoutesRenderingTest
 - 2026_10_30_000005_create_raw_material_categories_table.php
+- ImportCashLedgerCommand.php
 - TestCase
-- Controller
+- Illuminate\Foundation\Testing\RefreshDatabase
 - 2026_10_30_000001_create_invoices_table.php
-- 1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)
+- UserController
 - Data Flow Diagram (DFD) — Scentpeep Management System
 - DashboardTest
 - Use Case Diagram & Spesifikasi Use Case — Scentpeep Management System
 - Product
 - ExportReportsTest
 - Dokumentasi Rekayasa Perangkat Lunak — Scentpeep Management System
+- restock.blade.php
 - sales.blade.php
 
 ## God Nodes (most connected - your core abstractions)
-1. `User` - 50 edges
-2. `Location` - 49 edges
-3. `Product` - 35 edges
+1. `User` - 52 edges
+2. `Location` - 51 edges
+3. `Product` - 36 edges
 4. `Transaction` - 32 edges
-5. `TestCase` - 24 edges
-6. `Stock` - 21 edges
+5. `TestCase` - 26 edges
+6. `Stock` - 22 edges
 7. `TransactionAndStockTest` - 21 edges
 8. `Invoice` - 20 edges
 9. `InvoiceAndProcurementTest` - 18 edges
 10. `RawMaterialCrudTest` - 18 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)` --references--> `AuthController`  [INFERRED]
-  prompt.md → app/Http/Controllers/AuthController.php
-- `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)` --references--> `DashboardController`  [INFERRED]
-  prompt.md → app/Http/Controllers/DashboardController.php
-- `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)` --references--> `LocationController`  [INFERRED]
-  prompt.md → app/Http/Controllers/LocationController.php
 - `🛠️ Perintah-Perintah Graphify yang Berguna` --references--> `StockController`  [INFERRED]
   PANDUAN_SESI_BARU_GRAPHIFY.md → app/Http/Controllers/StockController.php
-- `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)` --references--> `StockController`  [INFERRED]
-  prompt.md → app/Http/Controllers/StockController.php
+- `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)` --references--> `TransactionController`  [INFERRED]
+  prompt.md → app/Http/Controllers/TransactionController.php
+- `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)` --references--> `UserController`  [INFERRED]
+  prompt.md → app/Http/Controllers/UserController.php
+- `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)` --references--> `Location`  [INFERRED]
+  prompt.md → app/Models/Location.php
+- `🛠️ Perintah-Perintah Graphify yang Berguna` --references--> `Product`  [INFERRED]
+  PANDUAN_SESI_BARU_GRAPHIFY.md → app/Models/Product.php
 
 ## Import Cycles
 - None detected.
 
-## Communities (112 total, 84 thin omitted)
+## Communities (113 total, 87 thin omitted)
 
 ### Community 0 - "Illuminate\Database\Schema\Blueprint"
 Cohesion: 0.23
@@ -147,28 +148,24 @@ Cohesion: 0.05
 Nodes (9): StoreLocationRequest, {closure#1}(), StoreMovementRequest, StoreProductRequest, StoreUserRequest, TransferStockRequest, UpdateLocationRequest, UpdateProductRequest (+1 more)
 
 ### Community 4 - "Transaction"
-Cohesion: 0.11
+Cohesion: 0.09
 Nodes (7): {closure#5}(), {closure#6}(), {closure#7}(), TransactionController, StoreTransactionRequest, UpdateTransactionRequest, Transaction
 
 ### Community 5 - "Illuminate\Database\Seeder"
-Cohesion: 0.17
-Nodes (5): DatabaseSeeder, InitialStockSeeder, LocationSeeder, ProductSeeder, RawMaterialSeeder
+Cohesion: 0.14
+Nodes (6): DatabaseSeeder, InitialStockSeeder, LocationSeeder, ProductSeeder, RawMaterialSeeder, UserSeeder
 
 ### Community 8 - "Dashboard Analytics"
 Cohesion: 0.10
 Nodes (20): devDependencies, concurrently, laravel-vite-plugin, tailwindcss, @tailwindcss/vite, vite, optionalDependencies, @laravel/multiplex (+12 more)
 
-### Community 9 - "User"
-Cohesion: 0.07
-Nodes (6): {closure#2}(), {closure#3}(), UserController, User, UserFactory, UserSeeder
-
-### Community 10 - "RawMaterialController.php"
-Cohesion: 0.13
-Nodes (8): {closure#2}(), {closure#3}(), {closure#4}(), {closure#5}(), {closure#6}(), RawMaterialController, RawMaterial, RawMaterialMutation
+### Community 10 - "Illuminate\Http\RedirectResponse"
+Cohesion: 0.05
+Nodes (17): AuthController, Controller, DashboardController, LocationController, PreOrderController, ProductController, RawMaterialCategoryController, {closure#2}() (+9 more)
 
 ### Community 13 - "Illuminate\Database\Eloquent\Relations\BelongsTo"
-Cohesion: 0.07
-Nodes (9): {closure#7}(), {closure#8}(), {closure#9}(), {closure#1}(), {closure#2}(), Invoice, PreOrder, Stock (+1 more)
+Cohesion: 0.10
+Nodes (6): {closure#1}(), {closure#2}(), PreOrder, RawMaterialCategory, Stock, StockTransfer
 
 ### Community 14 - "Panduan Pemanggilan Graphify pada Sesi Baru / Ganti Model AI"
 Cohesion: 0.20
@@ -210,6 +207,10 @@ Nodes (4): Arsitektur & Knowledge Graph, Default Skills & Mindset (Wajib Aktif d
 Cohesion: 0.50
 Nodes (3): Arsitektur & Knowledge Graph, Instruksi Projek: Scentpeep Management System, Panduan untuk Asisten AI (Agent Guidelines)
 
+### Community 70 - "InvoiceController.php"
+Cohesion: 0.12
+Nodes (5): {closure#7}(), {closure#8}(), {closure#9}(), InvoiceController, Invoice
+
 ### Community 75 - "Laporan Verifikasi Kriteria Sistem & Pengujian Otomatis — Scentpeep Management System"
 Cohesion: 0.33
 Nodes (5): 1. Matriks Kepatuhan Kriteria Utama & Fitur Sistem, 2. Ringkasan Eksekusi Test Otomatis (PHPUnit), 3. Kesimpulan Verifikasi, Laporan Verifikasi Kriteria Sistem & Pengujian Otomatis — Scentpeep Management System, Rincian Test Suite per Modul:
@@ -218,10 +219,6 @@ Nodes (5): 1. Matriks Kepatuhan Kriteria Utama & Fitur Sistem, 2. Ringkasan Ekse
 Cohesion: 0.13
 Nodes (14): 1. Diagram Relasi Entitas (Mermaid ERD), 2.10 Entitas Transfer Stok Antar Lokasi (`stock_transfers`), 2.11 Entitas Buku Kas & Keuangan (`transactions`), 2.1 Entitas Pengguna & Akses (`users`), 2.2 Entitas Master Lokasi Stok (`locations`), 2.3 Entitas Master Produk Parfum (`products`), 2.4 Entitas Persediaan Fisik Parfum (`stocks`), 2.5 Entitas Penjualan Parfum (`invoices`) (+6 more)
 
-### Community 97 - "Illuminate\Http\Request"
-Cohesion: 0.21
-Nodes (3): DashboardController, LocationController, StockController
-
 ### Community 99 - "2026_10_30_000005_create_raw_material_categories_table.php"
 Cohesion: 0.33
 Nodes (3): {closure#1}(), {closure#2}(), {closure#3}()
@@ -229,10 +226,6 @@ Nodes (3): {closure#1}(), {closure#2}(), {closure#3}()
 ### Community 101 - "TestCase"
 Cohesion: 0.31
 Nodes (3): ExampleTest, SecurityHeadersTest, TestCase
-
-### Community 102 - "Controller"
-Cohesion: 0.28
-Nodes (3): Controller, RawMaterialCategoryController, RawMaterialCategory
 
 ### Community 105 - "Data Flow Diagram (DFD) — Scentpeep Management System"
 Cohesion: 0.22
@@ -247,24 +240,24 @@ Cohesion: 0.50
 Nodes (3): Daftar Berkas Dokumentasi, Dokumentasi Rekayasa Perangkat Lunak — Scentpeep Management System, Ringkasan Arsitektur & Teknologi
 
 ## Knowledge Gaps
-- **32 isolated node(s):** `concurrently`, `tailwindcss`, `@laravel/multiplex`, `layouts.app`, `layouts.app` (+27 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 476 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **84 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **33 isolated node(s):** `concurrently`, `tailwindcss`, `@laravel/multiplex`, `layouts.app`, `layouts.app` (+28 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 485 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Location` connect `Location` to `TransactionAndStockTest`, `Illuminate\Foundation\Http\FormRequest`, `Transaction`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `TransactionAndStockTest.php`, `User`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `TestCase`, `ReportController.php`, `DashboardController.php`, `InvoiceAndProcurementTest`, `Illuminate\Database\Migrations\Migration`, `Illuminate\Http\Request`, `WebRoutesRenderingTest`, `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)`, `DashboardTest`, `Product`, `ExportReportsTest`?**
-  _High betweenness centrality (0.102) - this node is a cross-community bridge._
+- **Why does `Location` connect `Location` to `TransactionAndStockTest`, `Illuminate\Foundation\Http\FormRequest`, `Transaction`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `TransactionAndStockTest.php`, `Illuminate\Http\RedirectResponse`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `TestCase`, `ReportController.php`, `DashboardController.php`, `InvoiceAndProcurementTest`, `Illuminate\Database\Migrations\Migration`, `InvoiceController.php`, `UserController.php`, `WebRoutesRenderingTest`, `Illuminate\Foundation\Testing\RefreshDatabase`, `DashboardTest`, `Product`, `ExportReportsTest`?**
+  _High betweenness centrality (0.106) - this node is a cross-community bridge._
 - **What connects `concurrently`, `tailwindcss`, `@laravel/multiplex` to the rest of the system?**
-  _32 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _33 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `TransactionAndStockTest` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
-- **Why does `User` connect `User` to `Illuminate\Http\Request`, `WebRoutesRenderingTest`, `TransactionAndStockTest`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `Controller`, `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)`, `TransactionAndStockTest.php`, `DashboardTest`, `RawMaterialCrudTest`, `Product`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `ExportReportsTest`, `Location`, `TestCase`, `DashboardController.php`, `InvoiceAndProcurementTest`?**
-  _High betweenness centrality (0.076) - this node is a cross-community bridge._
+- **Why does `User` connect `User` to `TransactionAndStockTest`, `Illuminate\Database\Seeder`, `TransactionAndStockTest.php`, `Illuminate\Http\RedirectResponse`, `RawMaterialCrudTest`, `UserFactory.php`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `Location`, `TestCase`, `DashboardController.php`, `InvoiceAndProcurementTest`, `UserController.php`, `WebRoutesRenderingTest`, `ImportCashLedgerCommand.php`, `Illuminate\Foundation\Testing\RefreshDatabase`, `UserController`, `DashboardTest`, `Product`, `ExportReportsTest`?**
+  _High betweenness centrality (0.077) - this node is a cross-community bridge._
 - **Should `Eloquent Models` be split into smaller, more focused modules?**
   _Cohesion score 0.041666666666666664 - nodes in this community are weakly interconnected._
-- **Why does `Product` connect `Product` to `TransactionAndStockTest`, `WebRoutesRenderingTest`, `Transaction`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `TransactionAndStockTest.php`, `1. KONDISI SAAT INI (dari struktur folder; isi file belum diketahui)`, `DashboardTest`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `Panduan Pemanggilan Graphify pada Sesi Baru / Ganti Model AI`, `ExportReportsTest`, `Location`, `TestCase`, `ReportController.php`, `DashboardController.php`, `InvoiceAndProcurementTest`?**
-  _High betweenness centrality (0.054) - this node is a cross-community bridge._
+- **Why does `Product` connect `Product` to `TransactionAndStockTest`, `WebRoutesRenderingTest`, `Transaction`, `Illuminate\Database\Seeder`, `InvoiceController.php`, `Stock Management Logic`, `Illuminate\Foundation\Testing\RefreshDatabase`, `TransactionAndStockTest.php`, `Illuminate\Http\RedirectResponse`, `DashboardTest`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `Panduan Pemanggilan Graphify pada Sesi Baru / Ganti Model AI`, `ExportReportsTest`, `Location`, `TestCase`, `ReportController.php`, `DashboardController.php`, `InvoiceAndProcurementTest`?**
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
 - **Should `Illuminate\Foundation\Http\FormRequest` be split into smaller, more focused modules?**
-  _Cohesion score 0.04964539007092199 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05087881591119334 - nodes in this community are weakly interconnected._

@@ -661,6 +661,10 @@
                             <i class="bi bi-chevron-down nav-chevron"></i>
                         </a>
                         <div class="collapse {{ $isStockActive ? 'show' : '' }} nav-side-sub" id="menuStok">
+                            <a class="nav-side-link {{ request()->routeIs('stocks.restock') ? 'active' : '' }}" href="{{ route('stocks.restock') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Tambah Stock</span>
+                            </a>
                             <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-grid-3x3"></i>
                                 <span>Ringkasan Stok</span>

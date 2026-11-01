@@ -31,8 +31,8 @@ Seluruh komponen inti, controller, model, request validation, dan database trans
 ```text
 ======================================================================
 PHPUnit Test Execution Summary:
-Total Tests:      69 Passed (100%)
-Total Assertions: 416 Passed
+Total Tests:      73 Passed (100%)
+Total Assertions: 430 Passed
 Errors:           0
 Failures:         0
 Warnings:         0
@@ -80,7 +80,12 @@ Execution Status: GREEN (PASS)
    - `Admin can update material mutation and rebalance stock atomically`
    - `Admin can delete material mutation and revert stock`
    - `Staff access restrictions and validation handling`
-8. **Tests\Feature\PreOrderTest & LocationTest**:
+8. **Tests\Feature\StockRestockTest** (4 test):
+   - `Admin can access restock index and see catalog with pagination`
+   - `Filter status empty displays out of stock products`
+   - `Reseller is blocked from restock page`
+   - `Reseller dashboard links empty variants to restock page`
+9. **Tests\Feature\PreOrderTest & LocationTest**:
    - `Pre-order lifecycle and completion to main stock`
    - `Location golden angle color generation`
    - `Stock calculations and zero-stock prevention`
