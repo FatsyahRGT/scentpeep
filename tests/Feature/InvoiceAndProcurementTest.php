@@ -10,6 +10,7 @@ use App\Models\RawMaterial;
 use App\Models\Stock;
 use App\Models\Transaction;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -347,5 +348,70 @@ class InvoiceAndProcurementTest extends TestCase
 
         // Stock should be restored to 10
         $this->assertEquals(10, Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first()->qty);
+    }
+
+    public function test_invoices_index_can_filter_by_year_and_month_and_displays_yoy_metrics(): void
+    {
+        $currentYear = now()->year;
+        $prevYear = $currentYear - 1;
+
+        // Invoice current year (Bulan 10 / Oktober)
+        $invCY = Invoice::create([
+            'invoice_no' => 'INV-CY-01',
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Customer Ini',
+            'product_id' => $this->product->id,
+            'qty' => 5,
+            'location_id' => $this->iwan->id,
+            'total_price' => 900000,
+            'payment_status' => 'LUNAS',
+            'created_by' => $this->admin->id,
+        ]);
+        $invCY->created_at = Carbon::create($currentYear, 10, 15, 12, 0, 0);
+        $invCY->save();
+
+        // Invoice previous year
+        $invPY = Invoice::create([
+            'invoice_no' => 'INV-PY-01',
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Customer Lalu',
+            'product_id' => $this->product->id,
+            'qty' => 3,
+            'location_id' => $this->iwan->id,
+            'total_price' => 540000,
+            'payment_status' => 'LUNAS',
+            'created_by' => $this->admin->id,
+        ]);
+        $invPY->created_at = Carbon::create($prevYear, 10, 10, 10, 0, 0);
+        $invPY->save();
+
+        // Test normal access
+        $response = $this->actingAs($this->admin)->get(route('invoices.index'));
+        $response->assertOk();
+        $response->assertSee('Evaluasi Penjualan Tahunan');
+        $response->assertSee('INV-CY-01');
+        $response->assertSee('INV-PY-01');
+
+        // Test filter by current year only
+        $resFilterYear = $this->actingAs($this->admin)->get(route('invoices.index', ['year' => $currentYear]));
+        $resFilterYear->assertOk();
+        $resFilterYear->assertSee('INV-CY-01');
+        $resFilterYear->assertDontSee('INV-PY-01');
+
+        // Test filter by previous year
+        $resFilterPrev = $this->actingAs($this->admin)->get(route('invoices.index', ['year' => $prevYear]));
+        $resFilterPrev->assertOk();
+        $resFilterPrev->assertSee('INV-PY-01');
+        $resFilterPrev->assertDontSee('INV-CY-01');
+
+        // Test filter by month (bulan 10)
+        $resFilterMonth = $this->actingAs($this->admin)->get(route('invoices.index', ['year' => $currentYear, 'month' => 10]));
+        $resFilterMonth->assertOk();
+        $resFilterMonth->assertSee('INV-CY-01');
+
+        // Test filter by another month (bulan 1)
+        $resFilterEmpty = $this->actingAs($this->admin)->get(route('invoices.index', ['year' => $currentYear, 'month' => 1]));
+        $resFilterEmpty->assertOk();
+        $resFilterEmpty->assertDontSee('INV-CY-01');
     }
 }

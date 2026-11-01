@@ -4,6 +4,81 @@
 @section('page-header', 'Penjualan Parfum (Invoice)')
 
 @section('content')
+<!-- Evaluasi & Komparasi Penjualan Tahunan (Year-on-Year) -->
+<div class="card border-0 shadow-sm mb-4" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px; background: #ffffff;">
+    <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 32px; height: 32px; background-color: var(--scent-amber-subtle, rgba(179,139,77,0.12)); color: var(--scent-amber, #b38b4d);">
+                <i class="bi bi-graph-up-arrow"></i>
+            </span>
+            <div>
+                <h5 class="card-title mb-0 font-serif fw-bold text-dark fs-6">Evaluasi Penjualan Tahunan (Year-on-Year)</h5>
+                <small class="text-muted">Komparasi total unit parfum terjual (sold) dan omset antara tahun {{ $yoyMetrics['target_year'] }} vs {{ $yoyMetrics['prev_year'] }}.</small>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-dark font-mono-num px-2 py-1">Tahun {{ $yoyMetrics['target_year'] }}</span>
+            <span class="text-muted small">vs</span>
+            <span class="badge bg-light text-muted border font-mono-num px-2 py-1">Tahun {{ $yoyMetrics['prev_year'] }}</span>
+        </div>
+    </div>
+    <div class="card-body p-3 p-md-4">
+        <div class="row g-3 align-items-center">
+            <!-- Tahun Ini / Target -->
+            <div class="col-md-4 border-end">
+                <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.72rem;">Penjualan Tahun {{ $yoyMetrics['target_year'] }}</div>
+                <div class="d-flex align-items-baseline gap-2 mt-1">
+                    <span class="font-serif fs-2 fw-bold text-dark">{{ number_format($yoyMetrics['this_year_qty']) }}</span>
+                    <span class="text-muted small">pcs terjual</span>
+                </div>
+                <div class="small fw-semibold text-dark mt-1 font-mono-num">
+                    Omset: Rp {{ number_format($yoyMetrics['this_year_omset'], 0, ',', '.') }}
+                </div>
+                <div class="text-muted" style="font-size: 0.72rem;">
+                    Dari {{ number_format($yoyMetrics['this_year_invoices']) }} invoice terbit
+                </div>
+            </div>
+
+            <!-- Tahun Kemarin -->
+            <div class="col-md-4 border-end">
+                <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.72rem;">Penjualan Tahun {{ $yoyMetrics['prev_year'] }}</div>
+                <div class="d-flex align-items-baseline gap-2 mt-1">
+                    <span class="font-serif fs-2 fw-bold text-muted">{{ number_format($yoyMetrics['last_year_qty']) }}</span>
+                    <span class="text-muted small">pcs terjual</span>
+                </div>
+                <div class="small text-muted mt-1 font-mono-num">
+                    Omset: Rp {{ number_format($yoyMetrics['last_year_omset'], 0, ',', '.') }}
+                </div>
+                <div class="text-muted" style="font-size: 0.72rem;">
+                    Dari {{ number_format($yoyMetrics['last_year_invoices']) }} invoice terbit
+                </div>
+            </div>
+
+            <!-- Evaluasi Pertumbuhan (YoY Growth) -->
+            <div class="col-md-4 ps-md-3">
+                <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.72rem;">Pertumbuhan (YoY)</div>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                    <span class="badge {{ $yoyMetrics['qty_diff'] >= 0 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle' }} fs-6 font-mono-num px-2 py-1">
+                        <i class="bi {{ $yoyMetrics['qty_diff'] >= 0 ? 'bi-arrow-up-right' : 'bi-arrow-down-right' }} me-1"></i>{{ $yoyMetrics['qty_diff'] >= 0 ? '+' : '' }}{{ number_format($yoyMetrics['qty_diff']) }} pcs ({{ $yoyMetrics['qty_growth'] >= 0 ? '+' : '' }}{{ $yoyMetrics['qty_growth'] }}%)
+                    </span>
+                </div>
+                <div class="small mt-2 font-mono-num {{ $yoyMetrics['omset_diff'] >= 0 ? 'text-success' : 'text-danger' }}">
+                    Selisih Omset: {{ $yoyMetrics['omset_diff'] >= 0 ? '+Rp ' : '-Rp ' }}{{ number_format(abs($yoyMetrics['omset_diff']), 0, ',', '.') }}
+                </div>
+                <div class="text-muted" style="font-size: 0.72rem;">
+                    @if($yoyMetrics['qty_diff'] > 0)
+                        Volume unit terjual meningkat dibanding tahun lalu.
+                    @elseif($yoyMetrics['qty_diff'] < 0)
+                        Volume unit terjual masih di bawah capaian tahun lalu.
+                    @else
+                        Volume unit terjual setara dengan tahun lalu.
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- KPI Cards -->
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-lg-3">
@@ -15,23 +90,30 @@
     </div>
     <div class="col-sm-6 col-lg-3">
         <div class="card p-3 border-0 shadow-sm" style="background:#ffffff; border:1px solid var(--color-border) !important;">
-            <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Total Penjualan</div>
-            <div class="font-serif fs-3 fw-bold text-dark mt-1">Rp {{ number_format($metrics['total_sales_amount'], 0, ',', '.') }}</div>
-            <div class="small text-muted mt-1"><i class="bi bi-graph-up me-1"></i> Nilai omset tercatat</div>
+            <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Total Unit Terjual</div>
+            <div class="font-serif fs-3 fw-bold text-dark mt-1">{{ number_format($metrics['total_qty_sold']) }} <span class="fs-6 fw-normal font-sans text-muted">pcs</span></div>
+            <div class="small text-muted mt-1"><i class="bi bi-box-seam me-1"></i> Botol parfum keluar</div>
         </div>
     </div>
-    <div class="col-sm-6 col-lg-3">
+    <div class="col-sm-6 col-lg-2">
         <div class="card p-3 border-0 shadow-sm" style="background:#ffffff; border:1px solid var(--color-border) !important;">
-            <div class="text-muted small fw-semibold text-uppercase text-danger" style="letter-spacing: 0.05em;">Belum Lunas (Piutang)</div>
-            <div class="font-serif fs-3 fw-bold text-danger mt-1">Rp {{ number_format($metrics['total_unpaid_amount'], 0, ',', '.') }}</div>
-            <div class="small text-danger mt-1"><i class="bi bi-exclamation-circle me-1"></i> Menunggu pelunasan</div>
+            <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Total Penjualan</div>
+            <div class="font-serif fs-4 fw-bold text-dark mt-1 text-truncate" title="Rp {{ number_format($metrics['total_sales_amount'], 0, ',', '.') }}">Rp {{ number_format($metrics['total_sales_amount'], 0, ',', '.') }}</div>
+            <div class="small text-muted mt-1 text-truncate"><i class="bi bi-graph-up me-1"></i> Nilai omset</div>
         </div>
     </div>
-    <div class="col-sm-6 col-lg-3">
+    <div class="col-sm-6 col-lg-2">
+        <div class="card p-3 border-0 shadow-sm" style="background:#ffffff; border:1px solid var(--color-border) !important;">
+            <div class="text-muted small fw-semibold text-uppercase text-danger" style="letter-spacing: 0.05em;">Belum Lunas</div>
+            <div class="font-serif fs-4 fw-bold text-danger mt-1 text-truncate" title="Rp {{ number_format($metrics['total_unpaid_amount'], 0, ',', '.') }}">Rp {{ number_format($metrics['total_unpaid_amount'], 0, ',', '.') }}</div>
+            <div class="small text-danger mt-1 text-truncate"><i class="bi bi-exclamation-circle me-1"></i> Piutang</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
         <div class="card p-3 border-0 shadow-sm" style="background:#ffffff; border:1px solid var(--color-border) !important;">
             <div class="text-muted small fw-semibold text-uppercase text-success" style="letter-spacing: 0.05em;">Sudah Lunas</div>
-            <div class="font-serif fs-3 fw-bold text-success mt-1">Rp {{ number_format($metrics['total_paid_amount'], 0, ',', '.') }}</div>
-            <div class="small text-success mt-1"><i class="bi bi-check2-circle me-1"></i> Masuk buku kas</div>
+            <div class="font-serif fs-4 fw-bold text-success mt-1 text-truncate" title="Rp {{ number_format($metrics['total_paid_amount'], 0, ',', '.') }}">Rp {{ number_format($metrics['total_paid_amount'], 0, ',', '.') }}</div>
+            <div class="small text-success mt-1 text-truncate"><i class="bi bi-check2-circle me-1"></i> Masuk kas</div>
         </div>
     </div>
 </div>
@@ -49,23 +131,51 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
             <div class="d-flex flex-wrap align-items-center gap-3">
                 <form method="GET" action="{{ route('invoices.index') }}" class="d-flex flex-wrap align-items-center gap-2 m-0" id="filterInvoicesForm">
+                    <!-- Filter Tahun -->
+                    <select name="year" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        <option value="">-- Semua Tahun --</option>
+                        @foreach($availableYears as $yr)
+                        <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>Tahun {{ $yr }}</option>
+                        @endforeach
+                    </select>
+
+                    <!-- Filter Bulan -->
+                    <select name="month" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        <option value="">-- Semua Bulan --</option>
+                        @foreach($months as $num => $name)
+                        <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
+
+                    <!-- Filter Sales -->
                     <select name="sales_name" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
                         <option value="">-- Semua Sales --</option>
                         @foreach($salesOptions as $s)
                         <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
                         @endforeach
                     </select>
+
+                    <!-- Filter Status Bayar -->
                     <select name="payment_status" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
                         <option value="">-- Status Bayar --</option>
                         <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
                         <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
                     </select>
+
+                    <!-- Filter Lokasi -->
                     <select name="location_id" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
                         <option value="">-- Lokasi Stok --</option>
                         @foreach($locations as $loc)
                         <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
                         @endforeach
                     </select>
+
+                    @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'year', 'month', 'search']))
+                    <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Semua Filter">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                    </a>
+                    @endif
+
                     @if(request('search'))
                     <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
@@ -77,6 +187,8 @@
             </div>
 
             <form method="GET" action="{{ route('invoices.index') }}" class="ms-auto m-0">
+                @if(request('year'))<input type="hidden" name="year" value="{{ request('year') }}">@endif
+                @if(request('month'))<input type="hidden" name="month" value="{{ request('month') }}">@endif
                 @if(request('sales_name'))<input type="hidden" name="sales_name" value="{{ request('sales_name') }}">@endif
                 @if(request('payment_status'))<input type="hidden" name="payment_status" value="{{ request('payment_status') }}">@endif
                 @if(request('location_id'))<input type="hidden" name="location_id" value="{{ request('location_id') }}">@endif

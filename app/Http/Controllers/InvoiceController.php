@@ -7,6 +7,7 @@ use App\Models\Location;
 use App\Models\Product;
 use App\Models\Stock;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,14 @@ class InvoiceController extends Controller
             $query->where('location_id', $request->location_id);
         }
 
+        if ($request->filled('year')) {
+            $query->whereYear('created_at', $request->year);
+        }
+
+        if ($request->filled('month')) {
+            $query->whereMonth('created_at', $request->month);
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -40,19 +49,96 @@ class InvoiceController extends Controller
             });
         }
 
-        $invoices = $query->paginate(15)->withQueryString();
-
+        // Filtered Metrics (menyesuaikan filter yang sedang aktif)
+        $filteredMetricQuery = clone $query;
         $metrics = [
-            'total_invoices' => Invoice::count(),
-            'total_sales_amount' => (float) Invoice::sum('total_price'),
-            'total_unpaid_amount' => (float) Invoice::where('payment_status', Invoice::STATUS_UNPAID)->sum('total_price'),
-            'total_paid_amount' => (float) Invoice::where('payment_status', Invoice::STATUS_PAID)->sum('total_price'),
+            'total_invoices' => (clone $filteredMetricQuery)->count(),
+            'total_qty_sold' => (int) (clone $filteredMetricQuery)->sum('qty'),
+            'total_sales_amount' => (float) (clone $filteredMetricQuery)->sum('total_price'),
+            'total_unpaid_amount' => (float) (clone $filteredMetricQuery)->where('payment_status', Invoice::STATUS_UNPAID)->sum('total_price'),
+            'total_paid_amount' => (float) (clone $filteredMetricQuery)->where('payment_status', Invoice::STATUS_PAID)->sum('total_price'),
         ];
 
+        // Evaluasi Penjualan Year-on-Year (Sold Comparison: Tahun Ini vs Tahun Kemarin)
+        $targetYear = (int) ($request->filled('year') ? $request->year : Carbon::now()->year);
+        $prevYear = $targetYear - 1;
+
+        $thisYearQuery = Invoice::whereYear('created_at', $targetYear);
+        $lastYearQuery = Invoice::whereYear('created_at', $prevYear);
+
+        if ($request->filled('sales_name')) {
+            $thisYearQuery->where('sales_name', $request->sales_name);
+            $lastYearQuery->where('sales_name', $request->sales_name);
+        }
+
+        $thisYearQty = (int) (clone $thisYearQuery)->sum('qty');
+        $thisYearOmset = (float) (clone $thisYearQuery)->sum('total_price');
+        $thisYearInvoices = (int) (clone $thisYearQuery)->count();
+
+        $lastYearQty = (int) (clone $lastYearQuery)->sum('qty');
+        $lastYearOmset = (float) (clone $lastYearQuery)->sum('total_price');
+        $lastYearInvoices = (int) (clone $lastYearQuery)->count();
+
+        $qtyDiff = $thisYearQty - $lastYearQty;
+        $qtyGrowth = $lastYearQty > 0 
+            ? round(($qtyDiff / $lastYearQty) * 100, 1) 
+            : ($thisYearQty > 0 ? 100.0 : 0.0);
+
+        $omsetDiff = $thisYearOmset - $lastYearOmset;
+        $omsetGrowth = $lastYearOmset > 0 
+            ? round(($omsetDiff / $lastYearOmset) * 100, 1) 
+            : ($thisYearOmset > 0 ? 100.0 : 0.0);
+
+        $yoyMetrics = [
+            'target_year' => $targetYear,
+            'prev_year' => $prevYear,
+            'this_year_qty' => $thisYearQty,
+            'this_year_omset' => $thisYearOmset,
+            'this_year_invoices' => $thisYearInvoices,
+            'last_year_qty' => $lastYearQty,
+            'last_year_omset' => $lastYearOmset,
+            'last_year_invoices' => $lastYearInvoices,
+            'qty_diff' => $qtyDiff,
+            'qty_growth' => $qtyGrowth,
+            'omset_diff' => $omsetDiff,
+            'omset_growth' => $omsetGrowth,
+        ];
+
+        // Distinct available years for filter
+        $yearExtractSql = DB::connection()->getDriverName() === 'sqlite' 
+            ? "strftime('%Y', created_at) as y" 
+            : "YEAR(created_at) as y";
+
+        $availableYears = Invoice::selectRaw($yearExtractSql)
+            ->distinct()
+            ->pluck('y')
+            ->filter()
+            ->map(fn($y) => (int)$y)
+            ->push(Carbon::now()->year)
+            ->push(Carbon::now()->year - 1)
+            ->unique()
+            ->sortDesc()
+            ->values();
+
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        $invoices = $query->paginate(15)->withQueryString();
         $locations = Location::orderBy('name')->get();
         $salesOptions = Invoice::getSalesOptions();
 
-        return view('invoices.index', compact('invoices', 'metrics', 'locations', 'salesOptions'));
+        return view('invoices.index', compact(
+            'invoices',
+            'metrics',
+            'locations',
+            'salesOptions',
+            'yoyMetrics',
+            'availableYears',
+            'months'
+        ));
     }
 
     public function create(): View
