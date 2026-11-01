@@ -44,11 +44,21 @@
 
                     <div class="mb-3">
                         <label for="role" class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing: 0.05em;">Role / Hak Akses <span class="text-danger">*</span></label>
-                        <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
+                        <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required onchange="toggleResellerLocation(this.value)">
                             <option value="staff" {{ old('role', $user->role) === 'staff' ? 'selected' : '' }}>Staff (Input Transaksi, Ringkasan Stok & Transfer)</option>
+                            <option value="reseller" {{ old('role', $user->role) === 'reseller' ? 'selected' : '' }}>Reseller (Katalog & Penjualan Konsinyasi)</option>
                             <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin (Full Akses: Master Data & Manajemen Pengguna)</option>
                         </select>
                         @error('role')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3" id="resellerLocationField" style="{{ old('role', $user->role) === 'reseller' ? '' : 'display: none;' }}">
+                        <label for="location_name" class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing: 0.05em;">Nama Cabang / Lokasi Reseller <span class="text-muted fw-normal">(Opsional)</span></label>
+                        <input type="text" class="form-control @error('location_name') is-invalid @enderror" id="location_name" name="location_name" value="{{ old('location_name', $user->location?->name) }}" placeholder="Contoh: Toko Reseller Budi (Default sama dengan nama pengguna)">
+                        <small class="text-muted">Jika diisi, nama cabang / lokasi stok konsinyasi reseller akan otomatis diselaraskan.</small>
+                        @error('location_name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -71,4 +81,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    function toggleResellerLocation(role) {
+        const field = document.getElementById('resellerLocationField');
+        if (field) {
+            field.style.display = (role === 'reseller') ? 'block' : 'none';
+        }
+    }
+</script>
 @endsection

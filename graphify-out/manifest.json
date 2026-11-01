@@ -390,10 +390,10 @@
     "semantic_hash": ""
   },
   "app/Http/Controllers/UserController.php": {
-    "mtime": 1792244927.39737,
-    "seen": 1792247707.26217,
-    "ast_hash": "2b9823290302a19ddfa9e434b168c76b",
-    "semantic_hash": "2b9823290302a19ddfa9e434b168c76b"
+    "mtime": 1793527442.8573468,
+    "seen": 1793527591.512875,
+    "ast_hash": "4a52dd6ef2e006a45ef80006a8680899",
+    "semantic_hash": ""
   },
   "app/Http/Middleware/AdminMiddleware.php": {
     "mtime": 1791366849.5732913,
@@ -408,10 +408,10 @@
     "semantic_hash": "7c91283a2cb66be8857ed8350eb28832"
   },
   "app/Http/Requests/StoreUserRequest.php": {
-    "mtime": 1791366909.6900172,
-    "seen": 1792247707.2631664,
-    "ast_hash": "507ba1ae9f1d97d88d03a844eb468a01",
-    "semantic_hash": "507ba1ae9f1d97d88d03a844eb468a01"
+    "mtime": 1793527391.205118,
+    "seen": 1793527591.512875,
+    "ast_hash": "3f4832aa7ffab7fa6492646d096e67d5",
+    "semantic_hash": ""
   },
   "app/Http/Requests/UpdateTransactionRequest.php": {
     "mtime": 1792245899.971295,
@@ -420,10 +420,10 @@
     "semantic_hash": "539c7b104751cff55c38631b7de0adcf"
   },
   "app/Http/Requests/UpdateUserRequest.php": {
-    "mtime": 1791366913.8265407,
-    "seen": 1792247707.2631664,
-    "ast_hash": "4d4e4f42c553fb759224bc75f1e7756f",
-    "semantic_hash": "4d4e4f42c553fb759224bc75f1e7756f"
+    "mtime": 1793527407.6650531,
+    "seen": 1793527591.512875,
+    "ast_hash": "830b2ffd97c1d0fcc0ffac8d5f37544b",
+    "semantic_hash": ""
   },
   "app/Models/StockTransfer.php": {
     "mtime": 1792244834.3472834,
@@ -522,21 +522,21 @@
     "semantic_hash": ""
   },
   "resources/views/users/create.blade.php": {
-    "mtime": 1793200897.0461283,
-    "seen": 1793361746.6697118,
-    "ast_hash": "8f2942aa24c25a8763102a0f7130fdae",
+    "mtime": 1793527462.957754,
+    "seen": 1793527591.512875,
+    "ast_hash": "307fa1e2b347dd9d281a2a9177d13531",
     "semantic_hash": ""
   },
   "resources/views/users/edit.blade.php": {
-    "mtime": 1793200917.2834556,
-    "seen": 1793361746.6697118,
-    "ast_hash": "3723c1c0b2c4cd292a6a72448dd1f618",
+    "mtime": 1793527480.0315871,
+    "seen": 1793527591.512875,
+    "ast_hash": "b091167883e6c7d08ac62e043b55400d",
     "semantic_hash": ""
   },
   "resources/views/users/index.blade.php": {
-    "mtime": 1793365296.8624113,
-    "seen": 1793365460.1876948,
-    "ast_hash": "037bad363ae82f46ac78aa4cba2b61c4",
+    "mtime": 1793527494.1376534,
+    "seen": 1793527591.512875,
+    "ast_hash": "fb2d7676366a76dccaaf091fd41b3ad3",
     "semantic_hash": ""
   },
   "tests/Feature/DashboardTest.php": {
@@ -558,10 +558,10 @@
     "semantic_hash": "50030af77bccf71b0a84136f5ee998d7"
   },
   "tests/Feature/ResellerLifecycleTest.php": {
-    "mtime": 1792245004.0468626,
-    "seen": 1792247707.2735207,
-    "ast_hash": "a7b3ca0a960b18588117f8a5d5d5e7a9",
-    "semantic_hash": "a7b3ca0a960b18588117f8a5d5d5e7a9"
+    "mtime": 1793527553.5182066,
+    "seen": 1793527591.512875,
+    "ast_hash": "6fd25070e38016847e2ffd3adacc71d1",
+    "semantic_hash": ""
   },
   "tests/Feature/SalesAndCriteriaTest.php": {
     "mtime": 1792246315.425871,

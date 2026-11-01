@@ -21,6 +21,7 @@
                         <option value="">-- Semua Role --</option>
                         <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
                         <option value="staff" {{ request('role') === 'staff' ? 'selected' : '' }}>Staff</option>
+                        <option value="reseller" {{ request('role') === 'reseller' ? 'selected' : '' }}>Reseller</option>
                     </select>
                 </form>
 

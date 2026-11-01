@@ -99,4 +99,77 @@ class ResellerLifecycleTest extends TestCase
         $response->assertRedirect(route('dashboard'));
         $this->assertAuthenticatedAs($reseller);
     }
+
+    public function test_admin_can_create_reseller_user_internally_with_location(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->post(route('users.store'), [
+            'name' => 'Reseller Solo',
+            'email' => 'solo@reseller.com',
+            'password' => 'solo12345',
+            'role' => User::ROLE_RESELLER,
+            'location_name' => 'Gudang Solo',
+            'is_active' => 1,
+        ]);
+
+        $response->assertRedirect(route('users.index'));
+        $response->assertSessionHas('success');
+
+        $user = User::where('email', 'solo@reseller.com')->first();
+        $this->assertNotNull($user);
+        $this->assertEquals(User::ROLE_RESELLER, $user->role);
+        $this->assertTrue($user->is_active);
+
+        $this->assertDatabaseHas('locations', [
+            'name' => 'Gudang Solo',
+            'type' => Location::TYPE_RESELLER,
+            'user_id' => $user->id,
+        ]);
+    }
+
+    public function test_admin_can_update_reseller_user_and_location(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+            'is_active' => true,
+        ]);
+
+        $reseller = User::factory()->create([
+            'name' => 'Reseller Jogja',
+            'email' => 'jogja@reseller.com',
+            'role' => User::ROLE_RESELLER,
+            'is_active' => true,
+        ]);
+
+        $location = Location::create([
+            'name' => 'Jogja Central',
+            'type' => Location::TYPE_RESELLER,
+            'user_id' => $reseller->id,
+        ]);
+
+        $response = $this->actingAs($admin)->put(route('users.update', $reseller), [
+            'name' => 'Reseller Jogja Istimewa',
+            'email' => 'jogja_new@reseller.com',
+            'role' => User::ROLE_RESELLER,
+            'location_name' => 'Jogja Istimewa Store',
+            'is_active' => 1,
+        ]);
+
+        $response->assertRedirect(route('users.index'));
+
+        $this->assertDatabaseHas('users', [
+            'id' => $reseller->id,
+            'name' => 'Reseller Jogja Istimewa',
+            'email' => 'jogja_new@reseller.com',
+        ]);
+
+        $this->assertDatabaseHas('locations', [
+            'id' => $location->id,
+            'name' => 'Jogja Istimewa Store',
+        ]);
+    }
 }

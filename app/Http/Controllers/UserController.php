@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Location;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
@@ -41,13 +43,25 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'is_active' => $request->has('is_active') ? (bool) $request->is_active : true,
-        ]);
+        DB::transaction(function () use ($request) {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => $request->role,
+                'status' => User::STATUS_ACTIVE,
+                'is_active' => $request->has('is_active') ? (bool) $request->is_active : true,
+            ]);
+
+            if ($request->role === User::ROLE_RESELLER) {
+                $locName = $request->filled('location_name') ? $request->location_name : $request->name;
+                Location::create([
+                    'name' => $locName,
+                    'type' => Location::TYPE_RESELLER,
+                    'user_id' => $user->id,
+                ]);
+            }
+        });
 
         return redirect()->route('users.index')
             ->with('success', 'Pengguna baru berhasil ditambahkan!');
@@ -55,23 +69,41 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
+        $user->load('location');
         return view('users.edit', compact('user'));
     }
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-            'is_active' => $request->has('is_active') ? (bool) $request->is_active : $user->is_active,
-        ];
+        DB::transaction(function () use ($request, $user) {
+            $data = [
+                'name' => $request->name,
+                'email' => $request->email,
+                'role' => $request->role,
+                'is_active' => $request->has('is_active') ? (bool) $request->is_active : $user->is_active,
+            ];
 
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
+            if ($request->filled('password')) {
+                $data['password'] = Hash::make($request->password);
+            }
 
-        $user->update($data);
+            if ($request->role === User::ROLE_RESELLER) {
+                $locName = $request->filled('location_name') ? $request->location_name : $request->name;
+                if ($user->location) {
+                    $user->location->update([
+                        'name' => $locName,
+                    ]);
+                } else {
+                    Location::create([
+                        'name' => $locName,
+                        'type' => Location::TYPE_RESELLER,
+                        'user_id' => $user->id,
+                    ]);
+                }
+            }
+
+            $user->update($data);
+        });
 
         return redirect()->route('users.index')
             ->with('success', 'Data pengguna berhasil diperbarui!');
