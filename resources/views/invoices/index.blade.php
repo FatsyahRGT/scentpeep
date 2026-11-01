@@ -44,91 +44,83 @@
 </div>
 
 <div class="card mb-4">
-    <div class="card-header py-3">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
+        <div class="d-flex flex-column justify-content-between">
             <div>
                 <h3 class="card-title mb-1 font-serif fw-bold text-dark">Data Invoice Penjualan</h3>
                 <small class="text-muted d-block">Penjualan produk per varian parfum dengan pemotongan stok fisik otomatis.</small>
             </div>
+            <div class="d-flex align-items-center gap-2 mt-4">
+                <a href="{{ route('invoices.evaluation') }}" class="btn btn-sm btn-outline-secondary" title="Buka Evaluasi Penjualan (YoY)">
+                    <i class="bi bi-graph-up-arrow me-1"></i> Evaluasi YoY
+                </a>
+                <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
+                    <i class="bi bi-plus-lg me-1"></i> Buat Invoice
+                </a>
+            </div>
         </div>
 
-        <!-- Toolbar Container: Filter lalu Tombol Buat Invoice di kiri, Search di kanan (ms-auto) -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
-            <div class="d-flex flex-wrap align-items-center gap-3">
-                <form method="GET" action="{{ route('invoices.index') }}" class="d-flex flex-wrap align-items-center gap-2 m-0" id="filterInvoicesForm">
-                    <!-- Filter Tahun -->
-                    <select name="year" class="form-select form-select-sm" style="min-width: 135px;" onchange="this.form.submit()">
-                        <option value="">-- Semua Tahun --</option>
-                        @foreach($availableYears as $yr)
-                        <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>Tahun {{ $yr }}</option>
-                        @endforeach
-                    </select>
+        <!-- Kolom Kanan: Filter Dropdowns & Fitur Search di bawah Lokasi Stok -->
+        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
+            <form method="GET" action="{{ route('invoices.index') }}" class="d-flex flex-column gap-2 m-0" id="filterInvoicesForm">
+                <!-- Filter Tahun -->
+                <select name="year" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                    <option value="">Semua Tahun</option>
+                    @foreach($availableYears as $yr)
+                    <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>Tahun {{ $yr }}</option>
+                    @endforeach
+                </select>
 
-                    <!-- Filter Bulan -->
-                    <select name="month" class="form-select form-select-sm" style="min-width: 135px;" onchange="this.form.submit()">
-                        <option value="">-- Semua Bulan --</option>
-                        @foreach($months as $num => $name)
-                        <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>{{ $name }}</option>
-                        @endforeach
-                    </select>
+                <!-- Filter Bulan -->
+                <select name="month" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                    <option value="">Semua Bulan</option>
+                    @foreach($months as $num => $name)
+                    <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
 
-                    <!-- Filter Sales -->
-                    @if(!Auth::user()->isReseller())
-                    <select name="sales_name" class="form-select form-select-sm" style="min-width: 140px;" onchange="this.form.submit()">
-                        <option value="">-- Semua Sales --</option>
-                        @foreach($salesOptions as $s)
-                        <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
-                        @endforeach
-                    </select>
-                    @endif
+                <!-- Filter Sales -->
+                @if(!Auth::user()->isReseller())
+                <select name="sales_name" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                    <option value="">Semua Sales</option>
+                    @foreach($salesOptions as $s)
+                    <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
+                    @endforeach
+                </select>
+                @endif
 
-                    <!-- Filter Status Bayar -->
-                    <select name="payment_status" class="form-select form-select-sm" style="min-width: 140px;" onchange="this.form.submit()">
-                        <option value="">-- Status Bayar --</option>
-                        <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
-                        <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
-                    </select>
+                <!-- Filter Status Bayar -->
+                <select name="payment_status" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                    <option value="">Status Bayar</option>
+                    <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
+                    <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
+                </select>
 
-                    <!-- Filter Lokasi -->
-                    <select name="location_id" class="form-select form-select-sm" style="min-width: 145px;" onchange="this.form.submit()">
-                        <option value="">-- Lokasi Stok --</option>
-                        @foreach($locations as $loc)
-                        <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
-                        @endforeach
-                    </select>
+                <!-- Filter Lokasi -->
+                <select name="location_id" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                    <option value="">Lokasi Stok</option>
+                    @foreach($locations as $loc)
+                    <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
+                    @endforeach
+                </select>
 
-                    @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'year', 'month', 'search']))
-                    <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Semua Filter">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
-                    </a>
-                    @endif
+                <!-- Fitur Search: Tepat di Bawah Button Lokasi Stok -->
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                    <input type="search" name="search" class="form-control border-start-0 ps-2 text-center" placeholder="Cari invoice/customer&hellip;" value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
 
-                    @if(request('search'))
-                    <input type="hidden" name="search" value="{{ request('search') }}">
-                    @endif
-                </form>
-
-                <div class="d-flex align-items-center gap-2 ms-md-2">
-                    <a href="{{ route('invoices.evaluation') }}" class="btn btn-sm btn-outline-secondary" title="Buka Evaluasi Penjualan (YoY)">
-                        <i class="bi bi-graph-up-arrow me-1"></i> Evaluasi YoY
-                    </a>
-
-                    <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                        <i class="bi bi-plus-lg me-1"></i> Buat Invoice
+                @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'year', 'month', 'search']))
+                <div class="text-center mt-1">
+                    <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Semua Filter">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
                     </a>
                 </div>
-            </div>
-
-            <form method="GET" action="{{ route('invoices.index') }}" class="ms-auto m-0">
-                @if(request('year'))<input type="hidden" name="year" value="{{ request('year') }}">@endif
-                @if(request('month'))<input type="hidden" name="month" value="{{ request('month') }}">@endif
-                @if(request('sales_name'))<input type="hidden" name="sales_name" value="{{ request('sales_name') }}">@endif
-                @if(request('payment_status'))<input type="hidden" name="payment_status" value="{{ request('payment_status') }}">@endif
-                @if(request('location_id'))<input type="hidden" name="location_id" value="{{ request('location_id') }}">@endif
-                <div class="input-group input-group-sm" style="width: 14rem;">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="search" name="search" class="form-control border-start-0 ps-0" placeholder="Cari invoice/customer&hellip;" value="{{ request('search') }}">
-                </div>
+                @endif
             </form>
         </div>
     </div>

@@ -58,7 +58,7 @@
                         <div class="col-md-6">
                             <label for="category" class="form-label small fw-bold text-muted text-uppercase">Kategori <span class="text-danger">*</span></label>
                             <select class="form-select @error('category') is-invalid @enderror" id="category" name="category" required onchange="handleCategoryChange()">
-                                <option value="">-- Pilih Kategori --</option>
+                                <option value="">Pilih Kategori</option>
                                 <optgroup label="Pemasukan" id="optgroup_income">
                                     <option value="Penjualan" {{ old('category', $transaction->category) === 'Penjualan' ? 'selected' : '' }}>Penjualan Produk Parfum</option>
                                     <option value="Pendapatan Jasa" {{ old('category', $transaction->category) === 'Pendapatan Jasa' ? 'selected' : '' }}>Pendapatan Jasa / Konsultasi</option>
@@ -120,7 +120,7 @@
                                     Saluran Penjualan <span class="text-muted fw-normal">(Opsional)</span>
                                 </label>
                                 <select class="form-select @error('channel') is-invalid @enderror" id="channel" name="channel">
-                                    <option value="">-- Pilih Saluran --</option>
+                                    <option value="">Pilih Saluran</option>
                                     <option value="Offline Store" {{ old('channel', $transaction->channel ?? 'Offline Store') === 'Offline Store' ? 'selected' : '' }}>Toko Offline</option>
                                     <option value="WhatsApp" {{ old('channel', $transaction->channel) === 'WhatsApp' ? 'selected' : '' }}>WhatsApp / Kontak Pribadi</option>
                                     <option value="Shopee" {{ old('channel', $transaction->channel) === 'Shopee' ? 'selected' : '' }}>Shopee</option>
@@ -167,7 +167,7 @@
                                     Varian Produk <span id="productRequiredStar" class="text-danger d-none">*</span> <span id="productOptionalNote" class="text-muted fw-normal">(Opsional untuk Non-Stok)</span>
                                 </label>
                                 <select class="form-select @error('product_id') is-invalid @enderror" id="product_id" name="product_id" onchange="onEditProductChange()">
-                                    <option value="">-- Tanpa Varian Produk (Kas Umum) --</option>
+                                    <option value="">Tanpa Varian Produk (Kas Umum)</option>
                                     @foreach($products as $prod)
                                         <option value="{{ $prod->id }}" data-cost="{{ $prod->cost_price }}" data-sell="{{ $prod->sell_price }}" {{ old('product_id', $transaction->product_id) == $prod->id ? 'selected' : '' }}>
                                             {{ $prod->name }} {{ $prod->code ? "({$prod->code})" : '' }} (Rp {{ number_format($prod->sell_price, 0, ',', '.') }})
@@ -199,7 +199,7 @@
                                     Lokasi Stok Gudang / Toko <span class="text-danger">*</span>
                                 </label>
                                 <select class="form-select @error('location_id') is-invalid @enderror" id="location_id" name="location_id" onchange="updateLiveStockCalculator()">
-                                    <option value="">-- Pilih Lokasi Stok --</option>
+                                    <option value="">Pilih Lokasi Stok</option>
                                     @foreach($locations as $loc)
                                         <option value="{{ $loc->id }}" {{ old('location_id', $transaction->location_id) == $loc->id ? 'selected' : '' }}>
                                             {{ $loc->name }}

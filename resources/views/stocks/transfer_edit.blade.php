@@ -34,7 +34,7 @@
                                 Lokasi Asal (Sumber) <span class="text-danger">*</span>
                             </label>
                             <select class="form-select @error('from_location_id') is-invalid @enderror" id="from_location_id" name="from_location_id" required onchange="onFromLocationChange()">
-                                <option value="">-- Pilih Lokasi Asal --</option>
+                                <option value="">Pilih Lokasi Asal</option>
                                 @foreach($locations as $loc)
                                     <option value="{{ $loc->id }}" {{ old('from_location_id', $stockTransfer->from_location_id) == $loc->id ? 'selected' : '' }}>
                                         {{ $loc->name }}
@@ -57,7 +57,7 @@
                                 Lokasi Tujuan <span class="text-danger">*</span>
                             </label>
                             <select class="form-select @error('to_location_id') is-invalid @enderror" id="to_location_id" name="to_location_id" required onchange="onToLocationChange()">
-                                <option value="">-- Pilih Lokasi Tujuan --</option>
+                                <option value="">Pilih Lokasi Tujuan</option>
                                 @foreach($locations as $loc)
                                     <option value="{{ $loc->id }}" {{ old('to_location_id', $stockTransfer->to_location_id) == $loc->id ? 'selected' : '' }}>
                                         {{ $loc->name }}
@@ -80,7 +80,7 @@
                                 Varian Produk Parfum <span class="text-danger">*</span>
                             </label>
                             <select class="form-select @error('product_id') is-invalid @enderror" id="product_id" name="product_id" required onchange="updateLiveTransferCalculator()">
-                                <option value="">-- Pilih Varian Produk --</option>
+                                <option value="">Pilih Varian Produk</option>
                                 @foreach($products as $prod)
                                     <option value="{{ $prod->id }}" 
                                         data-name="{{ $prod->name }}" 

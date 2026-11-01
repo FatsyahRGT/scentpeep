@@ -288,21 +288,21 @@
     "semantic_hash": ""
   },
   "resources/views/layouts/app.blade.php": {
-    "mtime": 1793532572.40366,
-    "seen": 1793532692.0992289,
-    "ast_hash": "7c5ddb2a654a70f77a122596672ee656",
+    "mtime": 1793533470.8672009,
+    "seen": 1793533768.1642659,
+    "ast_hash": "6966f05c830d28bbe55c75ef6e05d490",
     "semantic_hash": ""
   },
   "resources/views/locations/create.blade.php": {
-    "mtime": 1793200676.8489077,
-    "seen": 1793361746.6697118,
-    "ast_hash": "b844ded67c5f3a96817fac9e9f474ed4",
+    "mtime": 1793533604.2920058,
+    "seen": 1793533768.1642659,
+    "ast_hash": "b45b5b034dac1be4f526452720b23ea3",
     "semantic_hash": ""
   },
   "resources/views/locations/edit.blade.php": {
-    "mtime": 1793200687.489062,
-    "seen": 1793361746.6697118,
-    "ast_hash": "acba5f56ca4a05ee7e7774eb6c616775",
+    "mtime": 1793533608.3786132,
+    "seen": 1793533768.1642659,
+    "ast_hash": "88fd2bbaeefbe25b573f708c126cc2a8",
     "semantic_hash": ""
   },
   "resources/views/locations/index.blade.php": {
@@ -324,9 +324,9 @@
     "semantic_hash": ""
   },
   "resources/views/products/index.blade.php": {
-    "mtime": 1793532643.0287178,
-    "seen": 1793532692.0992289,
-    "ast_hash": "4c9e98484fd28597bf7a8872f4f5a75e",
+    "mtime": 1793533529.029235,
+    "seen": 1793533768.1642659,
+    "ast_hash": "f8cf45be329fd4153bf538339957be41",
     "semantic_hash": ""
   },
   "resources/views/stocks/index.blade.php": {
@@ -492,9 +492,9 @@
     "semantic_hash": ""
   },
   "resources/views/stocks/transfer.blade.php": {
-    "mtime": 1793369915.090212,
-    "seen": 1793370110.453615,
-    "ast_hash": "1244866216c3f260696e8a6026d19936",
+    "mtime": 1793533636.4369671,
+    "seen": 1793533768.1642659,
+    "ast_hash": "e868ab1e4ee99e78e15147083fb45ea4",
     "semantic_hash": ""
   },
   "resources/views/stocks/transfers_index.blade.php": {
@@ -504,15 +504,15 @@
     "semantic_hash": ""
   },
   "resources/views/transactions/create.blade.php": {
-    "mtime": 1793369041.7012088,
-    "seen": 1793369270.4397264,
-    "ast_hash": "f2333ba655a346ba93f0a2c671e5ae17",
+    "mtime": 1793533665.9983125,
+    "seen": 1793533768.1642659,
+    "ast_hash": "271feb3e718b42ddecae22b5dd1b984e",
     "semantic_hash": ""
   },
   "resources/views/transactions/edit.blade.php": {
-    "mtime": 1793200855.1664891,
-    "seen": 1793361746.6697118,
-    "ast_hash": "fe845c17dd11f76f1c4a5fa0ab3defc8",
+    "mtime": 1793533693.1720479,
+    "seen": 1793533768.1642659,
+    "ast_hash": "3c75a6e6d7b5e7714d0fef0371018914",
     "semantic_hash": ""
   },
   "resources/views/transactions/index.blade.php": {
@@ -534,9 +534,9 @@
     "semantic_hash": ""
   },
   "resources/views/users/index.blade.php": {
-    "mtime": 1793532653.8417938,
-    "seen": 1793532692.0992289,
-    "ast_hash": "78b00f5b0a2a448c055c526fa677cf2e",
+    "mtime": 1793533538.328153,
+    "seen": 1793533768.1642659,
+    "ast_hash": "fb3281df1babbaee7238dd2aa7ec6020",
     "semantic_hash": ""
   },
   "tests/Feature/DashboardTest.php": {
@@ -678,39 +678,39 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/create.blade.php": {
-    "mtime": 1793529141.5936065,
-    "seen": 1793529443.5012968,
-    "ast_hash": "46b35bffd68a13854393347f255449ea",
+    "mtime": 1793533579.6487231,
+    "seen": 1793533768.1642659,
+    "ast_hash": "73c432e6a256f3bbff882b5e8229bdb9",
     "semantic_hash": ""
   },
   "resources/views/invoices/edit.blade.php": {
-    "mtime": 1793529150.6188736,
-    "seen": 1793529443.5012968,
-    "ast_hash": "d400b46a701852dc9e806a6cd02c9908",
+    "mtime": 1793533592.906828,
+    "seen": 1793533768.1642659,
+    "ast_hash": "18d903050544e4901b41b0c29cd515d1",
     "semantic_hash": ""
   },
   "resources/views/invoices/index.blade.php": {
-    "mtime": 1793532610.0307162,
-    "seen": 1793532692.0992289,
-    "ast_hash": "de0a4c4310fcfee64394daa015c985bc",
+    "mtime": 1793533493.1076195,
+    "seen": 1793533768.1642659,
+    "ast_hash": "ded44dd3f21e89551fa4b26fcd2fe832",
     "semantic_hash": ""
   },
   "resources/views/pre_orders/create.blade.php": {
-    "mtime": 1793532308.4747868,
-    "seen": 1793532692.0992289,
-    "ast_hash": "c32281226302ce192e4e2217b282d451",
+    "mtime": 1793533616.5135243,
+    "seen": 1793533768.1642659,
+    "ast_hash": "3f1e719f1c0b869d3668bcd744b1ba0d",
     "semantic_hash": ""
   },
   "resources/views/pre_orders/index.blade.php": {
-    "mtime": 1793532588.8150728,
-    "seen": 1793532692.0992289,
-    "ast_hash": "0d44cc20c07d6052dfd7e6d9d940d1b9",
+    "mtime": 1793533519.7622826,
+    "seen": 1793533768.1642659,
+    "ast_hash": "8d161b2aa5d0028b4721dbb87445becf",
     "semantic_hash": ""
   },
   "resources/views/raw_materials/index.blade.php": {
-    "mtime": 1793532146.0861385,
-    "seen": 1793532692.0992289,
-    "ast_hash": "1024be1ae477ca1e00d41f81a02e8bfa",
+    "mtime": 1793533556.9424589,
+    "seen": 1793533768.1642659,
+    "ast_hash": "5dc18e36e3768c4f5d32687be55c9a19",
     "semantic_hash": ""
   },
   "resources/views/stocks/public_reseller_dashboard.blade.php": {
@@ -900,9 +900,9 @@
     "semantic_hash": ""
   },
   "resources/views/stocks/transfer_edit.blade.php": {
-    "mtime": 1793369942.8797457,
-    "seen": 1793370110.453615,
-    "ast_hash": "0d21b9494b073b1ee363ce7bb72a26cb",
+    "mtime": 1793533656.4863245,
+    "seen": 1793533768.1642659,
+    "ast_hash": "3fe3ef22cbd6f70115f4bcbbbe9039f9",
     "semantic_hash": ""
   },
   "app/Http/Middleware/InternalOnlyMiddleware.php": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/evaluation.blade.php": {
-    "mtime": 1793529169.4349258,
-    "seen": 1793529443.5012968,
-    "ast_hash": "7b607cb5e84b218e5cffb69d1320dc29",
+    "mtime": 1793533509.0619059,
+    "seen": 1793533768.1642659,
+    "ast_hash": "60ece08c0cf607ba2d08002136fdcc28",
     "semantic_hash": ""
   },
   "resources/views/dashboards/sales.blade.php": {

@@ -35,7 +35,7 @@
                         <div class="col-md-8">
                             <label for="product_id" class="form-label small fw-semibold text-muted">Varian Parfum yang Di-PO <span class="text-danger">*</span></label>
                             <select name="product_id" id="product_id" class="form-select @error('product_id') is-invalid @enderror" required>
-                                <option value="">-- Pilih Varian Parfum --</option>
+                                <option value="">Pilih Varian Parfum</option>
                                 @foreach($products as $prod)
                                 <option value="{{ $prod->id }}" {{ old('product_id') == $prod->id ? 'selected' : '' }}>
                                     {{ $prod->name }} ({{ $prod->code ?? '-' }})

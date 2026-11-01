@@ -40,7 +40,7 @@
                     <div class="mb-4 {{ old('type', $location->type) === 'reseller' ? '' : 'd-none' }}" id="resellerUserWrapper">
                         <label for="user_id" class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing: 0.05em;">Akun Reseller Terkait <span class="text-muted fw-normal">(Opsional)</span></label>
                         <select class="form-select @error('user_id') is-invalid @enderror" id="user_id" name="user_id">
-                            <option value="">-- Pilih Akun User Reseller --</option>
+                            <option value="">Pilih Akun User Reseller</option>
                             @foreach($resellers as $reseller)
                                 <option value="{{ $reseller->id }}" {{ old('user_id', $location->user_id) == $reseller->id ? 'selected' : '' }}>
                                     {{ $reseller->name }} ({{ $reseller->email }})

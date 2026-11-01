@@ -298,19 +298,26 @@
         .form-select {
             border-radius: 8px;
             border: 1px solid var(--color-border);
-            padding: 0.55rem 2.25rem 0.55rem 0.85rem !important;
+            padding: 0.55rem 2.25rem 0.55rem 2.25rem !important;
             font-size: 0.9rem;
             background-color: #ffffff;
             color: var(--color-text-main);
+            text-align: center;
+            text-align-last: center;
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .form-select option {
+            text-align: center;
         }
         .form-select-sm {
             padding-top: 0.35rem !important;
             padding-bottom: 0.35rem !important;
-            padding-left: 0.75rem !important;
+            padding-left: 2.15rem !important;
             padding-right: 2.15rem !important;
             font-size: 0.82rem !important;
             min-height: 32px;
+            text-align: center;
+            text-align-last: center;
         }
         .form-control-sm {
             padding: 0.35rem 0.75rem !important;

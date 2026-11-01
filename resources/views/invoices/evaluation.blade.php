@@ -31,8 +31,8 @@
             <!-- Filter Bulan (Opsional) -->
             <div class="col-sm-6 col-md-3">
                 <label for="evalMonth" class="form-label small fw-semibold text-muted">Bulan Spesifik</label>
-                <select name="month" id="evalMonth" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">-- Semua Bulan (Setahun Penuh) --</option>
+                <select name="month" id="evalMonth" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                    <option value="">Semua Bulan (Setahun Penuh)</option>
                     @foreach($months as $num => $name)
                     <option value="{{ $num }}" {{ $selectedMonth == $num ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
@@ -43,8 +43,8 @@
             @if(!$isReseller)
             <div class="col-sm-6 col-md-2">
                 <label for="evalSales" class="form-label small fw-semibold text-muted">Pilih Sales</label>
-                <select name="sales_name" id="evalSales" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">-- Semua Sales --</option>
+                <select name="sales_name" id="evalSales" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                    <option value="">Semua Sales</option>
                     @foreach($salesOptions as $s)
                     <option value="{{ $s }}" {{ $selectedSales === $s ? 'selected' : '' }}>{{ $s }}</option>
                     @endforeach

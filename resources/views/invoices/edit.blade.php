@@ -58,7 +58,7 @@
                         <div class="col-md-8">
                             <label for="product_id" class="form-label small fw-semibold text-muted">Varian Parfum <span class="text-danger">*</span></label>
                             <select name="product_id" id="product_id" class="form-select @error('product_id') is-invalid @enderror" required onchange="calculateSuggestedPrice()">
-                                <option value="">-- Pilih Varian Parfum --</option>
+                                <option value="">Pilih Varian Parfum</option>
                                 @foreach($products as $prod)
                                 <option value="{{ $prod->id }}" data-price="{{ $prod->sell_price ?? 0 }}" {{ old('product_id', $invoice->product_id) == $prod->id ? 'selected' : '' }}>
                                     {{ $prod->name }} ({{ $prod->code ?? '-' }}) - Rp {{ number_format($prod->sell_price ?? 0, 0, ',', '.') }}
@@ -86,7 +86,7 @@
                         <div class="col-md-6">
                             <label for="location_id" class="form-label small fw-semibold text-muted">Potong dari Stok Lokasi <span class="text-danger">*</span></label>
                             <select name="location_id" id="location_id" class="form-select @error('location_id') is-invalid @enderror" required>
-                                <option value="">-- Pilih Lokasi Stok --</option>
+                                <option value="">Pilih Lokasi Stok</option>
                                 @foreach($locations as $loc)
                                 <option value="{{ $loc->id }}" {{ old('location_id', $invoice->location_id) == $loc->id ? 'selected' : '' }}>
                                     {{ $loc->name }}

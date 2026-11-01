@@ -74,7 +74,7 @@
                                 Kategori Kas <span class="text-danger">*</span>
                             </label>
                             <select class="form-select @error('category') is-invalid @enderror" id="category" name="category" required>
-                                <option value="">-- Pilih Kategori --</option>
+                                <option value="">Pilih Kategori</option>
                                 <optgroup label="Pengeluaran Operasional" id="optgroup_outcome">
                                     <option value="Operasional" {{ old('category') === 'Operasional' ? 'selected' : '' }}>Operasional Toko / Listrik / Sewa</option>
                                     <option value="Iklan Shopee" {{ old('category') === 'Iklan Shopee' ? 'selected' : '' }}>Iklan Shopee / Ads</option>
