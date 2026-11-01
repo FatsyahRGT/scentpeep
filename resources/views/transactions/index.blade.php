@@ -57,17 +57,14 @@
 
 <div class="card mb-4">
     <!-- Header & Action Bar -->
-    <div class="card-header py-3">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
+        <div class="d-flex flex-column justify-content-between">
             <div>
                 <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Daftar Transaksi Kas &amp; Stok</h3>
                 <small class="text-muted d-block">Total {{ $transactions->total() }} baris transaksi tercatat dalam sistem</small>
             </div>
-        </div>
-
-        <!-- Toolbar Container: Tombol Aksi di kiri -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
-            <div class="d-flex flex-wrap align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2 mt-4">
                 <a href="{{ route('transactions.create') }}" class="btn btn-sm btn-scent fw-semibold">
                     <i class="bi bi-plus-circle me-1"></i> Catat Transaksi
                 </a>
@@ -90,63 +87,60 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Filter Bar (1 Baris Ringkas Kesamping) -->
-    <div class="card-body p-3" style="background-color: var(--color-surface-hover, #f4f3f0); border-bottom: 1px solid var(--color-border, #e8e6e1);">
-        <form action="{{ route('transactions.index') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2 gap-md-3">
-            <!-- Tipe Arus Kas -->
-            <select name="type" class="form-select form-select-sm w-auto">
-                <option value="">Semua Tipe</option>
-                <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
-                <option value="OUTCOME" {{ request('type') === 'OUTCOME' ? 'selected' : '' }}>Keluar</option>
-            </select>
+        <!-- Kolom Kanan: Filter Dropdowns & Fitur Search di bawah Filter -->
+        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
+            <form action="{{ route('transactions.index') }}" method="GET" class="d-flex flex-column gap-2 m-0" id="filterTransactionsForm">
+                <!-- Tipe Arus Kas -->
+                <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Semua Tipe</option>
+                    <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
+                    <option value="OUTCOME" {{ request('type') === 'OUTCOME' ? 'selected' : '' }}>Keluar</option>
+                </select>
 
-            <!-- Kategori -->
-            <select name="category" class="form-select form-select-sm w-auto">
-                <option value="">Semua Kategori</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                @endforeach
-            </select>
+                <!-- Kategori -->
+                <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Semua Kategori</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
 
-            <!-- Lokasi (Admin Only) -->
-            @if(!Auth::user()->isReseller() && isset($locations))
-            <select name="location_id" class="form-select form-select-sm w-auto">
-                <option value="">Semua Lokasi</option>
-                @foreach($locations as $loc)
-                    <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
-                @endforeach
-            </select>
-            @endif
-
-            <!-- Rentang Tanggal (Dari & Sampai 1 baris) -->
-            <div class="d-flex align-items-center gap-2" style="flex: 0 1 auto;">
-                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}" title="Dari Tanggal" style="width: 135px;">
-                <span class="text-muted small">&ndash;</span>
-                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}" title="Sampai Tanggal" style="width: 135px;">
-            </div>
-
-            <!-- Tombol Filter & Reset -->
-            <div class="d-flex align-items-center gap-2">
-                <button type="submit" class="btn btn-sm btn-scent px-3" title="Terapkan Filter">
-                    <i class="bi bi-funnel me-1"></i> Filter
-                </button>
-                @if(request()->anyFilled(['search', 'type', 'category', 'location_id', 'start_date', 'end_date']))
-                    <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Filter">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                    </a>
+                <!-- Lokasi (Admin Only) -->
+                @if(!Auth::user()->isReseller() && isset($locations))
+                <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Semua Lokasi</option>
+                    @foreach($locations as $loc)
+                        <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
+                    @endforeach
+                </select>
                 @endif
-            </div>
 
-            <!-- Cari Keterangan / Ref (di posisi kanan dengan ms-auto) -->
-            <div class="ms-auto" style="flex: 0 1 210px; min-width: 160px;">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Keterangan / ref..." value="{{ request('search') }}">
+                <!-- Rentang Tanggal -->
+                <div class="d-flex align-items-center gap-1">
+                    <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}" title="Dari Tanggal" onchange="this.form.submit()">
+                    <span class="text-muted small">&ndash;</span>
+                    <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}" title="Sampai Tanggal" onchange="this.form.submit()">
                 </div>
-            </div>
-        </form>
+
+                <!-- Cari Keterangan / Ref (dengan panah submit) -->
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                    <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari keterangan / ref..." value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+
+                @if(request()->anyFilled(['search', 'type', 'category', 'location_id', 'start_date', 'end_date']))
+                <div class="text-center mt-1">
+                    <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Semua Filter">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
+                    </a>
+                </div>
+                @endif
+            </form>
+        </div>
     </div>
 
     <!-- Table -->

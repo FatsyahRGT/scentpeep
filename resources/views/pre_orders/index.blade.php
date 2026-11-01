@@ -30,41 +30,44 @@
 </div>
 
 <div class="card mb-4">
-    <div class="card-header py-3">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
+        <div class="d-flex flex-column justify-content-between">
             <div>
                 <h3 class="card-title mb-1 font-serif fw-bold text-dark">Daftar Pre-Order (Stok Pending)</h3>
                 <small class="text-muted d-block">Segmen khusus barang pre-order di luar stok utama. Klik 'Selesai' untuk memasukkannya ke stok fisik.</small>
             </div>
-        </div>
-
-        <!-- Toolbar Container: Filter lalu Tombol Catat PO di kiri -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
-            <div class="d-flex flex-wrap align-items-center gap-3">
-                <form method="GET" action="{{ route('pre-orders.index') }}" class="d-flex flex-wrap align-items-center gap-2 m-0">
-                    <select name="status" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
-                        <option value="">Semua Status</option>
-                        <option value="PENDING" {{ request('status') === 'PENDING' ? 'selected' : '' }}>Pending (Belum Siap)</option>
-                        <option value="SELESAI" {{ request('status') === 'SELESAI' ? 'selected' : '' }}>Selesai (Sudah Masuk Stok)</option>
-                    </select>
-                    <select name="location_id" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
-                        <option value="">Target Stok</option>
-                        @foreach($locations as $loc)
-                        <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
-                        @endforeach
-                    </select>
-
-                    @if(request()->hasAny(['status', 'location_id']))
-                    <a href="{{ route('pre-orders.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Filter">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
-                    </a>
-                    @endif
-                </form>
-
-                <a href="{{ route('pre-orders.create') }}" class="btn btn-sm btn-scent fw-semibold ms-md-2">
+            <div class="d-flex align-items-center gap-2 mt-4">
+                <a href="{{ route('pre-orders.create') }}" class="btn btn-sm btn-scent fw-semibold">
                     <i class="bi bi-plus-lg me-1"></i> Catat PO Baru
                 </a>
             </div>
+        </div>
+
+        <!-- Kolom Kanan: Filter Dropdowns -->
+        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
+            <form method="GET" action="{{ route('pre-orders.index') }}" class="d-flex flex-column gap-2 m-0" id="filterPreOrdersForm">
+                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Semua Status</option>
+                    <option value="PENDING" {{ request('status') === 'PENDING' ? 'selected' : '' }}>Pending (Belum Siap)</option>
+                    <option value="SELESAI" {{ request('status') === 'SELESAI' ? 'selected' : '' }}>Selesai (Sudah Masuk Stok)</option>
+                </select>
+
+                <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Target Stok</option>
+                    @foreach($locations as $loc)
+                    <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
+                    @endforeach
+                </select>
+
+                @if(request()->hasAny(['status', 'location_id']))
+                <div class="text-center mt-1">
+                    <a href="{{ route('pre-orders.index') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Filter">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
+                    </a>
+                </div>
+                @endif
+            </form>
         </div>
     </div>
 

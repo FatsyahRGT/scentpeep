@@ -183,25 +183,34 @@
 
 <!-- Main Table: Katalog Sebaran Stok & Filter Ready -->
 <div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important;">
-    <div class="card-header py-3 bg-white border-bottom">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div class="card-header py-3 bg-white border-bottom d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
+        <div class="d-flex flex-column justify-content-between">
             <div>
                 <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan &amp; Sebaran Stok Parfum</h3>
                 <small class="text-muted d-block">Pantau parfum apa saja yang ready, jumlahnya, dan siapa yang memegang stoknya.</small>
             </div>
+            @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
+            <div class="d-flex align-items-center gap-2 mt-4">
+                <button type="button" class="btn btn-sm btn-scent fw-semibold" data-bs-toggle="modal" data-bs-target="#modalManualRestock">
+                    <i class="bi bi-plus-lg me-1"></i> Tambah Stok Produksi
+                </button>
+            </div>
+            @endif
         </div>
 
-        <!-- Toolbar Container: Filter lalu Tombol Tambah di kiri, Search di kanan (ms-auto) -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
-            <div class="d-flex flex-wrap align-items-center gap-3">
-                <div class="btn-group btn-group-sm" role="group">
+        <!-- Kolom Kanan: Quick Filter & Fitur Search -->
+        <div style="width: 100%; max-width: 340px;" class="ms-md-auto">
+            <form method="GET" action="{{ route('stocks.reseller') }}" class="d-flex flex-column gap-2 m-0" id="filterResellerStockForm">
+                <input type="hidden" name="filter_status" value="{{ $filterStatus ?? 'all' }}">
+                <div class="btn-group btn-group-sm w-100" role="group">
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'all', 'search' => request('search')]) }}" 
                        class="btn btn-outline-secondary {{ ($filterStatus ?? 'all') === 'all' ? 'active' : '' }}">
-                        Semua Varian
+                        Semua
                     </a>
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'ready', 'search' => request('search')]) }}" 
                        class="btn btn-outline-success {{ ($filterStatus ?? '') === 'ready' ? 'active' : '' }}">
-                        <i class="bi bi-check-circle me-1"></i> Hanya Ready
+                        <i class="bi bi-check-circle me-1"></i> Ready
                     </a>
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'low', 'search' => request('search')]) }}" 
                        class="btn btn-outline-warning {{ in_array(($filterStatus ?? ''), ['low', 'menipis']) ? 'active' : '' }}">
@@ -219,19 +228,21 @@
                     </a>
                 </div>
 
-                @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
-                <button type="button" class="btn btn-sm btn-scent fw-semibold" data-bs-toggle="modal" data-bs-target="#modalManualRestock">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah Stok Produksi
-                </button>
-                @endif
-            </div>
-
-            <form method="GET" action="{{ route('stocks.reseller') }}" class="ms-auto m-0">
-                <input type="hidden" name="filter_status" value="{{ $filterStatus ?? 'all' }}">
-                <div class="input-group input-group-sm" style="width: 14rem;">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="search" name="search" class="form-control border-start-0 ps-0" placeholder="Cari varian/SKU&hellip;" value="{{ request('search') }}">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                    <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari varian/SKU&hellip;" value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
                 </div>
+
+                @if(request()->filled('search') || (request('filter_status') && request('filter_status') !== 'all'))
+                <div class="text-center mt-1">
+                    <a href="{{ route('stocks.reseller') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Filter">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
+                    </a>
+                </div>
+                @endif
             </form>
         </div>
     </div>

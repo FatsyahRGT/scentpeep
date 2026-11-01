@@ -5,17 +5,14 @@
 
 @section('content')
 <div class="card mb-4">
-    <div class="card-header py-3">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
+        <div class="d-flex flex-column justify-content-between">
             <div>
                 <h3 class="card-title mb-1 font-serif fw-bold text-dark">Log Riwayat Transfer Stok</h3>
                 <small class="text-muted d-block">Catatan mutasi pergerakan unit parfum dari gudang ke gudang atau ke reseller</small>
             </div>
-        </div>
-
-        <!-- Toolbar Container: Tombol Aksi di kiri, Search di kanan (ms-auto) -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
-            <div class="d-flex flex-wrap align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2 mt-4">
                 @if(!Auth::user()->isReseller())
                 <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-scent fw-semibold">
                     <i class="bi bi-arrow-left-right me-1"></i> Buat Transfer Baru
@@ -25,15 +22,27 @@
                     <i class="bi bi-box-seam me-1"></i> Ringkasan Stok
                 </a>
             </div>
+        </div>
 
-            <div class="ms-auto">
-                <form method="GET" action="{{ route('stocks.transfers') }}" class="m-0">
-                    <div class="input-group input-group-sm" style="width: 16rem">
-                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                        <input type="search" class="form-control border-start-0 ps-0" name="search" value="{{ request('search') }}" placeholder="Filter baris transfer&hellip;" aria-label="Filter rows">
-                    </div>
-                </form>
-            </div>
+        <!-- Kolom Kanan: Fitur Search -->
+        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
+            <form method="GET" action="{{ route('stocks.transfers') }}" class="d-flex flex-column gap-2 m-0">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                    <input type="search" class="form-control border-start-0 ps-2" name="search" value="{{ request('search') }}" placeholder="Filter baris transfer&hellip;" aria-label="Filter rows">
+                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+
+                @if(request()->filled('search'))
+                <div class="text-center mt-1">
+                    <a href="{{ route('stocks.transfers') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Filter">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
+                    </a>
+                </div>
+                @endif
+            </form>
         </div>
     </div>
 

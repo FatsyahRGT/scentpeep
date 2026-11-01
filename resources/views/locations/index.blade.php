@@ -5,27 +5,28 @@
 
 @section('content')
 <div class="card mb-4">
-    <div class="card-header py-3">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
+        <div class="d-flex flex-column justify-content-between">
             <div>
                 <h3 class="card-title mb-1 font-serif fw-bold text-dark">Master Lokasi Stok Fisik</h3>
                 <small class="text-muted d-block">Kelola toko fisik, gudang pusat, dan partner reseller konsinyasi (RIZKY, IWAN, TOKO GPI).</small>
             </div>
-        </div>
-
-        <!-- Toolbar Container: Tombol Tambah di kiri, Search di kanan (ms-auto) -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
-            <div class="d-flex flex-wrap align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2 mt-4">
                 <a href="{{ route('locations.create') }}" class="btn btn-sm btn-scent fw-semibold">
                     <i class="bi bi-plus-lg me-1"></i> Tambah Lokasi
                 </a>
             </div>
+        </div>
 
-            <div class="ms-auto">
-                <div class="input-group input-group-sm" style="width: 16rem">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="search" id="liveLocationSearch" class="form-control border-start-0 ps-0" placeholder="Filter baris lokasi&hellip;" aria-label="Filter rows">
-                </div>
+        <!-- Kolom Kanan: Fitur Search -->
+        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                <input type="search" id="liveLocationSearch" class="form-control border-start-0 ps-2" placeholder="Filter baris lokasi&hellip;" aria-label="Filter rows">
+                <button type="button" class="btn btn-sm btn-scent px-3" title="Cari">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
             </div>
         </div>
     </div>

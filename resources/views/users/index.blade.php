@@ -5,37 +5,46 @@
 
 @section('content')
 <div class="card mb-4">
-    <div class="card-header py-3">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
+        <div class="d-flex flex-column justify-content-between">
             <div>
                 <h3 class="card-title mb-1 font-serif fw-bold text-dark">Daftar Pengguna Sistem</h3>
                 <small class="text-muted d-block">Kelola akun pengguna, penugasan role (Admin / Staff), dan kontrol status aktif.</small>
             </div>
-        </div>
-
-        <!-- Toolbar Container: Filter lalu Tombol Tambah di kiri, Search di kanan (ms-auto) -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
-            <div class="d-flex flex-wrap align-items-center gap-3">
-                <form method="GET" action="{{ route('users.index') }}" class="m-0">
-                    <select name="role" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
-                        <option value="">Semua Role</option>
-                        <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="staff" {{ request('role') === 'staff' ? 'selected' : '' }}>Staff</option>
-                        <option value="reseller" {{ request('role') === 'reseller' ? 'selected' : '' }}>Reseller</option>
-                    </select>
-                </form>
-
+            <div class="d-flex align-items-center gap-2 mt-4">
                 <a href="{{ route('users.create') }}" class="btn btn-sm btn-scent fw-semibold">
                     <i class="bi bi-person-plus me-1"></i> Tambah Pengguna
                 </a>
             </div>
+        </div>
 
-            <div class="ms-auto">
-                <div class="input-group input-group-sm" style="width: 16rem">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="search" id="liveUserSearch" name="search" class="form-control border-start-0 ps-0" placeholder="Filter baris pengguna&hellip;" value="{{ request('search') }}" aria-label="Filter rows">
+        <!-- Kolom Kanan: Filter Role & Fitur Search -->
+        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
+            <form method="GET" action="{{ route('users.index') }}" class="d-flex flex-column gap-2 m-0" id="filterUsersForm">
+                <select name="role" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Semua Role</option>
+                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="staff" {{ request('role') === 'staff' ? 'selected' : '' }}>Staff</option>
+                    <option value="reseller" {{ request('role') === 'reseller' ? 'selected' : '' }}>Reseller</option>
+                </select>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                    <input type="search" id="liveUserSearch" name="search" class="form-control border-start-0 ps-2" placeholder="Filter nama / email pengguna&hellip;" value="{{ request('search') }}" aria-label="Filter rows">
+                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
                 </div>
-            </div>
+
+                @if(request()->hasAny(['role', 'search']))
+                <div class="text-center mt-1">
+                    <a href="{{ route('users.index') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Filter">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
+                    </a>
+                </div>
+                @endif
+            </form>
         </div>
     </div>
 

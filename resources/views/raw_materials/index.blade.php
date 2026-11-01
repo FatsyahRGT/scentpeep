@@ -38,68 +38,59 @@
 
 <!-- Card Utama Master Bahan Mentah -->
 <div class="card mb-4 shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
-    <div class="card-header bg-white py-3 border-bottom">
-        <div>
-            <h3 class="card-title font-serif fw-bold text-dark mb-0">Status Persediaan Bahan Mentah</h3>
-            <small class="text-muted">Kelola master bahan mentah, kategori material, serta pencatatan stok pengadaan dan pemakaian.</small>
-        </div>
-
-        <!-- Toolbar Terstandarisasi -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
-            <!-- Sisi Kiri: Filter lalu Tombol Aksi -->
-            <div class="d-flex flex-wrap align-items-center gap-3">
-                <form method="GET" action="{{ route('raw-materials.index') }}" class="d-flex flex-wrap align-items-center gap-2">
-                    <select name="category" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
-                        <option value="">Semua Kategori</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->name }}" {{ request('category') == $cat->name ? 'selected' : '' }}>
-                                {{ $cat->name }} ({{ $cat->raw_materials_count }})
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <select name="status" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
-                        <option value="">Semua Status</option>
-                        <option value="ready" {{ request('status') === 'ready' ? 'selected' : '' }}>Stok Aman</option>
-                        <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Stok Menipis</option>
-                    </select>
-
-                    @if(request('search'))
-                        <input type="hidden" name="search" value="{{ request('search') }}">
-                    @endif
-                </form>
-
+    <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
+        <div class="d-flex flex-column justify-content-between">
+            <div>
+                <h3 class="card-title font-serif fw-bold text-dark mb-1">Status Persediaan Bahan Mentah</h3>
+                <small class="text-muted d-block">Kelola master bahan mentah, kategori material, serta pencatatan stok pengadaan dan pemakaian.</small>
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-4">
                 <button type="button" class="btn btn-sm btn-scent fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahMaterial">
                     <i class="bi bi-plus-lg me-1"></i> Tambah Bahan
                 </button>
-
                 <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold" data-bs-toggle="modal" data-bs-target="#modalKelolaKategori">
                     <i class="bi bi-tags me-1"></i> Kelola Kategori
                 </button>
             </div>
+        </div>
 
-            <!-- Sisi Kanan: Search Bar -->
-            <div class="ms-auto" style="min-width: 260px;">
-                <form method="GET" action="{{ route('raw-materials.index') }}">
-                    @if(request('category'))
-                        <input type="hidden" name="category" value="{{ request('category') }}">
-                    @endif
-                    @if(request('status'))
-                        <input type="hidden" name="status" value="{{ request('status') }}">
-                    @endif
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-light text-muted border-end-0">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Cari nama bahan mentah..." value="{{ request('search') }}">
-                        @if(request('search'))
-                            <a href="{{ route('raw-materials.index', request()->except('search')) }}" class="btn btn-outline-secondary" title="Reset pencarian">
-                                <i class="bi bi-x-lg"></i>
-                            </a>
-                        @endif
-                    </div>
-                </form>
-            </div>
+        <!-- Kolom Kanan: Filter Dropdowns & Fitur Search -->
+        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
+            <form method="GET" action="{{ route('raw-materials.index') }}" class="d-flex flex-column gap-2 m-0" id="filterRawMaterialsForm">
+                <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Semua Kategori</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->name }}" {{ request('category') == $cat->name ? 'selected' : '' }}>
+                            {{ $cat->name }} ({{ $cat->raw_materials_count }})
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">Semua Status</option>
+                    <option value="ready" {{ request('status') === 'ready' ? 'selected' : '' }}>Stok Aman</option>
+                    <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Stok Menipis</option>
+                </select>
+
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white text-muted border-end-0 ps-3">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari nama bahan mentah..." value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+
+                @if(request()->hasAny(['category', 'status', 'search']))
+                <div class="text-center mt-1">
+                    <a href="{{ route('raw-materials.index') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Filter">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
+                    </a>
+                </div>
+                @endif
+            </form>
         </div>
     </div>
 

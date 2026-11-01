@@ -603,11 +603,11 @@
                         <div class="collapse {{ $isDashboardActive ? 'show' : '' }} nav-side-sub" id="menuDashboard">
                             <a class="nav-side-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-wallet2"></i>
-                                <span>Dashboard Kas &amp; Ledger</span>
+                                <span>Dashboard Utama</span>
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('stocks.reseller') ? 'active' : '' }}" href="{{ route('stocks.reseller') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-boxes"></i>
-                                <span>Dashboard Stok &amp; Sebaran</span>
+                                <span>Dashboard Stok</span>
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('invoices.evaluation') ? 'active' : '' }}" href="{{ route('invoices.evaluation') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-graph-up-arrow"></i>
