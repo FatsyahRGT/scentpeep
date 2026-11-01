@@ -65,7 +65,7 @@
         <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
             <form method="GET" action="{{ route('invoices.index') }}" class="d-flex flex-column gap-2 m-0" id="filterInvoicesForm">
                 <!-- Filter Tahun -->
-                <select name="year" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">Semua Tahun</option>
                     @foreach($availableYears as $yr)
                     <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>Tahun {{ $yr }}</option>
@@ -73,7 +73,7 @@
                 </select>
 
                 <!-- Filter Bulan -->
-                <select name="month" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                <select name="month" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">Semua Bulan</option>
                     @foreach($months as $num => $name)
                     <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>{{ $name }}</option>
@@ -82,7 +82,7 @@
 
                 <!-- Filter Sales -->
                 @if(!Auth::user()->isReseller())
-                <select name="sales_name" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                <select name="sales_name" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">Semua Sales</option>
                     @foreach($salesOptions as $s)
                     <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
@@ -91,14 +91,14 @@
                 @endif
 
                 <!-- Filter Status Bayar -->
-                <select name="payment_status" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                <select name="payment_status" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">Status Bayar</option>
                     <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
                     <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
                 </select>
 
                 <!-- Filter Lokasi -->
-                <select name="location_id" class="form-select form-select-sm text-center" onchange="this.form.submit()">
+                <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">Lokasi Stok</option>
                     @foreach($locations as $loc)
                     <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
@@ -108,7 +108,7 @@
                 <!-- Fitur Search: Tepat di Bawah Button Lokasi Stok -->
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
-                    <input type="search" name="search" class="form-control border-start-0 ps-2 text-center" placeholder="Cari invoice/customer&hellip;" value="{{ request('search') }}">
+                    <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari invoice/customer&hellip;" value="{{ request('search') }}">
                     <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
                         <i class="bi bi-arrow-right"></i>
                     </button>

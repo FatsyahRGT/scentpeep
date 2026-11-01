@@ -49,7 +49,7 @@
             <!-- Sisi Kiri: Filter lalu Tombol Aksi -->
             <div class="d-flex flex-wrap align-items-center gap-3">
                 <form method="GET" action="{{ route('raw-materials.index') }}" class="d-flex flex-wrap align-items-center gap-2">
-                    <select name="category" class="form-select form-select-sm text-center" style="min-width: 170px;" onchange="this.form.submit()">
+                    <select name="category" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
                         <option value="">Semua Kategori</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->name }}" {{ request('category') == $cat->name ? 'selected' : '' }}>
@@ -58,7 +58,7 @@
                         @endforeach
                     </select>
 
-                    <select name="status" class="form-select form-select-sm" style="min-width: 140px;" onchange="this.form.submit()">
+                    <select name="status" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
                         <option value="">Semua Status</option>
                         <option value="ready" {{ request('status') === 'ready' ? 'selected' : '' }}>Stok Aman</option>
                         <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Stok Menipis</option>

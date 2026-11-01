@@ -17,7 +17,7 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3 mb-4">
             <div class="d-flex flex-wrap align-items-center gap-3">
                 <form method="GET" action="{{ route('products.index') }}" class="m-0">
-                    <select name="status" class="form-select form-select-sm text-center" style="min-width: 150px;" onchange="this.form.submit()">
+                    <select name="status" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
                         <option value="">Semua Status</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Non-Aktif</option>

@@ -96,34 +96,28 @@
     <div class="card-body p-3" style="background-color: var(--color-surface-hover, #f4f3f0); border-bottom: 1px solid var(--color-border, #e8e6e1);">
         <form action="{{ route('transactions.index') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2 gap-md-3">
             <!-- Tipe Arus Kas -->
-            <div style="flex: 0 1 145px; min-width: 140px;">
-                <select name="type" class="form-select form-select-sm">
-                    <option value="">Semua Tipe</option>
-                    <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
-                    <option value="OUTCOME" {{ request('type') === 'OUTCOME' ? 'selected' : '' }}>Keluar</option>
-                </select>
-            </div>
+            <select name="type" class="form-select form-select-sm w-auto">
+                <option value="">Semua Tipe</option>
+                <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
+                <option value="OUTCOME" {{ request('type') === 'OUTCOME' ? 'selected' : '' }}>Keluar</option>
+            </select>
 
             <!-- Kategori -->
-            <div style="flex: 0 1 165px; min-width: 155px;">
-                <select name="category" class="form-select form-select-sm">
-                    <option value="">Semua Kategori</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <select name="category" class="form-select form-select-sm w-auto">
+                <option value="">Semua Kategori</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                @endforeach
+            </select>
 
             <!-- Lokasi (Admin Only) -->
             @if(!Auth::user()->isReseller() && isset($locations))
-            <div style="flex: 0 1 165px; min-width: 150px;">
-                <select name="location_id" class="form-select form-select-sm">
-                    <option value="">Semua Lokasi</option>
-                    @foreach($locations as $loc)
-                        <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <select name="location_id" class="form-select form-select-sm w-auto">
+                <option value="">Semua Lokasi</option>
+                @foreach($locations as $loc)
+                    <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
+                @endforeach
+            </select>
             @endif
 
             <!-- Rentang Tanggal (Dari & Sampai 1 baris) -->
