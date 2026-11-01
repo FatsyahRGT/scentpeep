@@ -60,6 +60,7 @@ class WebRoutesRenderingTest extends TestCase
             '/dashboard',
             '/invoices',
             '/invoices/create',
+            '/invoices/evaluation',
             '/pre-orders',
             '/pre-orders/create',
             '/raw-materials',
@@ -94,6 +95,7 @@ class WebRoutesRenderingTest extends TestCase
             '/stocks',
             '/invoices',
             '/invoices/create',
+            '/invoices/evaluation',
         ];
 
         foreach ($resellerRoutes as $url) {

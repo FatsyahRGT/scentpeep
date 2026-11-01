@@ -35,7 +35,7 @@
                         <div class="col-md-6">
                             <label for="sales_name" class="form-label small fw-semibold text-muted">Nama Sales <span class="text-danger">*</span></label>
                             <select name="sales_name" id="sales_name" class="form-select @error('sales_name') is-invalid @enderror" required>
-                                <option value="">-- Pilih Sales --</option>
+                                <option value="">Pilih Sales</option>
                                 @foreach($salesOptions as $sales)
                                 <option value="{{ $sales }}" {{ old('sales_name', $invoice->sales_name) === $sales ? 'selected' : '' }}>{{ $sales }}</option>
                                 @endforeach

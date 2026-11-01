@@ -168,4 +168,17 @@ class DashboardTest extends TestCase
         $this->assertEquals(15, $rizkyDs['total_qty']);
         $this->assertEquals(\App\Models\Location::paletteForName('RIZKY')['pill_bg'], $rizkyDs['color']);
     }
+
+    public function test_dashboard_sales_distribution_excludes_storage_location_names(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('dashboard'));
+        $response->assertOk();
+
+        $salesDistribution = $response->viewData('salesDistribution');
+        $salesNames = collect($salesDistribution)->pluck('name');
+
+        // Gudang & Toko Reseller tidak boleh muncul sebagai nama sales person
+        $this->assertFalse($salesNames->contains('Gudang Pusat'));
+        $this->assertFalse($salesNames->contains('Toko Reseller Mitra'));
+    }
 }

@@ -72,63 +72,6 @@ class InvoiceController extends Controller
             'total_paid_amount' => (float) (clone $filteredMetricQuery)->where('payment_status', Invoice::STATUS_PAID)->sum('total_price'),
         ];
 
-        // Evaluasi Penjualan Year-on-Year (Sold Comparison: Tahun Ini vs Tahun Kemarin)
-        $targetYear = (int) ($request->filled('year') ? $request->year : Carbon::now()->year);
-        $prevYear = $targetYear - 1;
-
-        $thisYearQuery = Invoice::whereYear('created_at', $targetYear);
-        $lastYearQuery = Invoice::whereYear('created_at', $prevYear);
-
-        if ($isReseller) {
-            $userLocId = $user->location?->id;
-            $resellerScope = function ($q) use ($user, $userLocId) {
-                $q->where('sales_name', $user->name)
-                  ->orWhere('created_by', $user->id);
-                if ($userLocId) {
-                    $q->orWhere('location_id', $userLocId);
-                }
-            };
-            $thisYearQuery->where($resellerScope);
-            $lastYearQuery->where($resellerScope);
-        } elseif ($request->filled('sales_name')) {
-            $thisYearQuery->where('sales_name', $request->sales_name);
-            $lastYearQuery->where('sales_name', $request->sales_name);
-        }
-
-        $thisYearQty = (int) (clone $thisYearQuery)->sum('qty');
-        $thisYearOmset = (float) (clone $thisYearQuery)->sum('total_price');
-        $thisYearInvoices = (int) (clone $thisYearQuery)->count();
-
-        $lastYearQty = (int) (clone $lastYearQuery)->sum('qty');
-        $lastYearOmset = (float) (clone $lastYearQuery)->sum('total_price');
-        $lastYearInvoices = (int) (clone $lastYearQuery)->count();
-
-        $qtyDiff = $thisYearQty - $lastYearQty;
-        $qtyGrowth = $lastYearQty > 0 
-            ? round(($qtyDiff / $lastYearQty) * 100, 1) 
-            : ($thisYearQty > 0 ? 100.0 : 0.0);
-
-        $omsetDiff = $thisYearOmset - $lastYearOmset;
-        $omsetGrowth = $lastYearOmset > 0 
-            ? round(($omsetDiff / $lastYearOmset) * 100, 1) 
-            : ($thisYearOmset > 0 ? 100.0 : 0.0);
-
-        $yoyMetrics = [
-            'target_year' => $targetYear,
-            'prev_year' => $prevYear,
-            'this_year_qty' => $thisYearQty,
-            'this_year_omset' => $thisYearOmset,
-            'this_year_invoices' => $thisYearInvoices,
-            'last_year_qty' => $lastYearQty,
-            'last_year_omset' => $lastYearOmset,
-            'last_year_invoices' => $lastYearInvoices,
-            'qty_diff' => $qtyDiff,
-            'qty_growth' => $qtyGrowth,
-            'omset_diff' => $omsetDiff,
-            'omset_growth' => $omsetGrowth,
-        ];
-
-        // Distinct available years for filter
         $yearExtractSql = DB::connection()->getDriverName() === 'sqlite' 
             ? "strftime('%Y', created_at) as y" 
             : "YEAR(created_at) as y";
@@ -165,9 +108,189 @@ class InvoiceController extends Controller
             'metrics',
             'locations',
             'salesOptions',
-            'yoyMetrics',
             'availableYears',
             'months'
+        ));
+    }
+
+    /**
+     * Dashboard khusus Evaluasi & Komparasi Penjualan (Year-on-Year dan Perbandingan Bulanan).
+     */
+    public function evaluation(Request $request): View
+    {
+        $user = Auth::user();
+        $isReseller = $user->isReseller();
+
+        // 1. Tahun Target dan Tahun Pembanding
+        $targetYear = (int) ($request->filled('year') ? $request->year : Carbon::now()->year);
+        $compareYear = (int) ($request->filled('compare_year') ? $request->compare_year : ($targetYear - 1));
+        $selectedMonth = $request->filled('month') ? (int) $request->month : null;
+        $selectedSales = $request->sales_name;
+
+        // Distinct available years for filter
+        $yearExtractSql = DB::connection()->getDriverName() === 'sqlite' 
+            ? "strftime('%Y', created_at) as y" 
+            : "YEAR(created_at) as y";
+
+        $availableYears = Invoice::selectRaw($yearExtractSql)
+            ->distinct()
+            ->pluck('y')
+            ->filter()
+            ->map(fn($y) => (int)$y)
+            ->push(Carbon::now()->year)
+            ->push(Carbon::now()->year - 1)
+            ->unique()
+            ->sortDesc()
+            ->values();
+
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        // Scope helper
+        $applySalesScope = function ($query) use ($isReseller, $user, $selectedSales) {
+            if ($isReseller) {
+                $userLocId = $user->location?->id;
+                $query->where(function ($q) use ($user, $userLocId) {
+                    $q->where('sales_name', $user->name)
+                      ->orWhere('created_by', $user->id);
+                    if ($userLocId) {
+                        $q->orWhere('location_id', $userLocId);
+                    }
+                });
+            } elseif ($selectedSales) {
+                $query->where('sales_name', $selectedSales);
+            }
+        };
+
+        // Query Utama untuk KPI Ringkasan
+        $targetQuery = Invoice::whereYear('created_at', $targetYear);
+        $compareQuery = Invoice::whereYear('created_at', $compareYear);
+
+        if ($selectedMonth) {
+            $targetQuery->whereMonth('created_at', $selectedMonth);
+            $compareQuery->whereMonth('created_at', $selectedMonth);
+        }
+
+        $applySalesScope($targetQuery);
+        $applySalesScope($compareQuery);
+
+        $targetQty = (int) (clone $targetQuery)->sum('qty');
+        $targetOmset = (float) (clone $targetQuery)->sum('total_price');
+        $targetInvoices = (int) (clone $targetQuery)->count();
+
+        $compareQty = (int) (clone $compareQuery)->sum('qty');
+        $compareOmset = (float) (clone $compareQuery)->sum('total_price');
+        $compareInvoices = (int) (clone $compareQuery)->count();
+
+        $qtyDiff = $targetQty - $compareQty;
+        $qtyGrowth = $compareQty > 0 
+            ? round(($qtyDiff / $compareQty) * 100, 1) 
+            : ($targetQty > 0 ? 100.0 : 0.0);
+
+        $omsetDiff = $targetOmset - $compareOmset;
+        $omsetGrowth = $compareOmset > 0 
+            ? round(($omsetDiff / $compareOmset) * 100, 1) 
+            : ($targetOmset > 0 ? 100.0 : 0.0);
+
+        $yoyMetrics = [
+            'target_year' => $targetYear,
+            'compare_year' => $compareYear,
+            'selected_month' => $selectedMonth,
+            'month_name' => $selectedMonth ? ($months[$selectedMonth] ?? '') : null,
+            'target_qty' => $targetQty,
+            'target_omset' => $targetOmset,
+            'target_invoices' => $targetInvoices,
+            'compare_qty' => $compareQty,
+            'compare_omset' => $compareOmset,
+            'compare_invoices' => $compareInvoices,
+            'qty_diff' => $qtyDiff,
+            'qty_growth' => $qtyGrowth,
+            'omset_diff' => $omsetDiff,
+            'omset_growth' => $omsetGrowth,
+        ];
+
+        // Rincian Bulanan 12 Bulan
+        $monthExtractSql = DB::connection()->getDriverName() === 'sqlite'
+            ? "CAST(strftime('%m', created_at) AS INTEGER) as m"
+            : "MONTH(created_at) as m";
+
+        $targetMonthlyDataQuery = Invoice::whereYear('created_at', $targetYear)
+            ->selectRaw("{$monthExtractSql}, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as inv_count")
+            ->groupBy('m');
+        $applySalesScope($targetMonthlyDataQuery);
+        $targetMonthly = $targetMonthlyDataQuery->get()->keyBy('m');
+
+        $compareMonthlyDataQuery = Invoice::whereYear('created_at', $compareYear)
+            ->selectRaw("{$monthExtractSql}, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as inv_count")
+            ->groupBy('m');
+        $applySalesScope($compareMonthlyDataQuery);
+        $compareMonthly = $compareMonthlyDataQuery->get()->keyBy('m');
+
+        $monthlyBreakdown = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $tRec = $targetMonthly->get($m);
+            $cRec = $compareMonthly->get($m);
+
+            $tQ = (int) ($tRec?->total_qty ?? 0);
+            $tO = (float) ($tRec?->total_omset ?? 0);
+            $tI = (int) ($tRec?->inv_count ?? 0);
+
+            $cQ = (int) ($cRec?->total_qty ?? 0);
+            $cO = (float) ($cRec?->total_omset ?? 0);
+            $cI = (int) ($cRec?->inv_count ?? 0);
+
+            $qDiff = $tQ - $cQ;
+            $qGrowth = $cQ > 0 ? round(($qDiff / $cQ) * 100, 1) : ($tQ > 0 ? 100.0 : 0.0);
+
+            $oDiff = $tO - $cO;
+            $oGrowth = $cO > 0 ? round(($oDiff / $cO) * 100, 1) : ($tO > 0 ? 100.0 : 0.0);
+
+            $monthlyBreakdown[$m] = [
+                'month_num' => $m,
+                'month_name' => $months[$m],
+                'target_qty' => $tQ,
+                'target_omset' => $tO,
+                'target_invoices' => $tI,
+                'compare_qty' => $cQ,
+                'compare_omset' => $cO,
+                'compare_invoices' => $cI,
+                'qty_diff' => $qDiff,
+                'qty_growth' => $qGrowth,
+                'omset_diff' => $oDiff,
+                'omset_growth' => $oGrowth,
+            ];
+        }
+
+        // Top Varian Terlaris di Periode Terpilih
+        $topProductsQuery = Invoice::whereYear('created_at', $targetYear)
+            ->select('product_id', DB::raw('SUM(qty) as total_sold'), DB::raw('SUM(total_price) as total_omset'))
+            ->groupBy('product_id')
+            ->orderByDesc('total_sold')
+            ->with('product');
+
+        if ($selectedMonth) {
+            $topProductsQuery->whereMonth('created_at', $selectedMonth);
+        }
+        $applySalesScope($topProductsQuery);
+        $topProducts = $topProductsQuery->take(8)->get();
+
+        $salesOptions = $isReseller ? collect([$user->name]) : Invoice::getSalesOptions();
+
+        return view('invoices.evaluation', compact(
+            'yoyMetrics',
+            'monthlyBreakdown',
+            'topProducts',
+            'availableYears',
+            'months',
+            'salesOptions',
+            'targetYear',
+            'compareYear',
+            'selectedMonth',
+            'selectedSales',
+            'isReseller'
         ));
     }
 

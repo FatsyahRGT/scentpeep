@@ -176,17 +176,14 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('sales_name');
 
-        // Prioritas nama sales: tim lapangan / reseller / staff non-admin + nama invoice aktif
+        // Prioritas nama sales: tim lapangan / reseller / staff non-admin + nama invoice aktif (lokasi/gudang fisik tidak digabung ke sales)
         $staffUserNames = User::where('is_active', true)
             ->where('role', '!=', User::ROLE_ADMIN)
             ->whereNotIn('email', ['staff@scentpeep.com', 'admin@scentpeep.com'])
             ->whereNotIn('name', ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff'])
             ->pluck('name');
 
-        $locationTeamNames = Location::pluck('name');
-
         $allSalesNames = $staffUserNames
-            ->merge($locationTeamNames)
             ->merge($salesStats->keys())
             ->reject(fn($n) => in_array($n, ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff']))
             ->unique()

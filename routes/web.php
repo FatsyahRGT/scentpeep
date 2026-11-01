@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // 1. Invoices (Penjualan Parfum per Varian - Akses Semua User)
+    Route::get('/invoices/evaluation', [InvoiceController::class, 'evaluation'])->name('invoices.evaluation');
     Route::post('/invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.markPaid');
     Route::resource('invoices', InvoiceController::class);
 

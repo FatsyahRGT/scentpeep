@@ -543,6 +543,10 @@
                                 <i class="bi bi-file-earmark-text"></i>
                                 <span>Daftar Invoice</span>
                             </a>
+                            <a class="nav-side-link {{ request()->routeIs('invoices.evaluation') ? 'active' : '' }}" href="{{ route('invoices.evaluation') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                <span>Evaluasi Penjualan (YoY)</span>
+                            </a>
                             <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-boxes"></i>
                                 <span>Stok Fisik Saya</span>
@@ -579,6 +583,10 @@
                                 <i class="bi bi-file-earmark-text"></i>
                                 <span>Daftar Invoice</span>
                             </a>
+                            <a class="nav-side-link {{ request()->routeIs('invoices.evaluation') ? 'active' : '' }}" href="{{ route('invoices.evaluation') }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                <span>Evaluasi Penjualan (YoY)</span>
+                            </a>
                         </div>
                     </div>
 
@@ -599,11 +607,11 @@
                         <div class="collapse {{ $isStockActive ? 'show' : '' }} nav-side-sub" id="menuStok">
                             <a class="nav-side-link {{ request()->routeIs('stocks.reseller') ? 'active' : '' }}" href="{{ route('stocks.reseller') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-shop-window"></i>
-                                <span>Sebaran Stok Reseller</span>
+                                <span>Dashboard Stok</span>
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-grid-3x3"></i>
-                                <span>Ringkasan Matriks Stok</span>
+                                <span>Ringkasan Stok</span>
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('pre-orders.*') ? 'active' : '' }}" href="{{ route('pre-orders.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-hourglass-split"></i>
@@ -611,7 +619,7 @@
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('stocks.transfers') || request()->routeIs('stocks.transfer.*') ? 'active' : '' }}" href="{{ route('stocks.transfers') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-arrow-left-right"></i>
-                                <span>Transfer Stok Antar Lokasi</span>
+                                <span>Transfer Stok</span>
                             </a>
                             <a class="nav-side-link fw-semibold" style="color: var(--scent-dark);" href="{{ route('stocks.publicReseller') }}" target="_blank" title="Buka dashboard stok versi reseller tanpa login">
                                 <i class="bi bi-box-arrow-up-right"></i>
@@ -637,7 +645,7 @@
                         <div class="collapse {{ $isMaterialActive ? 'show' : '' }} nav-side-sub" id="menuMaterial">
                             <a class="nav-side-link {{ request()->routeIs('raw-materials.index') ? 'active' : '' }}" href="{{ route('raw-materials.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-box"></i>
-                                <span>Pengadaan Box & Botol</span>
+                                <span>Kontrol Raw Material</span>
                             </a>
                         </div>
                     </div>
@@ -659,11 +667,11 @@
                         <div class="collapse {{ $isKasActive ? 'show' : '' }} nav-side-sub" id="menuKas">
                             <a class="nav-side-link {{ request()->routeIs('transactions.create') ? 'active' : '' }}" href="{{ route('transactions.create') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-plus-circle"></i>
-                                <span>Catat Transaksi Kas</span>
+                                <span>Catat Kas</span>
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('transactions.index') || request()->routeIs('transactions.edit') ? 'active' : '' }}" href="{{ route('transactions.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-journal-text"></i>
-                                <span>Riwayat Kas Masuk & Keluar</span>
+                                <span>Riwayat Cashflow</span>
                             </a>
                         </div>
                     </div>

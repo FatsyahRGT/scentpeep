@@ -388,9 +388,15 @@ class InvoiceAndProcurementTest extends TestCase
         // Test normal access
         $response = $this->actingAs($this->admin)->get(route('invoices.index'));
         $response->assertOk();
-        $response->assertSee('Evaluasi Penjualan Tahunan');
+        $response->assertSee('Evaluasi YoY');
         $response->assertSee('INV-CY-01');
         $response->assertSee('INV-PY-01');
+
+        // Test dedicated evaluation page
+        $resEval = $this->actingAs($this->admin)->get(route('invoices.evaluation', ['year' => $currentYear, 'compare_year' => $prevYear]));
+        $resEval->assertOk();
+        $resEval->assertSee('Ringkasan Evaluasi');
+        $resEval->assertSee('Komparasi Performa Bulanan');
 
         // Test filter by current year only
         $resFilterYear = $this->actingAs($this->admin)->get(route('invoices.index', ['year' => $currentYear]));

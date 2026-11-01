@@ -294,5 +294,10 @@ class ResellerLifecycleTest extends TestCase
         // Reseller 1 CAN edit their own invoice
         $this->actingAs($reseller1)->get(route('invoices.edit', $inv1))
             ->assertOk();
+
+        // Reseller 1 can access evaluation dashboard scoped to their sales
+        $evalRes = $this->actingAs($reseller1)->get(route('invoices.evaluation'));
+        $evalRes->assertOk();
+        $evalRes->assertSee('Evaluasi & Komparasi Penjualan');
     }
 }
