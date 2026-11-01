@@ -12,9 +12,9 @@
     "semantic_hash": "25a307335c0719bc9a91b3f7babd186d"
   },
   "app/Http/Controllers/DashboardController.php": {
-    "mtime": 1793530100.9715397,
-    "seen": 1793530221.5689962,
-    "ast_hash": "2360dfc649cf5784694857d6a7672586",
+    "mtime": 1793535549.526051,
+    "seen": 1793535618.511452,
+    "ast_hash": "1d4fa4acc1071c3837d4acb0705a73fa",
     "semantic_hash": ""
   },
   "app/Http/Controllers/LocationController.php": {
@@ -282,9 +282,9 @@
     "semantic_hash": ""
   },
   "resources/views/dashboard.blade.php": {
-    "mtime": 1793528701.375867,
-    "seen": 1793528738.5212889,
-    "ast_hash": "06144f9bba165d2b5dfaf99a9a0f3ada",
+    "mtime": 1793535571.281086,
+    "seen": 1793535618.5124488,
+    "ast_hash": "2863ffc95f9ea03148c8130257ac769a",
     "semantic_hash": ""
   },
   "resources/views/layouts/app.blade.php": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "resources/views/stocks/index.blade.php": {
-    "mtime": 1793534540.0939977,
-    "seen": 1793534673.1388745,
-    "ast_hash": "24d3706db3241eca95f654cdb706ac57",
+    "mtime": 1793535398.2294605,
+    "seen": 1793535618.5124488,
+    "ast_hash": "753088528007afffd883ed9f4d972570",
     "semantic_hash": ""
   },
   "routes/console.php": {
@@ -714,8 +714,8 @@
     "semantic_hash": ""
   },
   "resources/views/stocks/public_reseller_dashboard.blade.php": {
-    "mtime": 1793365191.6609576,
-    "seen": 1793365460.1876948,
+    "mtime": 1793535447.8244958,
+    "seen": 1793535618.5124488,
     "ast_hash": "3496a7499db4c6971ba90ac17d5c6539",
     "semantic_hash": ""
   },
@@ -918,9 +918,9 @@
     "semantic_hash": ""
   },
   "resources/views/dashboards/sales.blade.php": {
-    "mtime": 1793530150.2337885,
-    "seen": 1793530221.5689962,
-    "ast_hash": "c560bbbdeabe07e5d1deba47a4fa373d",
+    "mtime": 1793535586.4740796,
+    "seen": 1793535618.5124488,
+    "ast_hash": "536319f271f7837c05b3a3394a7ba22e",
     "semantic_hash": ""
   }
 }

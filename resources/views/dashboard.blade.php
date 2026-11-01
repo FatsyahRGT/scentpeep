@@ -186,9 +186,26 @@
                     @forelse($salesDistribution as $sales)
                     @php $spal = $sales['palette'] ?? \App\Models\Location::paletteForName($sales['name']); @endphp
                     <div class="p-2 p-md-3 rounded-3 text-center d-flex flex-column justify-content-between h-100 shadow-sm" style="background-color: {{ $spal['bg'] }}; border: 1px solid {{ $spal['border'] }}; min-width: 0; overflow: hidden;">
-                        <span class="badge mb-1 px-2 py-1 text-truncate w-100 d-inline-block" style="background-color: {{ $spal['badge_bg'] }}; color: {{ $spal['badge_text'] }}; border: 1px solid {{ $spal['border'] }}; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.02em;" title="{{ $sales['name'] }}">
-                            <i class="bi bi-person-fill me-1"></i>{{ $sales['name'] }}
-                        </span>
+                        <div>
+                            <span class="badge mb-1 px-2 py-1 text-truncate w-100 d-inline-block" style="background-color: {{ $spal['badge_bg'] }}; color: {{ $spal['badge_text'] }}; border: 1px solid {{ $spal['border'] }}; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.02em;" title="{{ $sales['name'] }}">
+                                <i class="bi bi-person-fill me-1"></i>{{ $sales['name'] }}
+                            </span>
+                            <div class="mb-1">
+                                @if(($sales['role_label'] ?? '') === 'Reseller')
+                                    <span class="badge bg-dark text-white px-2 py-0" style="font-size: 0.62rem; font-weight: 600; letter-spacing: 0.03em;">
+                                        <i class="bi bi-shop me-1"></i>Reseller
+                                    </span>
+                                @elseif(($sales['role_label'] ?? '') === 'Admin')
+                                    <span class="badge bg-secondary text-white px-2 py-0" style="font-size: 0.62rem; font-weight: 600; letter-spacing: 0.03em;">
+                                        <i class="bi bi-shield-check me-1"></i>Admin
+                                    </span>
+                                @else
+                                    <span class="badge bg-white text-dark border px-2 py-0" style="font-size: 0.62rem; font-weight: 600; letter-spacing: 0.03em; border-color: {{ $spal['border'] }} !important;">
+                                        <i class="bi bi-briefcase-fill text-muted me-1"></i>Sales
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
                         <div class="my-1">
                             <div class="font-serif fs-4 fw-bold text-truncate" style="color: {{ $spal['text'] }}; line-height: 1.2;">{{ number_format($sales['total_qty']) }} <span class="fs-6 text-muted font-sans fw-normal">pcs</span></div>
                             <div class="font-mono fw-semibold text-truncate" style="color: {{ $spal['text'] }}; font-size: 0.72rem;">Rp {{ number_format($sales['total_omset'], 0, ',', '.') }}</div>

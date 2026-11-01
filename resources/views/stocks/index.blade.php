@@ -95,7 +95,7 @@
                 @if(!Auth::user()->isReseller())
                 <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-scent-outline fw-semibold">
                     <i class="bi bi-arrow-left-right me-1"></i> Transfer Stok
-                </a>
+                </a>  
                 @endif
                 <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
                     <i class="bi bi-receipt-cutoff me-1"></i> Buat Invoice

@@ -183,16 +183,28 @@ class DashboardController extends Controller
             ->whereNotIn('name', ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff'])
             ->pluck('name');
 
+        $allUsersByName = User::all()->keyBy(fn($u) => strtolower(trim($u->name)));
+
         $allSalesNames = $staffUserNames
             ->merge($salesStats->keys())
             ->reject(fn($n) => in_array($n, ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff']))
             ->unique()
             ->values();
 
-        $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats) {
+        $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats, $allUsersByName) {
             $stat = $salesStats->get($name);
+            $user = $allUsersByName->get(strtolower(trim($name)));
+            $role = $user ? $user->role : 'staff';
+            $roleLabel = match(strtolower($role)) {
+                'reseller' => 'Reseller',
+                'admin' => 'Admin',
+                default => 'Sales',
+            };
+
             return [
                 'name' => $name,
+                'role' => $role,
+                'role_label' => $roleLabel,
                 'total_qty' => (int) ($stat->total_qty ?? 0),
                 'total_omset' => (float) ($stat->total_omset ?? 0),
                 'invoice_count' => (int) ($stat->invoice_count ?? 0),
@@ -319,16 +331,28 @@ class DashboardController extends Controller
             ->whereNotIn('name', ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff'])
             ->pluck('name');
 
+        $allUsersByName = User::all()->keyBy(fn($u) => strtolower(trim($u->name)));
+
         $allSalesNames = $staffUserNames
             ->merge($salesStats->keys())
             ->reject(fn($n) => in_array($n, ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff']))
             ->unique()
             ->values();
 
-        $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats) {
+        $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats, $allUsersByName) {
             $stat = $salesStats->get($name);
+            $user = $allUsersByName->get(strtolower(trim($name)));
+            $role = $user ? $user->role : 'staff';
+            $roleLabel = match(strtolower($role)) {
+                'reseller' => 'Reseller',
+                'admin' => 'Admin',
+                default => 'Sales',
+            };
+
             return [
                 'name' => $name,
+                'role' => $role,
+                'role_label' => $roleLabel,
                 'total_qty' => (int) ($stat->total_qty ?? 0),
                 'total_omset' => (float) ($stat->total_omset ?? 0),
                 'invoice_count' => (int) ($stat->invoice_count ?? 0),
