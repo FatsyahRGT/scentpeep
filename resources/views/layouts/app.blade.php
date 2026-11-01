@@ -614,10 +614,6 @@
                                 <i class="bi bi-file-earmark-text"></i>
                                 <span>Daftar Invoice</span>
                             </a>
-                            <a class="nav-side-link {{ request()->routeIs('invoices.evaluation') ? 'active' : '' }}" href="{{ route('invoices.evaluation') }}" onclick="closeMobileSidebarIfOpen()">
-                                <i class="bi bi-graph-up-arrow"></i>
-                                <span>Evaluasi Penjualan (YoY)</span>
-                            </a>
                         </div>
                     </div>
 
@@ -636,10 +632,6 @@
                             <i class="bi bi-chevron-down nav-chevron"></i>
                         </a>
                         <div class="collapse {{ $isStockActive ? 'show' : '' }} nav-side-sub" id="menuStok">
-                            <a class="nav-side-link {{ request()->routeIs('stocks.reseller') ? 'active' : '' }}" href="{{ route('stocks.reseller') }}" onclick="closeMobileSidebarIfOpen()">
-                                <i class="bi bi-shop-window"></i>
-                                <span>Dashboard Stok</span>
-                            </a>
                             <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-grid-3x3"></i>
                                 <span>Ringkasan Stok</span>

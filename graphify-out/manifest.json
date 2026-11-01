@@ -288,9 +288,9 @@
     "semantic_hash": ""
   },
   "resources/views/layouts/app.blade.php": {
-    "mtime": 1793530175.0299132,
-    "seen": 1793530221.5689962,
-    "ast_hash": "1f63dec627e40abb15a9aa08a42d5a58",
+    "mtime": 1793530363.764418,
+    "seen": 1793530403.1568675,
+    "ast_hash": "85d9667bf2a66d0596d71bf673094865",
     "semantic_hash": ""
   },
   "resources/views/locations/create.blade.php": {
