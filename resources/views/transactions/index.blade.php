@@ -57,20 +57,17 @@
 
 <div class="card mb-4">
     <!-- Header & Action Bar -->
-    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
-        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
-        <div class="d-flex flex-column justify-content-between">
+    <div class="card-header bg-white py-3 border-bottom d-block">
+        <!-- Baris Pertama: Judul di Kiri & Tombol Aksi di Kanan Atas -->
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
                 <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Daftar Transaksi Kas &amp; Stok</h3>
                 <small class="text-muted d-block">Total {{ $transactions->total() }} baris transaksi tercatat dalam sistem</small>
             </div>
-            <div class="d-flex align-items-center gap-2 mt-4">
-                <a href="{{ route('transactions.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                    <i class="bi bi-plus-circle me-1"></i> Catat Transaksi
-                </a>
+            <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
                 <div class="dropdown">
-                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-download me-1"></i> Ekspor
+                    <button class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-download"></i> Ekspor
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
                         <li>
@@ -85,77 +82,90 @@
                         </li>
                     </ul>
                 </div>
+                <a href="{{ route('transactions.create') }}" class="btn btn-dark btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap fw-semibold">
+                    <i class="bi bi-plus-lg"></i> Catat Transaksi
+                </a>
             </div>
         </div>
 
-        <!-- Kolom Kanan: Filter Dropdowns & Fitur Search di bawah Filter -->
-        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
-            <form action="{{ route('transactions.index') }}" method="GET" class="d-flex flex-column gap-2 m-0" id="filterTransactionsForm">
+        <!-- Pemisah Visual -->
+        <hr class="my-3 opacity-25">
+
+        <!-- Baris Kedua: Horizontal Filter Toolbar -->
+        <form action="{{ route('transactions.index') }}" method="GET" class="m-0" id="filterTransactionsForm">
+            <div class="row g-2 align-items-center">
                 <!-- Tipe Arus Kas -->
-                <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Tipe</option>
-                    <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
-                    <option value="OUTCOME" {{ request('type') === 'OUTCOME' ? 'selected' : '' }}>Keluar</option>
-                </select>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <select name="type" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                        <option value="">Semua Tipe</option>
+                        <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
+                        <option value="OUTCOME" {{ request('type') === 'OUTCOME' ? 'selected' : '' }}>Keluar</option>
+                    </select>
+                </div>
 
                 <!-- Kategori -->
-                <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Kategori</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                    @endforeach
-                </select>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <select name="category" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                        <option value="">Semua Kategori</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <!-- Lokasi (Admin Only) -->
                 @if(!Auth::user()->isReseller() && isset($locations))
-                <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Lokasi</option>
-                    @foreach($locations as $loc)
-                        <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
-                    @endforeach
-                </select>
+                <div class="col-12 col-md-4 col-xl-2">
+                    <select name="location_id" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                        <option value="">Semua Lokasi</option>
+                        @foreach($locations as $loc)
+                            <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 @endif
 
                 <!-- Rentang Tanggal -->
-                <div class="d-flex align-items-center gap-1">
-                    <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}" title="Dari Tanggal" onchange="this.form.submit()">
-                    <span class="text-muted small">&ndash;</span>
-                    <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}" title="Sampai Tanggal" onchange="this.form.submit()">
+                <div class="col-12 col-md-6 col-xl-3">
+                    <div class="d-flex align-items-center gap-1">
+                        <input type="date" name="start_date" class="form-control form-control-sm rounded-3" value="{{ request('start_date') }}" title="Dari Tanggal" onchange="this.form.submit()">
+                        <span class="text-muted small">&ndash;</span>
+                        <input type="date" name="end_date" class="form-control form-control-sm rounded-3" value="{{ request('end_date') }}" title="Sampai Tanggal" onchange="this.form.submit()">
+                    </div>
                 </div>
 
-                <!-- Cari Keterangan / Ref (dengan panah submit) -->
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
-                    <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari keterangan / ref..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
-                        <i class="bi bi-arrow-right"></i>
-                    </button>
+                <!-- Cari Keterangan / Ref -->
+                <div class="col-12 col-md-6 col-xl-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0 text-muted ps-3 rounded-start-3"><i class="bi bi-search"></i></span>
+                        <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari keterangan / ref..." value="{{ request('search') }}">
+                        @if(request()->anyFilled(['search', 'type', 'category', 'location_id', 'start_date', 'end_date']))
+                        <a href="{{ route('transactions.index') }}" class="btn btn-outline-secondary px-2 d-inline-flex align-items-center" title="Reset Semua Filter">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+                        @endif
+                        <button type="submit" class="btn btn-dark px-3 rounded-end-3" title="Cari">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
-
-                @if(request()->anyFilled(['search', 'type', 'category', 'location_id', 'start_date', 'end_date']))
-                <div class="text-center mt-1">
-                    <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Semua Filter">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
-                    </a>
-                </div>
-                @endif
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 
     <!-- Table -->
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table align-middle table-hover m-0">
-                <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
+                <thead style="background-color: var(--color-surface-hover, #f4f3f0);" class="text-nowrap align-middle">
                     <tr>
-                        <th style="width: 110px;" class="py-2 px-3 text-muted small fw-semibold">Tanggal</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Tipe & Kategori</th>
+                        <th style="width: 110px;" class="py-2 px-3 text-muted small fw-semibold text-nowrap">Tanggal</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-nowrap">Tipe & Kategori</th>
                         <th class="py-2 px-3 text-muted small fw-semibold">Keterangan & Referensi</th>
-                        <th class="d-none d-sm-table-cell py-2 px-3 text-muted small fw-semibold">Efek Stok Fisik</th>
-                        <th class="text-end py-2 px-3 text-muted small fw-semibold">Nominal (Rp)</th>
-                        <th class="d-none d-lg-table-cell py-2 px-3 text-muted small fw-semibold">Pencatat</th>
-                        <th class="text-center py-2 px-3 text-muted small fw-semibold" style="width: 60px;">Aksi</th>
+                        <th class="d-none d-sm-table-cell py-2 px-3 text-muted small fw-semibold text-nowrap">Efek Stok Fisik</th>
+                        <th class="text-end text-nowrap py-2 px-3 text-muted small fw-semibold">Nominal (Rp)</th>
+                        <th class="d-none d-lg-table-cell py-2 px-3 text-muted small fw-semibold text-nowrap">Pencatat</th>
+                        <th class="text-end text-nowrap py-2 px-3 text-muted small fw-semibold pe-4" style="width: 60px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -167,7 +177,7 @@
                         </td>
 
                         <!-- Tipe & Kategori -->
-                        <td class="py-2 px-3">
+                        <td class="py-2 px-3 text-nowrap">
                             <span class="badge {{ $tx->type === 'INCOME' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} border px-2 py-1">
                                 {{ $tx->type === 'INCOME' ? 'MASUK' : 'KELUAR' }} &middot; {{ $tx->category }}
                             </span>
@@ -196,9 +206,9 @@
                         </td>
 
                         <!-- Efek Stok Fisik -->
-                        <td class="d-none d-sm-table-cell py-2 px-3">
+                        <td class="d-none d-sm-table-cell py-2 px-3 text-nowrap">
                             @if($tx->stock_effect !== 'NONE' && $tx->product)
-                                <div class="d-flex align-items-center gap-1 flex-wrap">
+                                <div class="d-flex align-items-center gap-1 text-nowrap">
                                     <span class="badge {{ $tx->stock_effect === 'IN' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-dark' }} border">
                                         {{ $tx->stock_effect === 'IN' ? '+ ' : '- ' }}{{ $tx->qty }} pcs
                                     </span>
@@ -223,13 +233,13 @@
                         </td>
 
                         <!-- Creator -->
-                        <td class="small text-muted d-none d-lg-table-cell py-2 px-3">
+                        <td class="small text-muted d-none d-lg-table-cell py-2 px-3 text-nowrap">
                             {{ $tx->creator?->name ?? 'System' }}
                         </td>
 
                         <!-- Action 3-dots Dropdown -->
-                        <td class="text-center py-2 px-3">
-                            <div class="dropdown">
+                        <td class="text-end py-2 px-3 text-nowrap pe-4">
+                            <div class="dropdown d-inline-block">
                                 <button class="btn btn-sm btn-ghost-secondary rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Menu Aksi">
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </button>

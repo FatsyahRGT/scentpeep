@@ -43,86 +43,101 @@
     </div>
 </div>
 
-<div class="card mb-4">
-    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
-        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
-        <div class="d-flex flex-column justify-content-between">
+<div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important; border-radius: 12px;">
+    <div class="card-header py-3 bg-white border-bottom d-block">
+        <!-- Baris Pertama: Header & Action Buttons -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
-                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Data Invoice Penjualan</h3>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Data Invoice Penjualan</h3>
                 <small class="text-muted d-block">Penjualan produk per varian parfum dengan pemotongan stok fisik otomatis.</small>
             </div>
-            <div class="d-flex align-items-center gap-2 mt-4">
-                <a href="{{ route('invoices.evaluation') }}" class="btn btn-sm btn-outline-secondary" title="Buka Evaluasi Penjualan (YoY)">
-                    <i class="bi bi-graph-up-arrow me-1"></i> Evaluasi YoY
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="{{ route('invoices.evaluation') }}" class="btn btn-sm btn-outline-secondary fw-semibold rounded-pill px-3 d-inline-flex align-items-center gap-2 text-nowrap" title="Buka Evaluasi Penjualan (YoY)">
+                    <i class="bi bi-graph-up-arrow"></i> Evaluasi YoY
                 </a>
-                <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                    <i class="bi bi-plus-lg me-1"></i> Buat Invoice
+                <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold rounded-pill px-3 d-inline-flex align-items-center gap-2 text-nowrap">
+                    <i class="bi bi-plus-lg"></i> Buat Invoice
                 </a>
             </div>
         </div>
 
-        <!-- Kolom Kanan: Filter Dropdowns & Fitur Search di bawah Lokasi Stok -->
-        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
-            <form method="GET" action="{{ route('invoices.index') }}" class="d-flex flex-column gap-2 m-0" id="filterInvoicesForm">
+        <!-- Pemisah Visual -->
+        <hr class="my-3 opacity-25">
+
+        <!-- Baris Kedua: Horizontal Filter & Search Toolbar -->
+        <form method="GET" action="{{ route('invoices.index') }}" class="m-0" id="filterInvoicesForm">
+            <div class="row g-2 align-items-center">
                 <!-- Filter Tahun -->
-                <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Tahun</option>
-                    @foreach($availableYears as $yr)
-                    <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>Tahun {{ $yr }}</option>
-                    @endforeach
-                </select>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Semua Tahun</option>
+                        @foreach($availableYears as $yr)
+                        <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>Tahun {{ $yr }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <!-- Filter Bulan -->
-                <select name="month" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Bulan</option>
-                    @foreach($months as $num => $name)
-                    <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <select name="month" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Semua Bulan</option>
+                        @foreach($months as $num => $name)
+                        <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <!-- Filter Sales -->
                 @if(!Auth::user()->isReseller())
-                <select name="sales_name" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Sales</option>
-                    @foreach($salesOptions as $s)
-                    <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
-                    @endforeach
-                </select>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <select name="sales_name" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Semua Sales</option>
+                        @foreach($salesOptions as $s)
+                        <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 @endif
 
                 <!-- Filter Status Bayar -->
-                <select name="payment_status" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Status Bayar</option>
-                    <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
-                    <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
-                </select>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <select name="payment_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Status Bayar</option>
+                        <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
+                        <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
+                    </select>
+                </div>
 
                 <!-- Filter Lokasi -->
-                <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Lokasi Stok</option>
-                    @foreach($locations as $loc)
-                    <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
-                    @endforeach
-                </select>
-
-                <!-- Fitur Search: Tepat di Bawah Button Lokasi Stok -->
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
-                    <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari invoice/customer&hellip;" value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
-                        <i class="bi bi-arrow-right"></i>
-                    </button>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Lokasi Stok</option>
+                        @foreach($locations as $loc)
+                        <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
-                @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'year', 'month', 'search']))
-                <div class="text-center mt-1">
-                    <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Semua Filter">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
-                    </a>
+                <!-- Fitur Search -->
+                <div class="col-12 col-md-4 {{ Auth::user()->isReseller() ? 'col-lg-4' : 'col-lg-2' }}">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0 text-muted ps-2"><i class="bi bi-search"></i></span>
+                        <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari invoice/customer&hellip;" value="{{ request('search') }}">
+                        <button type="submit" class="btn btn-sm btn-scent px-2" title="Cari">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
-                @endif
-            </form>
-        </div>
+            </div>
+
+            @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'year', 'month', 'search']))
+            <div class="d-flex justify-content-end mt-2">
+                <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary py-1 px-3" style="font-size: 0.78rem;" title="Reset Semua Filter">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
+                </a>
+            </div>
+            @endif
+        </form>
     </div>
 
     <div class="card-body p-0">

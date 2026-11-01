@@ -38,74 +38,80 @@
 
 <!-- Card Utama Master Bahan Mentah -->
 <div class="card mb-4 shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
-    <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-start gap-3">
-        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
-        <div class="d-flex flex-column justify-content-between">
+    <div class="card-header bg-white py-3 border-bottom d-block">
+        <!-- Baris Pertama: Judul di Kiri & Tombol Aksi di Kanan Atas -->
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
                 <h3 class="card-title font-serif fw-bold text-dark mb-1">Status Persediaan Bahan Mentah</h3>
                 <small class="text-muted d-block">Kelola master bahan mentah, kategori material, serta pencatatan stok pengadaan dan pemakaian.</small>
             </div>
-            <div class="d-flex align-items-center gap-2 mt-4">
-                <button type="button" class="btn btn-sm btn-scent fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahMaterial">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah Bahan
+            <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap fw-semibold" data-bs-toggle="modal" data-bs-target="#modalKelolaKategori">
+                    <i class="bi bi-tags"></i> Kelola Kategori
                 </button>
-                <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold" data-bs-toggle="modal" data-bs-target="#modalKelolaKategori">
-                    <i class="bi bi-tags me-1"></i> Kelola Kategori
+                <button type="button" class="btn btn-dark btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahMaterial">
+                    <i class="bi bi-plus-lg"></i> Tambah Bahan
                 </button>
             </div>
         </div>
 
-        <!-- Kolom Kanan: Filter Dropdowns & Fitur Search -->
-        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
-            <form method="GET" action="{{ route('raw-materials.index') }}" class="d-flex flex-column gap-2 m-0" id="filterRawMaterialsForm">
-                <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Kategori</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat->name }}" {{ request('category') == $cat->name ? 'selected' : '' }}>
-                            {{ $cat->name }} ({{ $cat->raw_materials_count }})
-                        </option>
-                    @endforeach
-                </select>
+        <!-- Pemisah Visual -->
+        <hr class="my-3 opacity-25">
 
-                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Status</option>
-                    <option value="ready" {{ request('status') === 'ready' ? 'selected' : '' }}>Stok Aman</option>
-                    <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Stok Menipis</option>
-                </select>
-
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white text-muted border-end-0 ps-3">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari nama bahan mentah..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
-                        <i class="bi bi-arrow-right"></i>
-                    </button>
+        <!-- Baris Kedua: Horizontal Filter & Search Bar -->
+        <form method="GET" action="{{ route('raw-materials.index') }}" class="m-0" id="filterRawMaterialsForm">
+            <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-3">
+                    <select name="category" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                        <option value="">Semua Kategori</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->name }}" {{ request('category') == $cat->name ? 'selected' : '' }}>
+                                {{ $cat->name }} ({{ $cat->raw_materials_count }})
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
-                @if(request()->hasAny(['category', 'status', 'search']))
-                <div class="text-center mt-1">
-                    <a href="{{ route('raw-materials.index') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Filter">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
-                    </a>
+                <div class="col-12 col-md-3">
+                    <select name="status" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                        <option value="">Semua Status</option>
+                        <option value="ready" {{ request('status') === 'ready' ? 'selected' : '' }}>Stok Aman</option>
+                        <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Stok Menipis</option>
+                    </select>
                 </div>
-                @endif
-            </form>
-        </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white text-muted border-end-0 ps-3 rounded-start-3">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari nama bahan mentah..." value="{{ request('search') }}">
+                        @if(request()->hasAny(['category', 'status', 'search']))
+                        <a href="{{ route('raw-materials.index') }}" class="btn btn-outline-secondary px-2 d-inline-flex align-items-center" title="Reset Semua Filter">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+                        @endif
+                        <button type="submit" class="btn btn-dark px-3 rounded-end-3" title="Cari">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table align-middle table-hover m-0">
-                <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
+                <thead style="background-color: var(--color-surface-hover, #f4f3f0);" class="text-nowrap align-middle">
                     <tr>
                         <th class="py-2 px-3 text-muted small fw-semibold" style="width: 50px;">#</th>
                         <th class="py-2 px-3 text-muted small fw-semibold">Nama Item Bahan</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center">Kategori</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center">Batas Min.</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center">Stok Fisik</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center">Status</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-end" style="min-width: 240px;">Aksi</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-center text-nowrap">Kategori</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-center text-nowrap">Batas Min.</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-center text-nowrap">Stok Fisik</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-center text-nowrap">Status</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-end text-nowrap pe-4" style="min-width: 240px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,20 +122,20 @@
                             <div class="fw-bold text-dark fs-6">{{ $mat->name }}</div>
                             <small class="text-muted">Kategori: {{ $mat->materialCategory->name ?? $mat->category }}</small>
                         </td>
-                        <td class="py-3 px-3 text-center">
+                        <td class="py-3 px-3 text-center text-nowrap">
                             <span class="badge {{ $mat->category === 'BOX' ? 'bg-secondary' : ($mat->category === 'BOTOL' ? 'bg-dark' : 'bg-light text-dark border') }} px-2 py-1">
                                 {{ $mat->materialCategory->name ?? $mat->category }}
                             </span>
                         </td>
-                        <td class="py-3 px-3 text-center font-mono-num small text-muted">
+                        <td class="py-3 px-3 text-center text-nowrap font-mono-num small text-muted">
                             {{ number_format($mat->min_stock) }} pcs
                         </td>
-                        <td class="py-3 px-3 text-center">
+                        <td class="py-3 px-3 text-center text-nowrap">
                             <span class="font-mono-num fw-bold fs-6 {{ $mat->isLowStock() ? 'text-danger' : 'text-dark' }}">
                                 {{ number_format($mat->stock_qty) }} <span class="fs-7 fw-normal text-muted">pcs</span>
                             </span>
                         </td>
-                        <td class="py-3 px-3 text-center">
+                        <td class="py-3 px-3 text-center text-nowrap">
                             @if($mat->isLowStock())
                             <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
                                 <i class="bi bi-exclamation-circle me-1"></i> Menipis
@@ -140,16 +146,16 @@
                             </span>
                             @endif
                         </td>
-                        <td class="py-3 px-3 text-end">
-                            <div class="d-inline-flex align-items-center gap-1">
-                                <button type="button" class="btn btn-sm btn-scent py-1 px-2" data-bs-toggle="modal" data-bs-target="#modalProcure{{ $mat->id }}" title="Pengadaan Stok Masuk">
-                                    <i class="bi bi-plus-circle me-1"></i> Pengadaan
+                        <td class="py-3 px-3 text-end text-nowrap pe-4">
+                            <div class="d-inline-flex align-items-center justify-content-end gap-1 text-nowrap">
+                                <button type="button" class="btn btn-dark btn-sm rounded-3 px-3 py-1 d-inline-flex align-items-center gap-1 text-nowrap" data-bs-toggle="modal" data-bs-target="#modalProcure{{ $mat->id }}" title="Pengadaan Stok Masuk">
+                                    <i class="bi bi-plus-circle"></i> Pengadaan
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" data-bs-toggle="modal" data-bs-target="#modalConsume{{ $mat->id }}" title="Catat Pemakaian Produksi">
-                                    <i class="bi bi-dash-circle me-1"></i> Pakai
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-1 d-inline-flex align-items-center gap-1 text-nowrap" data-bs-toggle="modal" data-bs-target="#modalConsume{{ $mat->id }}" title="Catat Pemakaian Produksi">
+                                    <i class="bi bi-dash-circle"></i> Pakai
                                 </button>
                                 <div class="dropdown d-inline-block">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 px-2 py-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                         <span class="visually-hidden">Menu Aksi</span>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
@@ -337,14 +343,19 @@
 
 <!-- Card Riwayat Mutasi & Pengadaan Terkini -->
 <div class="card shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
-    <div class="card-header bg-white py-3 border-bottom">
-        <h3 class="card-title font-serif fw-bold text-dark mb-0">Riwayat Mutasi & Log Pengadaan</h3>
-        <small class="text-muted">Catatan historis stok masuk pengadaan supplier dan pemakaian operasional packaging.</small>
+    <div class="card-header bg-white py-3 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+        <div>
+            <h3 class="card-title font-serif fw-bold text-dark mb-0">Riwayat Mutasi & Log Pengadaan</h3>
+            <small class="text-muted">Catatan historis stok masuk pengadaan supplier dan pemakaian operasional packaging.</small>
+        </div>
+        <button type="button" class="btn btn-sm btn-scent fw-semibold rounded-3 px-3 py-2 text-nowrap d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalTambahMutasi">
+            <i class="bi bi-plus-lg"></i> Catat Mutasi Manual
+        </button>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table align-middle table-hover m-0">
-                <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
+                <thead style="background-color: var(--color-surface-hover, #f4f3f0);" class="text-nowrap align-middle">
                     <tr>
                         <th class="py-2 px-3 text-muted small fw-semibold" style="width: 140px;">Waktu</th>
                         <th class="py-2 px-3 text-muted small fw-semibold">Item Material</th>
@@ -352,12 +363,13 @@
                         <th class="py-2 px-3 text-muted small fw-semibold text-center" style="width: 110px;">Qty</th>
                         <th class="py-2 px-3 text-muted small fw-semibold">Keterangan / Supplier</th>
                         <th class="py-2 px-3 text-muted small fw-semibold text-end" style="width: 130px;">Petugas</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-end text-nowrap" style="width: 100px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($mutations as $mut)
                     <tr>
-                        <td class="py-2 px-3 text-muted small">{{ $mut->created_at->format('d/m/Y H:i') }}</td>
+                        <td class="py-2 px-3 text-muted small text-nowrap">{{ $mut->created_at->format('d/m/Y H:i') }}</td>
                         <td class="py-2 px-3 fw-semibold text-dark">{{ $mut->rawMaterial->name ?? '-' }}</td>
                         <td class="py-2 px-3 text-center">
                             @if($mut->type === 'IN')
@@ -375,17 +387,30 @@
                         </td>
                         <td class="py-2 px-3 text-muted small">
                             <span class="text-dark">{{ $mut->note ?: '-' }}</span>
+                            @if($mut->amount > 0)
+                            <span class="d-block text-success small font-mono"><i class="bi bi-cash me-1"></i> Rp {{ number_format($mut->amount, 0, ',', '.') }}</span>
+                            @endif
                             @if($mut->supplier)
                             <span class="d-block text-secondary small"><i class="bi bi-truck me-1"></i> Supplier: {{ $mut->supplier }}</span>
                             @endif
                         </td>
-                        <td class="py-2 px-3 text-end text-muted small">
+                        <td class="py-2 px-3 text-end text-muted small text-nowrap">
                             <i class="bi bi-person me-1"></i>{{ $mut->creator->name ?? 'System' }}
+                        </td>
+                        <td class="py-2 px-3 text-end text-nowrap">
+                            <div class="d-inline-flex align-items-center justify-content-end gap-1">
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 py-1 px-2" data-bs-toggle="modal" data-bs-target="#modalEditMutasi{{ $mut->id }}" title="Edit Mutasi">
+                                    <i class="bi bi-pencil small"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2" data-bs-toggle="modal" data-bs-target="#modalHapusMutasi{{ $mut->id }}" title="Hapus Mutasi">
+                                    <i class="bi bi-trash small"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">Belum ada riwayat mutasi bahan mentah.</td>
+                        <td colspan="7" class="text-center py-5 text-muted">Belum ada riwayat mutasi bahan mentah.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -405,6 +430,127 @@
     </div>
     @endif
 </div>
+
+{{-- Modals Edit & Hapus Mutasi --}}
+@foreach($mutations as $mut)
+<div class="modal fade" id="modalEditMutasi{{ $mut->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{{ route('raw-materials.mutations.update', $mut) }}" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-serif fw-bold">Edit Riwayat Mutasi #{{ $mut->id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning py-2 px-3 small border-0 rounded-3 mb-3">
+                        <i class="bi bi-exclamation-triangle me-1"></i> Perubahan data mutasi akan otomatis menyesuaikan stok fisik material.
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Item Bahan Mentah <span class="text-danger">*</span></label>
+                        <select name="raw_material_id" class="form-select" required>
+                            @if(!$materials->contains('id', $mut->raw_material_id) && $mut->rawMaterial)
+                                <option value="{{ $mut->rawMaterial->id }}" selected>
+                                    {{ $mut->rawMaterial->name }} (Stok fisik: {{ number_format($mut->rawMaterial->stock_qty) }} pcs)
+                                </option>
+                            @endif
+                            @foreach($materials as $mat)
+                                <option value="{{ $mat->id }}" {{ $mut->raw_material_id == $mat->id ? 'selected' : '' }}>
+                                    {{ $mat->name }} (Stok fisik: {{ number_format($mat->stock_qty) }} pcs)
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Tipe Mutasi <span class="text-danger">*</span></label>
+                            <select name="type" class="form-select" required>
+                                <option value="IN" {{ $mut->type === 'IN' ? 'selected' : '' }}>Masuk (Pengadaan / Tambah)</option>
+                                <option value="OUT" {{ $mut->type === 'OUT' ? 'selected' : '' }}>Keluar (Pakai / Rusak)</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Jumlah (Qty) <span class="text-danger">*</span></label>
+                            <input type="number" name="qty" min="1" class="form-control font-mono" value="{{ $mut->qty }}" required>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Biaya Pengadaan (Rp)</label>
+                            <input type="number" name="amount" min="0" step="any" class="form-control font-mono" value="{{ $mut->amount > 0 ? (int)$mut->amount : '' }}" placeholder="Opsional (Rp)">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Nama Supplier / Vendor</label>
+                            <input type="text" name="supplier" class="form-control" value="{{ $mut->supplier }}" placeholder="Opsional">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold text-muted">Keterangan / Keperluan</label>
+                        <textarea name="note" class="form-control" rows="2" placeholder="Catatan mutasi...">{{ $mut->note }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-scent fw-semibold">Simpan Perubahan</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalHapusMutasi{{ $mut->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{{ route('raw-materials.mutations.destroy', $mut) }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title font-serif fw-bold text-danger">Hapus Riwayat Mutasi #{{ $mut->id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">Apakah Anda yakin ingin menghapus catatan mutasi ini?</p>
+                    <div class="p-3 bg-light rounded-3 border mb-3 small">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Item Material:</span>
+                            <span class="fw-bold text-dark">{{ $mut->rawMaterial->name ?? '-' }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Tipe & Jumlah:</span>
+                            <span class="fw-bold {{ $mut->type === 'IN' ? 'text-success' : 'text-secondary' }}">
+                                {{ $mut->type === 'IN' ? 'MASUK (+)' : 'KELUAR (-)' }} {{ number_format($mut->qty) }} pcs
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Waktu Catat:</span>
+                            <span>{{ $mut->created_at->format('d/m/Y H:i') }}</span>
+                        </div>
+                        @if($mut->supplier)
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Supplier:</span>
+                            <span>{{ $mut->supplier }}</span>
+                        </div>
+                        @endif
+                    </div>
+                    <div class="alert alert-warning py-2 px-3 small border-0 rounded-3 mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        @if($mut->type === 'IN')
+                            Menghapus data ini akan <strong>mengurangi stok fisik sebanyak {{ number_format($mut->qty) }} pcs</strong> (membatalkan stok masuk).
+                        @else
+                            Menghapus data ini akan <strong>menambah kembali stok fisik sebanyak {{ number_format($mut->qty) }} pcs</strong> (membatalkan stok keluar).
+                        @endif
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-danger fw-semibold">Ya, Hapus Mutasi</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@endforeach
 
 <!-- Modal Tambah Master Material Baru -->
 <div class="modal fade" id="modalTambahMaterial" tabindex="-1" aria-hidden="true">
@@ -562,6 +708,65 @@
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
+    </div>
+</div>
+<!-- Modal Tambah Mutasi Manual -->
+<div class="modal fade" id="modalTambahMutasi" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{{ route('raw-materials.mutations.store') }}" method="POST">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-serif fw-bold">Catat Mutasi Stok Manual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Pilih Bahan Mentah <span class="text-danger">*</span></label>
+                        <select name="raw_material_id" class="form-select" required>
+                            <option value="">Pilih Item Bahan Mentah</option>
+                            @foreach($materials as $mat)
+                                <option value="{{ $mat->id }}">
+                                    {{ $mat->name }} (Stok saat ini: {{ number_format($mat->stock_qty) }} pcs)
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Tipe Mutasi <span class="text-danger">*</span></label>
+                            <select name="type" class="form-select" required>
+                                <option value="IN">Stok Masuk</option>
+                                <option value="OUT">Stok Keluar</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Jumlah (Qty) <span class="text-danger">*</span></label>
+                            <input type="number" name="qty" min="1" class="form-control font-mono" placeholder="Contoh: 100" required>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Biaya Pengadaan (Rp)</label>
+                            <input type="number" name="amount" min="0" step="any" class="form-control font-mono" placeholder="Opsional (Rp)">
+                            <small class="text-muted" style="font-size: 0.75rem;">Jika diisi pada stok Masuk, otomatis masuk Buku Kas.</small>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Nama Supplier / Vendor</label>
+                            <input type="text" name="supplier" class="form-control" placeholder="Opsional">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold text-muted">Keterangan / Keperluan</label>
+                        <textarea name="note" class="form-control" rows="2" placeholder="Catatan mutasi..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-scent fw-semibold">Simpan Mutasi</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

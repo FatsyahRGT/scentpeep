@@ -53,9 +53,10 @@
     </div>
 </div>
 
-<!-- Location Totals Quick Distribution Bar -->
+<!-- Location Totals Quick Distribution Bar (1 Baris Sejajar Responsif) -->
 <div class="card p-3 mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px; background: #ffffff;">
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
+        <!-- Sisi Kiri: Label & Deretan Badge Lokasi -->
         <div class="d-flex flex-wrap align-items-center gap-2">
             <span class="small fw-bold text-uppercase text-muted" style="letter-spacing: 0.05em;">
                 <i class="bi bi-geo-alt-fill me-1"></i> Sebaran Stok Fisik ({{ $locations->count() }} Titik Lokasi):
@@ -66,12 +67,12 @@
                     $locQty = $locationTotals[$loc->id] ?? 0;
                 @endphp
                 <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1" style="background-color: {{ $palette['badge_bg'] }}; color: {{ $palette['badge_text'] }}; border: 1px solid {{ $palette['border'] }}; font-size: 0.8rem;">
-                    <i class="bi bi-geo-alt" style="font-size: 0.72rem;"></i> <strong>{{ $loc->name }}:</strong> {{ number_format($locQty) }} pcs
+                    <i class="bi bi-geo-alt" style="font-size: 0.72rem;"></i> <strong class="text-uppercase">{{ $loc->name }}:</strong> <span>{{ number_format($locQty) }} pcs</span>
                 </span>
             @endforeach
         </div>
-        <!-- View Mode Switcher -->
-        <div class="btn-group btn-group-sm" role="group" aria-label="View Switcher">
+        <!-- Sisi Kanan: View Mode Switcher -->
+        <div class="btn-group btn-group-sm flex-shrink-0" role="group" aria-label="View Switcher">
             <button type="button" class="btn btn-outline-dark active fw-semibold" id="btnViewList" onclick="toggleStockView('list')">
                 <i class="bi bi-list-check me-1"></i> Tampilan Sebaran (Skalabel)
             </button>
@@ -83,26 +84,19 @@
 </div>
 
 <div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
-    <!-- Header & Action Buttons -->
-    <div class="card-header py-3 bg-white border-bottom d-flex flex-wrap justify-content-between align-items-start gap-3">
-        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
-        <div class="d-flex flex-column justify-content-between">
+    <!-- Header Card Ringkas 2 Baris: Baris 1 (Judul & Aksi), Baris 2 (Search & Filter Status) -->
+    <div class="card-header py-3 bg-white border-bottom d-block">
+        <!-- Baris Pertama: Judul di Kiri & Tombol Aksi di Kanan Atas -->
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
                 <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Katalog &amp; Ketersediaan Stok Parfum</h3>
                 <small class="text-muted d-block">Data stok fisik real-time hasil sinkronisasi transaksi, invoice, dan transfer multi-lokasi.</small>
             </div>
-            <div class="d-flex align-items-center gap-2 mt-4">
-                @if(!Auth::user()->isReseller())
-                <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-scent-outline fw-semibold">
-                    <i class="bi bi-arrow-left-right me-1"></i> Transfer Stok
-                </a>  
-                @endif
-                <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                    <i class="bi bi-receipt-cutoff me-1"></i> Buat Invoice
-                </a>
+            <!-- Tombol Aksi: Ekspor -> Transfer Stok -> Buat Invoice -->
+            <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
                 <div class="dropdown">
-                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-download me-1"></i> Ekspor
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-download"></i> Ekspor
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
                         <li>
@@ -117,32 +111,39 @@
                         </li>
                     </ul>
                 </div>
+                @if(!Auth::user()->isReseller())
+                <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-outline-secondary fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap">
+                    <i class="bi bi-arrow-left-right"></i> Transfer Stok
+                </a>
+                @endif
+                <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap">
+                    <i class="bi bi-receipt-cutoff"></i> Buat Invoice
+                </a>
             </div>
         </div>
 
-         <!-- Kolom Kanan: Filter Status & Fitur Search -->
-        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
-            <div class="d-flex flex-column gap-2 m-0">
-                <!-- Quick Filter Status -->
-                <div class="btn-group btn-group-sm w-100" role="group" id="stockStatusFilterGroup">
-                    <button type="button" class="btn btn-outline-secondary active" data-filter="all">Semua</button>
-                    <button type="button" class="btn btn-outline-success" data-filter="ready"><i class="bi bi-check-circle me-1"></i> Ready</button>
-                    <button type="button" class="btn btn-outline-warning" data-filter="low"><i class="bi bi-exclamation-triangle me-1"></i> Menipis</button>
-                    <button type="button" class="btn btn-outline-danger" data-filter="empty"><i class="bi bi-x-circle me-1"></i> Habis</button>
-                </div>
+        <!-- Pemisah Visual -->
+        <hr class="my-3 opacity-25">
+
+        <!-- Baris Kedua: Search Bar & Filter Status Berdampingan -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <!-- Sisi Kiri/Tengah: Input Pencarian dengan Lebar Proporsional -->
+            <div class="input-group input-group-sm flex-grow-1" style="max-width: 480px;">
+                <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                <input type="search" id="liveStockSearch" class="form-control border-start-0 ps-2" placeholder="Filter nama parfum/SKU&hellip;" aria-label="Filter rows">
+                <button type="button" class="btn btn-sm btn-scent px-3" title="Cari">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Sisi Kanan: Quick Filter Status Stok -->
+            <div class="btn-group btn-group-sm flex-shrink-0" role="group" id="stockStatusFilterGroup">
+                <button type="button" class="btn btn-outline-secondary active text-nowrap" data-filter="all">Semua</button>
+                <button type="button" class="btn btn-outline-success text-nowrap" data-filter="ready"><i class="bi bi-check-circle me-1"></i> Ready</button>
+                <button type="button" class="btn btn-outline-warning text-nowrap" data-filter="low"><i class="bi bi-exclamation-triangle me-1"></i> Menipis</button>
+                <button type="button" class="btn btn-outline-danger text-nowrap" data-filter="empty"><i class="bi bi-x-circle me-1"></i> Habis</button>
             </div>
         </div>
-
-        <!-- Fitur Search -->
-        <div class="input-group input-group-sm">
-            <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
-            <input type="search" id="liveStockSearch" class="form-control border-start-0 ps-2" placeholder="Filter nama parfum/SKU&hellip;" aria-label="Filter rows">
-            <button type="button" class="btn btn-sm btn-scent px-3" title="Cari">
-                <i class="bi bi-arrow-right"></i>
-            </button>
-        </div>
-
-       
     </div>
 
     <!-- 1. Tampilan Sebaran (List View) - Desain Skalabel untuk Banyak Lokasi -->

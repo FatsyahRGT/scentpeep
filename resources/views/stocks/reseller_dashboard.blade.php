@@ -5,10 +5,11 @@
 
 @section('content')
 <!-- Top KPI Cards -->
-<div class="row g-3 mb-4">
+<!-- Baris 1: 4 Card Lokasi Reseller -->
+<div class="row g-3 mb-3">
     @foreach($holdersDistribution as $h)
     @php $pal = $h['palette']; @endphp
-    <div class="col-sm-6 col-lg-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card p-3 border-0 shadow-sm h-100" style="background: {{ $pal['bg'] }}; border: 1px solid {{ $pal['border'] }} !important;">
             <div class="small fw-bold text-uppercase d-flex justify-content-between align-items-center" style="color: {{ $pal['text'] }}; letter-spacing: 0.05em;">
                 <span><i class="bi bi-person-fill me-1"></i> Stok di {{ $h['name'] }}</span>
@@ -17,78 +18,96 @@
                 </span>
             </div>
             <div class="font-serif fs-3 fw-bold mt-2" style="color: {{ $pal['text'] }};">
-                {{ number_format($h['total_qty']) }} <span class="fs-6 fw-normal text-muted">pcs</span>
+                {{ number_format($h['total_qty']) }} <span class="fs-6 fw-normal text-muted font-sans">pcs</span>
             </div>
-            <div class="small text-muted mt-1"><i class="bi bi-geo-alt me-1"></i> Lokasi: {{ $h['name'] }}</div>
+            <div class="small text-muted mt-1"><i class="bi bi-geo-alt me-1"></i> Lokasi: <span class="text-uppercase">{{ $h['name'] }}</span></div>
         </div>
     </div>
     @endforeach
-    <div class="col-sm-6 col-lg-3">
-        <div class="card p-3 border-0 shadow-sm h-100" style="background:#ffffff; border:1px solid var(--color-border) !important;">
+</div>
+
+<!-- Baris 2: Status Ketersediaan Varian (Ready vs Habis) -->
+<div class="row g-3 mb-4">
+    <!-- Varian Ready Stock -->
+    <div class="col-12 col-lg-6">
+        <div class="card p-3 p-lg-4 border-0 shadow-sm h-100" style="background:#ffffff; border:1px solid var(--color-border) !important;">
             <div class="text-muted small fw-semibold text-uppercase text-success" style="letter-spacing: 0.05em;">
                 <i class="bi bi-check2-circle me-1"></i> Varian Ready Stock
             </div>
             <div class="font-serif fs-3 fw-bold text-success mt-2">
-                {{ number_format($metrics['ready_variants_count']) }} <span class="fs-6 fw-normal text-muted">varian</span>
+                {{ number_format($metrics['ready_variants_count']) }} <span class="fs-6 fw-normal text-muted font-sans">varian</span>
             </div>
-            <div class="small text-muted mt-1">Bisa langsung dijual / dipesan</div>
+            <div class="small text-muted mt-1">Bisa langsung dijual / dipesan ke pelanggan</div>
         </div>
     </div>
-    <div class="col-sm-6 col-lg-3">
-        <div class="card p-3 border-0 shadow-sm h-100" style="background:#ffffff; border:1px solid var(--color-border) !important;">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="text-muted small fw-semibold text-uppercase text-danger" style="letter-spacing: 0.05em;">
-                    <i class="bi bi-x-circle me-1"></i> Varian Stok Habis
-                </div>
-                @if(isset($outOfStockProducts) && $outOfStockProducts->isNotEmpty())
-                <a href="{{ route('stocks.reseller', ['filter_status' => 'empty']) }}" class="badge bg-danger-subtle text-danger border border-danger-subtle text-decoration-none py-1 px-2" title="Filter varian habis">
-                    Lihat &rarr;
-                </a>
-                @endif
-            </div>
-            <div class="font-serif fs-3 fw-bold text-danger mt-2">
-                {{ number_format($metrics['out_of_stock_count']) }} <span class="fs-6 fw-normal text-muted font-sans">varian</span>
-            </div>
-            <div class="small text-danger">Perlu produksi ulang</div>
 
-            @if(isset($outOfStockProducts) && $outOfStockProducts->isNotEmpty())
-            <div class="mt-2 pt-2 border-top" style="border-color: rgba(220, 53, 69, 0.15) !important;">
-                <div class="small text-muted fw-semibold mb-1" style="font-size: 0.72rem;">Detail Varian Kosong:</div>
-                <div class="d-flex flex-column gap-1">
-                    @foreach($outOfStockProducts->take(3) as $oosp)
-                    <div class="d-flex justify-content-between align-items-center bg-danger-subtle px-2 py-1 rounded" style="font-size: 0.78rem;">
-                        <span class="fw-semibold text-danger text-truncate me-1" title="{{ $oosp->name }} (SKU: {{ $oosp->code ?? '-' }})">
-                            <i class="bi bi-exclamation-circle me-1"></i>{{ $oosp->name }}
-                        </span>
-                        @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
-                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold text-nowrap d-inline-flex align-items-center" style="font-size: 0.72rem; min-height: 26px;" onclick="openQuickRestock({{ $oosp->id }}, '{{ addslashes($oosp->name) }}')" title="Tambah Stok Produksi">
-                            <i class="bi bi-plus me-1"></i> Restock
-                        </button>
-                        @endif
+    <!-- Varian Stok Habis -->
+    <div class="col-12 col-lg-6">
+        <div class="card p-3 p-lg-4 border-0 shadow-sm h-100" style="background:#ffffff; border:1px solid var(--color-border) !important;">
+            <div class="row g-3 align-items-center h-100">
+                <!-- Kolom Kiri: Header, Jumlah, Keterangan -->
+                <div class="col-12 col-md-5 pe-md-4 border-end" style="border-color: var(--color-border, #e8e6e1) !important;">
+                    <div class="d-flex align-items-center gap-2 text-nowrap mb-2">
+                        <div class="text-muted small fw-semibold text-uppercase text-danger" style="letter-spacing: 0.05em;">
+                            <i class="bi bi-x-circle me-1"></i> VARIAN STOK HABIS
+                        </div>
                     </div>
-                    @endforeach
-                    @if($outOfStockProducts->count() > 3)
-                    <a href="{{ route('stocks.reseller', ['filter_status' => 'empty']) }}" class="small text-danger text-decoration-underline" style="font-size: 0.72rem;">
-                        + {{ $outOfStockProducts->count() - 3 }} varian lainnya &rarr;
-                    </a>
+                    <div class="font-serif fs-3 fw-bold text-danger">
+                        {{ number_format($metrics['out_of_stock_count']) }} <span class="fs-6 fw-normal text-muted font-sans">varian</span>
+                    </div>
+                    <div class="small text-danger fw-semibold mt-1">Perlu produksi ulang</div>
+                </div>
+
+                <!-- Kolom Kanan: Detail Varian Kosong & Tombol Restock -->
+                <div class="col-12 col-md-7 ps-md-3">
+                    @if(isset($outOfStockProducts) && $outOfStockProducts->isNotEmpty())
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small text-muted fw-semibold" style="font-size: 0.75rem;">Detail Varian Kosong:</span>
+                            <a href="{{ route('stocks.reseller', ['filter_status' => 'empty']) }}" class="badge bg-danger-subtle text-danger border border-danger-subtle text-decoration-none py-1 px-2 text-nowrap flex-shrink-0" title="Filter varian habis">
+                                Lihat &rarr;
+                            </a>
+                        </div>
+                        <div class="d-flex flex-column gap-1">
+                            @foreach($outOfStockProducts->take(3) as $oosp)
+                            <div class="d-flex justify-content-between align-items-center bg-danger-subtle px-2 py-1 rounded" style="font-size: 0.78rem;">
+                                <span class="fw-semibold text-danger text-truncate me-2" title="{{ $oosp->name }} (SKU: {{ $oosp->code ?? '-' }})">
+                                    <i class="bi bi-exclamation-circle me-1"></i>{{ $oosp->name }}
+                                </span>
+                                @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold text-nowrap flex-shrink-0 d-inline-flex align-items-center" style="font-size: 0.72rem; min-height: 26px;" onclick="openQuickRestock({{ $oosp->id }}, '{{ addslashes($oosp->name) }}')" title="Tambah Stok Produksi">
+                                    <i class="bi bi-plus me-1"></i> Restock
+                                </button>
+                                @endif
+                            </div>
+                            @endforeach
+                            @if($outOfStockProducts->count() > 3)
+                            <a href="{{ route('stocks.reseller', ['filter_status' => 'empty']) }}" class="small text-danger text-decoration-underline" style="font-size: 0.72rem;">
+                                + {{ $outOfStockProducts->count() - 3 }} varian lainnya &rarr;
+                            </a>
+                            @endif
+                        </div>
+                    </div>
+                    @else
+                    <div class="text-muted small">Semua varian saat ini memiliki stok fisik ready.</div>
                     @endif
                 </div>
             </div>
-            @endif
         </div>
     </div>
 </div>
 
+<!-- Baris 3: Sebaran Stok Multi-Lokasi & Leaderboard Best Seller -->
 <div class="row g-4 mb-4">
     <!-- Sebaran Stok: Dimana saja & Ada di siapa saja -->
-    <div class="col-lg-6">
+    <div class="col-12 col-lg-6">
         <div class="card h-100 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important;">
-            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-diagram-3-fill text-muted fs-5"></i>
-                    <h4 class="font-serif card-title mb-0 fw-bold fs-5">Sebaran Stok di Siapa Saja & Dimana Saja</h4>
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 overflow-hidden">
+                    <i class="bi bi-diagram-3-fill text-muted fs-5 flex-shrink-0"></i>
+                    <h5 class="font-serif card-title mb-0 fw-bold fs-5 text-truncate">Sebaran Stok di Siapa Saja & Dimana Saja</h5>
                 </div>
-                <span class="badge bg-light text-muted border">Distribusi Fisik</span>
+                <span class="badge bg-light text-muted border text-nowrap flex-shrink-0">Distribusi Fisik</span>
             </div>
             <div class="card-body p-3">
                 <div class="d-flex flex-column gap-3">
@@ -98,7 +117,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <span class="fw-bold fs-6" style="color: {{ $pal['text'] }};">
                                 <span class="badge me-1" style="background-color: {{ $pal['badge_bg'] }}; color: {{ $pal['badge_text'] }}; border: 1px solid {{ $pal['border'] }};">
-                                    <i class="bi bi-geo-alt-fill me-1"></i> {{ $h['name'] }}
+                                    <i class="bi bi-geo-alt-fill me-1"></i> <span class="text-uppercase">{{ $h['name'] }}</span>
                                 </span>
                             </span>
                             <span class="badge bg-white border" style="color: {{ $pal['text'] }}; border-color: {{ $pal['border'] }} !important;">
@@ -108,7 +127,7 @@
                         <div class="d-flex justify-content-between align-items-baseline mt-2">
                             <span class="text-muted small">Total Unit Fisik yang Dipegang:</span>
                             <span class="font-serif fs-3 fw-bold" style="color: {{ $pal['text'] }};">
-                                {{ number_format($h['total_qty']) }} <span class="fs-6 fw-normal text-muted">pcs</span>
+                                {{ number_format($h['total_qty']) }} <span class="fs-6 fw-normal text-muted font-sans">pcs</span>
                             </span>
                         </div>
                     </div>
@@ -121,30 +140,30 @@
     </div>
 
     <!-- Leaderboard Parfum Paling Laris (Best Seller) -->
-    <div class="col-lg-6">
+    <div class="col-12 col-lg-6">
         <div class="card h-100 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important;">
-            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-trophy-fill text-warning fs-5"></i>
-                    <h4 class="font-serif card-title mb-0 fw-bold fs-5">Varian Parfum Paling Laris (Best Seller)</h4>
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 overflow-hidden">
+                    <i class="bi bi-trophy-fill text-warning fs-5 flex-shrink-0"></i>
+                    <h5 class="font-serif card-title mb-0 fw-bold fs-5 text-truncate">Varian Parfum Paling Laris (Best Seller)</h5>
                 </div>
-                <span class="badge bg-light text-muted border">Top Penjualan</span>
+                <span class="badge bg-light text-muted border text-nowrap flex-shrink-0">Top Penjualan</span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table align-middle table-hover m-0">
-                        <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
+                        <thead style="background-color: var(--color-surface-hover, #f4f3f0);" class="text-nowrap align-middle">
                             <tr>
-                                <th style="width: 45px;" class="text-center py-2 px-3 text-muted small fw-semibold">#</th>
+                                <th style="width: 45px;" class="text-center py-2 px-3 text-muted small fw-semibold text-nowrap">#</th>
                                 <th class="py-2 px-3 text-muted small fw-semibold">Nama Varian Parfum</th>
-                                <th class="py-2 px-3 text-center text-muted small fw-semibold" style="width: 100px;">Terjual</th>
-                                <th class="py-2 px-3 text-end text-muted small fw-semibold" style="width: 130px;">Total Omset</th>
+                                <th class="py-2 px-3 text-center text-muted small fw-semibold text-nowrap" style="width: 100px;">Terjual</th>
+                                <th class="py-2 px-3 text-end text-muted small fw-semibold text-nowrap" style="min-width: 130px;">Total Omset</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="text-nowrap align-middle">
                             @forelse($bestSellers as $idx => $bs)
                             <tr>
-                                <td class="text-center py-2 px-3">
+                                <td class="text-center py-2 px-3 text-nowrap">
                                     @if($idx === 0)
                                     <span class="badge rounded-circle text-dark" style="background:#ffd700; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center;">1</span>
                                     @elseif($idx === 1)
@@ -159,12 +178,12 @@
                                     <span class="fw-semibold text-dark">{{ $bs->product->name ?? '-' }}</span>
                                     <small class="text-muted d-block font-mono">{{ $bs->product->code ?? '' }}</small>
                                 </td>
-                                <td class="py-2 px-3 text-center">
+                                <td class="py-2 px-3 text-center text-nowrap">
                                     <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-bold">
                                         {{ $bs->total_sold }} pcs
                                     </span>
                                 </td>
-                                <td class="py-2 px-3 text-end font-mono fw-semibold text-dark">
+                                <td class="py-2 px-3 text-end font-mono fw-semibold text-dark text-nowrap">
                                     Rp {{ number_format($bs->total_omset, 0, ',', '.') }}
                                 </td>
                             </tr>
@@ -183,68 +202,55 @@
 
 <!-- Main Table: Katalog Sebaran Stok & Filter Ready -->
 <div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important;">
-    <div class="card-header py-3 bg-white border-bottom d-flex flex-wrap justify-content-between align-items-start gap-3">
-        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
-        <div class="d-flex flex-column justify-content-between">
+    <!-- Header Sesuai Acuan Gambar (Tanpa Tombol Lain) -->
+    <div class="card-header py-3 bg-white border-bottom d-block">
+        <!-- Baris 1: Judul di Kiri & Quick Filter Status di Kanan -->
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
             <div>
-                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Katalog Ketersediaan &amp; Sebaran Stok Parfum</h3>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Katalog Ketersediaan &amp; Sebaran Stok Parfum</h3>
                 <small class="text-muted d-block">Pantau parfum apa saja yang ready, jumlahnya, dan siapa yang memegang stoknya.</small>
             </div>
-            @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
-            <div class="d-flex align-items-center gap-2 mt-4">
-                <button type="button" class="btn btn-sm btn-scent fw-semibold" data-bs-toggle="modal" data-bs-target="#modalManualRestock">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah Stok Produksi
-                </button>
-            </div>
-            @endif
-        </div>
-
-        <!-- Kolom Kanan: Quick Filter & Fitur Search -->
-        <div style="width: 100%; max-width: 340px;" class="ms-md-auto">
-            <form method="GET" action="{{ route('stocks.reseller') }}" class="d-flex flex-column gap-2 m-0" id="filterResellerStockForm">
-                <input type="hidden" name="filter_status" value="{{ $filterStatus ?? 'all' }}">
-                <div class="btn-group btn-group-sm w-100" role="group">
+            <div>
+                <div class="btn-group btn-group-sm" role="group" id="resellerStatusFilterGroup">
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'all', 'search' => request('search')]) }}" 
-                       class="btn btn-outline-secondary {{ ($filterStatus ?? 'all') === 'all' ? 'active' : '' }}">
+                       class="btn btn-outline-secondary text-nowrap {{ ($filterStatus ?? 'all') === 'all' ? 'active' : '' }}">
                         Semua
                     </a>
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'ready', 'search' => request('search')]) }}" 
-                       class="btn btn-outline-success {{ ($filterStatus ?? '') === 'ready' ? 'active' : '' }}">
+                       class="btn btn-outline-success text-nowrap {{ ($filterStatus ?? '') === 'ready' ? 'active' : '' }}">
                         <i class="bi bi-check-circle me-1"></i> Ready
                     </a>
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'low', 'search' => request('search')]) }}" 
-                       class="btn btn-outline-warning {{ in_array(($filterStatus ?? ''), ['low', 'menipis']) ? 'active' : '' }}">
+                       class="btn btn-outline-warning text-nowrap {{ in_array(($filterStatus ?? ''), ['low', 'menipis']) ? 'active' : '' }}">
                         <i class="bi bi-exclamation-triangle me-1"></i> Menipis
-                        @if(($metrics['low_stock_count'] ?? 0) > 0)
-                        <span class="badge bg-warning text-dark rounded-pill ms-1">{{ $metrics['low_stock_count'] }}</span>
-                        @endif
                     </a>
                     <a href="{{ route('stocks.reseller', ['filter_status' => 'empty', 'search' => request('search')]) }}" 
-                       class="btn btn-outline-danger {{ ($filterStatus ?? '') === 'empty' ? 'active' : '' }}">
+                       class="btn btn-outline-danger text-nowrap {{ ($filterStatus ?? '') === 'empty' ? 'active' : '' }}">
                         <i class="bi bi-x-circle me-1"></i> Habis
-                        @if(($metrics['out_of_stock_count'] ?? 0) > 0)
-                        <span class="badge bg-danger text-white rounded-pill ms-1">{{ $metrics['out_of_stock_count'] }}</span>
-                        @endif
                     </a>
                 </div>
-
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
-                    <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari varian/SKU&hellip;" value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
-                        <i class="bi bi-arrow-right"></i>
-                    </button>
-                </div>
-
-                @if(request()->filled('search') || (request('filter_status') && request('filter_status') !== 'all'))
-                <div class="text-center mt-1">
-                    <a href="{{ route('stocks.reseller') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Filter">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
-                    </a>
-                </div>
-                @endif
-            </form>
+            </div>
         </div>
+
+        <!-- Baris 2: Fitur Search Lebar Penuh dengan Tombol Panah (Sesuai Acuan Gambar) -->
+        <form method="GET" action="{{ route('stocks.reseller') }}" class="w-100 m-0">
+            <input type="hidden" name="filter_status" value="{{ $filterStatus ?? 'all' }}">
+            <div class="input-group input-group-sm w-100">
+                <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Filter nama parfum/SKU&hellip;" value="{{ request('search') }}">
+                <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+
+            @if(request()->filled('search') || (request('filter_status') && request('filter_status') !== 'all'))
+            <div class="text-center mt-2">
+                <a href="{{ route('stocks.reseller') }}" class="btn btn-sm btn-outline-secondary py-1 px-3" style="font-size: 0.78rem;" title="Reset Filter">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
+                </a>
+            </div>
+            @endif
+        </form>
     </div>
 
     <div class="card-body p-0">

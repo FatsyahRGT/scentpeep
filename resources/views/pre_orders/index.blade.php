@@ -29,31 +29,24 @@
     </div>
 </div>
 
-<div class="card mb-4">
-    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
-        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
-        <div class="d-flex flex-column justify-content-between">
-            <div>
-                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Daftar Pre-Order (Stok Pending)</h3>
-                <small class="text-muted d-block">Segmen khusus barang pre-order di luar stok utama. Klik 'Selesai' untuk memasukkannya ke stok fisik.</small>
-            </div>
-            <div class="d-flex align-items-center gap-2 mt-4">
-                <a href="{{ route('pre-orders.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                    <i class="bi bi-plus-lg me-1"></i> Catat PO Baru
-                </a>
-            </div>
+<div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important; border-radius: 12px;">
+    <div class="card-header py-3 bg-white border-bottom d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
+        <!-- Kolom Kiri: Judul & Subtitle -->
+        <div>
+            <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Daftar Pre-Order (Stok Pending)</h3>
+            <small class="text-muted d-block">Segmen khusus barang pre-order di luar stok utama. Klik 'Selesai' untuk memasukkannya ke stok fisik.</small>
         </div>
 
-        <!-- Kolom Kanan: Filter Dropdowns -->
-        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
-            <form method="GET" action="{{ route('pre-orders.index') }}" class="d-flex flex-column gap-2 m-0" id="filterPreOrdersForm">
-                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+        <!-- Kolom Kanan: Container Horizontal (Dropdowns + Button Catat PO Baru) -->
+        <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
+            <form method="GET" action="{{ route('pre-orders.index') }}" class="d-flex flex-wrap align-items-center gap-2 m-0" id="filterPreOrdersForm">
+                <select name="status" class="form-select form-select-sm rounded-3" style="width: auto; min-width: 150px;" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     <option value="PENDING" {{ request('status') === 'PENDING' ? 'selected' : '' }}>Pending (Belum Siap)</option>
                     <option value="SELESAI" {{ request('status') === 'SELESAI' ? 'selected' : '' }}>Selesai (Sudah Masuk Stok)</option>
                 </select>
 
-                <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                <select name="location_id" class="form-select form-select-sm rounded-3" style="width: auto; min-width: 150px;" onchange="this.form.submit()">
                     <option value="">Target Stok</option>
                     @foreach($locations as $loc)
                     <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
@@ -61,13 +54,15 @@
                 </select>
 
                 @if(request()->hasAny(['status', 'location_id']))
-                <div class="text-center mt-1">
-                    <a href="{{ route('pre-orders.index') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Filter">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
-                    </a>
-                </div>
+                <a href="{{ route('pre-orders.index') }}" class="btn btn-sm btn-outline-secondary rounded-3 py-1 px-2" style="font-size: 0.78rem;" title="Reset Semua Filter">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
                 @endif
             </form>
+
+            <a href="{{ route('pre-orders.create') }}" class="btn btn-sm btn-scent fw-semibold rounded-3 text-nowrap d-inline-flex align-items-center gap-2">
+                <i class="bi bi-plus-lg"></i> Catat PO Baru
+            </a>
         </div>
     </div>
 
@@ -76,27 +71,27 @@
             <table class="table align-middle table-hover m-0">
                 <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
                     <tr>
-                        <th class="py-2 px-3 text-muted small fw-semibold" style="width: 130px;">No. PO</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Tanggal</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-nowrap" style="width: 130px;">No. PO</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-nowrap">Tanggal</th>
                         <th class="py-2 px-3 text-muted small fw-semibold">Varian Parfum</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center" style="width: 100px;">Qty PO</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center" style="width: 120px;">Target Lokasi</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-center text-nowrap" style="width: 100px;">Qty PO</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-center text-nowrap" style="width: 120px;">Target Lokasi</th>
                         <th class="py-2 px-3 text-muted small fw-semibold">Pemesan / Catatan</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-center" style="width: 130px;">Status</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold text-end" style="width: 140px;">Aksi</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-center text-nowrap" style="width: 130px;">Status</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-end text-nowrap" style="width: 160px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($preOrders as $po)
                     <tr>
-                        <td class="py-2 px-3 font-mono fw-semibold text-dark">{{ $po->po_number }}</td>
-                        <td class="py-2 px-3 text-muted small">{{ $po->created_at->format('d/m/Y') }}</td>
+                        <td class="py-2 px-3 font-mono fw-semibold text-dark text-nowrap">{{ $po->po_number }}</td>
+                        <td class="py-2 px-3 text-muted small text-nowrap">{{ $po->created_at->format('d/m/Y') }}</td>
                         <td class="py-2 px-3">
                             <span class="fw-semibold text-dark">{{ $po->product->name ?? '-' }}</span>
                             <small class="text-muted d-block font-mono">{{ $po->product->code ?? '' }}</small>
                         </td>
-                        <td class="py-2 px-3 text-center fw-bold">{{ $po->qty }} pcs</td>
-                        <td class="py-2 px-3 text-center">
+                        <td class="py-2 px-3 text-center fw-bold text-nowrap">{{ $po->qty }} pcs</td>
+                        <td class="py-2 px-3 text-center text-nowrap">
                             @if($po->location)
                                 @php $poPal = $po->location->getColorPalette(); @endphp
                                 <span class="badge" style="background-color: {{ $poPal['badge_bg'] }}; color: {{ $poPal['badge_text'] }}; border: 1px solid {{ $poPal['border'] }}; font-weight: 600;">
@@ -112,7 +107,7 @@
                             @endif
                             <small class="text-muted">{{ $po->notes ?: '-' }}</small>
                         </td>
-                        <td class="py-2 px-3 text-center">
+                        <td class="py-2 px-3 text-center text-nowrap">
                             @if($po->status === 'SELESAI')
                             <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
                                 <i class="bi bi-check-circle-fill me-1"></i> MASUK STOK
@@ -123,20 +118,20 @@
                             </span>
                             @endif
                         </td>
-                        <td class="py-2 px-3 text-end">
-                            <div class="d-inline-flex gap-1 align-items-center">
+                        <td class="py-2 px-3 text-end text-nowrap">
+                            <div class="d-inline-flex align-items-center justify-content-end gap-2">
                                 @if($po->status === 'PENDING')
-                                <form action="{{ route('pre-orders.complete', $po) }}" method="POST" class="d-inline" onsubmit="return confirm('Stok sudah siap? Sebanyak {{ $po->qty }} pcs akan otomatis dimasukkan ke stok utama {{ $po->location->name ?? '' }}.');">
+                                <form action="{{ route('pre-orders.complete', $po) }}" method="POST" class="d-inline m-0" onsubmit="return confirm('Stok sudah siap? Sebanyak {{ $po->qty }} pcs akan otomatis dimasukkan ke stok utama {{ $po->location->name ?? '' }}.');">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-scent py-1 px-2" title="Stok Siap & Masukkan ke Stok Utama">
-                                        <i class="bi bi-box-arrow-in-down me-1"></i> Masuk Stok
+                                    <button type="submit" class="btn btn-dark btn-sm rounded-3 px-3 py-1 d-inline-flex align-items-center gap-1 text-nowrap" title="Stok Siap & Masukkan ke Stok Utama">
+                                        <i class="bi bi-box-arrow-in-down"></i> Masuk Stok
                                     </button>
                                 </form>
                                 @endif
-                                <form action="{{ route('pre-orders.destroy', $po) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus data PO ini?');">
+                                <form action="{{ route('pre-orders.destroy', $po) }}" method="POST" class="d-inline m-0" onsubmit="return confirm('Hapus data PO ini?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2" title="Hapus PO">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2 d-inline-flex align-items-center justify-content-center" title="Hapus PO" style="height: 31px; min-width: 31px;">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>

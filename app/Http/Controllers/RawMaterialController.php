@@ -49,12 +49,11 @@ class RawMaterialController extends Controller
             ->latest()
             ->paginate(15);
 
-        $allMaterials = RawMaterial::all();
         $metrics = [
             'total_box_stock' => (int) RawMaterial::where('category', RawMaterial::CATEGORY_BOX)->sum('stock_qty'),
             'total_botol_stock' => (int) RawMaterial::where('category', RawMaterial::CATEGORY_BOTOL)->sum('stock_qty'),
-            'low_stock_count' => $allMaterials->filter->isLowStock()->count(),
-            'total_items' => $allMaterials->count(),
+            'low_stock_count' => RawMaterial::whereColumn('stock_qty', '<=', 'min_stock')->count(),
+            'total_items' => RawMaterial::count(),
             'total_categories' => $categories->count(),
         ];
 
@@ -179,5 +178,157 @@ class RawMaterialController extends Controller
 
         return redirect()->route('raw-materials.index')
             ->with('success', "Pemakaian {$validated['qty']} pcs {$rawMaterial->name} berhasil dicatat.");
+    }
+
+    public function storeMutation(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'raw_material_id' => 'required|exists:raw_materials,id',
+            'type' => ['required', Rule::in([RawMaterialMutation::TYPE_IN, RawMaterialMutation::TYPE_OUT])],
+            'qty' => 'required|integer|min:1',
+            'amount' => 'nullable|numeric|min:0',
+            'supplier' => 'nullable|string|max:255',
+            'note' => 'nullable|string|max:500',
+        ]);
+
+        $material = RawMaterial::findOrFail($validated['raw_material_id']);
+
+        if ($validated['type'] === RawMaterialMutation::TYPE_OUT && $material->stock_qty < $validated['qty']) {
+            throw ValidationException::withMessages([
+                'qty' => "Stok fisik '{$material->name}' tidak mencukupi! Tersedia: {$material->stock_qty} pcs, diminta: {$validated['qty']} pcs.",
+            ]);
+        }
+
+        DB::transaction(function () use ($material, $validated) {
+            if ($validated['type'] === RawMaterialMutation::TYPE_IN) {
+                $material->increment('stock_qty', $validated['qty']);
+            } else {
+                $material->decrement('stock_qty', $validated['qty']);
+            }
+
+            RawMaterialMutation::create([
+                'raw_material_id' => $material->id,
+                'type' => $validated['type'],
+                'qty' => $validated['qty'],
+                'amount' => $validated['amount'] ?? null,
+                'supplier' => $validated['supplier'] ?? null,
+                'note' => $validated['note'] ?? ($validated['type'] === RawMaterialMutation::TYPE_IN ? 'Pengadaan stok masuk' : 'Pemakaian produksi / packaging'),
+                'created_by' => Auth::id(),
+            ]);
+
+            if ($validated['type'] === RawMaterialMutation::TYPE_IN && ! empty($validated['amount']) && $validated['amount'] > 0) {
+                Transaction::create([
+                    'tanggal' => now()->toDateString(),
+                    'type' => Transaction::TYPE_OUTCOME,
+                    'category' => 'Bahan Baku',
+                    'amount' => $validated['amount'],
+                    'qty' => $validated['qty'],
+                    'description' => "Pengadaan {$material->name} x {$validated['qty']} pcs" . ($validated['supplier'] ? " dari {$validated['supplier']}" : ''),
+                    'stock_effect' => Transaction::EFFECT_NONE,
+                    'created_by' => Auth::id(),
+                ]);
+            }
+        });
+
+        return redirect()->route('raw-materials.index')
+            ->with('success', "Mutasi {$validated['type']} sebanyak {$validated['qty']} pcs '{$material->name}' berhasil dicatat.");
+    }
+
+    public function updateMutation(Request $request, RawMaterialMutation $mutation): RedirectResponse
+    {
+        $validated = $request->validate([
+            'raw_material_id' => 'required|exists:raw_materials,id',
+            'type' => ['required', Rule::in([RawMaterialMutation::TYPE_IN, RawMaterialMutation::TYPE_OUT])],
+            'qty' => 'required|integer|min:1',
+            'amount' => 'nullable|numeric|min:0',
+            'supplier' => 'nullable|string|max:255',
+            'note' => 'nullable|string|max:500',
+        ]);
+
+        DB::transaction(function () use ($mutation, $validated) {
+            $oldMaterial = $mutation->rawMaterial;
+            $newMaterial = RawMaterial::findOrFail($validated['raw_material_id']);
+
+            if ($oldMaterial->id === $newMaterial->id) {
+                $currentStock = $newMaterial->stock_qty;
+                // Revert old effect
+                $stockReverted = ($mutation->type === RawMaterialMutation::TYPE_IN)
+                    ? $currentStock - $mutation->qty
+                    : $currentStock + $mutation->qty;
+
+                // Apply new effect
+                $finalStock = ($validated['type'] === RawMaterialMutation::TYPE_IN)
+                    ? $stockReverted + $validated['qty']
+                    : $stockReverted - $validated['qty'];
+
+                if ($finalStock < 0) {
+                    throw ValidationException::withMessages([
+                        'qty' => "Perubahan mutasi menyebabkan sisa stok fisik '{$newMaterial->name}' menjadi minus ({$finalStock} pcs). Penyesuaian ditolak.",
+                    ]);
+                }
+
+                $newMaterial->stock_qty = $finalStock;
+                $newMaterial->save();
+            } else {
+                // Different material
+                $oldStockReverted = ($mutation->type === RawMaterialMutation::TYPE_IN)
+                    ? $oldMaterial->stock_qty - $mutation->qty
+                    : $oldMaterial->stock_qty + $mutation->qty;
+
+                if ($oldStockReverted < 0) {
+                    throw ValidationException::withMessages([
+                        'raw_material_id' => "Pembatalan mutasi dari '{$oldMaterial->name}' menyebabkan stok menjadi minus ({$oldStockReverted} pcs).",
+                    ]);
+                }
+                $oldMaterial->stock_qty = $oldStockReverted;
+                $oldMaterial->save();
+
+                $newFinalStock = ($validated['type'] === RawMaterialMutation::TYPE_IN)
+                    ? $newMaterial->stock_qty + $validated['qty']
+                    : $newMaterial->stock_qty - $validated['qty'];
+
+                if ($newFinalStock < 0) {
+                    throw ValidationException::withMessages([
+                        'qty' => "Penerapan mutasi ke '{$newMaterial->name}' menyebabkan stok menjadi minus ({$newFinalStock} pcs).",
+                    ]);
+                }
+                $newMaterial->stock_qty = $newFinalStock;
+                $newMaterial->save();
+            }
+
+            $mutation->update([
+                'raw_material_id' => $newMaterial->id,
+                'type' => $validated['type'],
+                'qty' => $validated['qty'],
+                'amount' => $validated['amount'] ?? null,
+                'supplier' => $validated['supplier'] ?? null,
+                'note' => $validated['note'] ?? null,
+            ]);
+        });
+
+        return redirect()->route('raw-materials.index')
+            ->with('success', 'Data mutasi stok berhasil diperbarui dan saldo stok fisik telah disinkronkan.');
+    }
+
+    public function destroyMutation(RawMaterialMutation $mutation): RedirectResponse
+    {
+        DB::transaction(function () use ($mutation) {
+            $material = $mutation->rawMaterial;
+            if ($mutation->type === RawMaterialMutation::TYPE_IN) {
+                if ($material->stock_qty < $mutation->qty) {
+                    throw ValidationException::withMessages([
+                        'error' => "Tidak dapat menghapus mutasi masuk ini karena sisa stok fisik saat ini ({$material->stock_qty} pcs) lebih kecil dari jumlah mutasi yang akan dibatalkan ({$mutation->qty} pcs).",
+                    ]);
+                }
+                $material->decrement('stock_qty', $mutation->qty);
+            } else {
+                $material->increment('stock_qty', $mutation->qty);
+            }
+
+            $mutation->delete();
+        });
+
+        return redirect()->route('raw-materials.index')
+            ->with('success', 'Riwayat mutasi berhasil dihapus dan saldo stok fisik telah dikembalikan.');
     }
 }

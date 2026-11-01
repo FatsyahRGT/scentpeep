@@ -60,6 +60,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/raw-materials/categories', [RawMaterialCategoryController::class, 'store'])->name('raw-materials.categories.store');
         Route::put('/raw-materials/categories/{rawMaterialCategory}', [RawMaterialCategoryController::class, 'update'])->name('raw-materials.categories.update');
         Route::delete('/raw-materials/categories/{rawMaterialCategory}', [RawMaterialCategoryController::class, 'destroy'])->name('raw-materials.categories.destroy');
+        Route::post('/raw-materials/mutations', [RawMaterialController::class, 'storeMutation'])->name('raw-materials.mutations.store');
+        Route::put('/raw-materials/mutations/{mutation}', [RawMaterialController::class, 'updateMutation'])->name('raw-materials.mutations.update');
+        Route::delete('/raw-materials/mutations/{mutation}', [RawMaterialController::class, 'destroyMutation'])->name('raw-materials.mutations.destroy');
         Route::post('/raw-materials/{rawMaterial}/procure', [RawMaterialController::class, 'procure'])->name('raw-materials.procure');
         Route::post('/raw-materials/{rawMaterial}/consume', [RawMaterialController::class, 'consume'])->name('raw-materials.consume');
         Route::resource('raw-materials', RawMaterialController::class);

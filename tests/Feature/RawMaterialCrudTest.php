@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\RawMaterial;
 use App\Models\RawMaterialCategory;
+use App\Models\RawMaterialMutation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -225,5 +226,133 @@ class RawMaterialCrudTest extends TestCase
         $responseSearch->assertOk();
         $responseSearch->assertSee('Botol Kaca Bening');
         $responseSearch->assertDontSee('Box Mewah Hitam');
+    }
+
+    public function test_can_store_mutation_and_adjust_stock(): void
+    {
+        $material = RawMaterial::create([
+            'name' => 'Botol Spray 30ml',
+            'category_id' => $this->botolCat->id,
+            'category' => 'BOTOL',
+            'stock_qty' => 10,
+            'min_stock' => 5,
+        ]);
+
+        // IN mutation
+        $responseIn = $this->actingAs($this->admin)->post(route('raw-materials.mutations.store'), [
+            'raw_material_id' => $material->id,
+            'type' => 'IN',
+            'qty' => 50,
+            'amount' => 250000,
+            'supplier' => 'PT Botol Nusantara',
+            'note' => 'Restok batch 1',
+        ]);
+        $responseIn->assertRedirect(route('raw-materials.index'));
+        $this->assertEquals(60, $material->fresh()->stock_qty);
+        $this->assertDatabaseHas('raw_material_mutations', [
+            'raw_material_id' => $material->id,
+            'type' => 'IN',
+            'qty' => 50,
+            'supplier' => 'PT Botol Nusantara',
+        ]);
+        $this->assertDatabaseHas('transactions', [
+            'type' => 'OUTCOME',
+            'category' => 'Bahan Baku',
+            'amount' => 250000,
+        ]);
+
+        // OUT mutation
+        $responseOut = $this->actingAs($this->admin)->post(route('raw-materials.mutations.store'), [
+            'raw_material_id' => $material->id,
+            'type' => 'OUT',
+            'qty' => 20,
+            'note' => 'Pakai untuk batch parfum A',
+        ]);
+        $responseOut->assertRedirect(route('raw-materials.index'));
+        $this->assertEquals(40, $material->fresh()->stock_qty);
+
+        // OUT mutation with insufficient stock
+        $responseFail = $this->actingAs($this->admin)->post(route('raw-materials.mutations.store'), [
+            'raw_material_id' => $material->id,
+            'type' => 'OUT',
+            'qty' => 100,
+        ]);
+        $responseFail->assertSessionHasErrors(['qty']);
+        $this->assertEquals(40, $material->fresh()->stock_qty);
+    }
+
+    public function test_can_update_mutation_and_adjust_stock(): void
+    {
+        $material = RawMaterial::create([
+            'name' => 'Box 30ml Hardbox',
+            'category_id' => $this->boxCat->id,
+            'category' => 'BOX',
+            'stock_qty' => 50,
+            'min_stock' => 10,
+        ]);
+
+        $mutation = RawMaterialMutation::create([
+            'raw_material_id' => $material->id,
+            'type' => 'IN',
+            'qty' => 30,
+            'created_by' => $this->admin->id,
+        ]);
+
+        // Stock was 50 (which included the 30). Now update qty from 30 to 40.
+        $response = $this->actingAs($this->admin)->put(route('raw-materials.mutations.update', $mutation), [
+            'raw_material_id' => $material->id,
+            'type' => 'IN',
+            'qty' => 40,
+            'note' => 'Koreksi qty jadi 40',
+        ]);
+        $response->assertRedirect(route('raw-materials.index'));
+        $this->assertEquals(60, $material->fresh()->stock_qty);
+
+        // Update to OUT: old +30 reverted (-30 => 30), new OUT 40 applied (30 - 40 = -10), should fail
+        $responseNegative = $this->actingAs($this->admin)->put(route('raw-materials.mutations.update', $mutation), [
+            'raw_material_id' => $material->id,
+            'type' => 'OUT',
+            'qty' => 40,
+        ]);
+        $responseNegative->assertSessionHasErrors(['qty']);
+    }
+
+    public function test_can_destroy_mutation_and_revert_stock(): void
+    {
+        $material = RawMaterial::create([
+            'name' => 'Stiker Segel Hologram',
+            'category_id' => $this->boxCat->id,
+            'category' => 'BOX',
+            'stock_qty' => 100,
+            'min_stock' => 10,
+        ]);
+
+        // OUT mutation of 20
+        $mutOut = RawMaterialMutation::create([
+            'raw_material_id' => $material->id,
+            'type' => 'OUT',
+            'qty' => 20,
+            'created_by' => $this->admin->id,
+        ]);
+
+        // Deleting OUT mutation should revert stock (100 + 20 = 120)
+        $response = $this->actingAs($this->admin)->delete(route('raw-materials.mutations.destroy', $mutOut));
+        $response->assertRedirect(route('raw-materials.index'));
+        $this->assertEquals(120, $material->fresh()->stock_qty);
+        $this->assertDatabaseMissing('raw_material_mutations', ['id' => $mutOut->id]);
+
+        // IN mutation of 50
+        $mutIn = RawMaterialMutation::create([
+            'raw_material_id' => $material->id,
+            'type' => 'IN',
+            'qty' => 50,
+            'created_by' => $this->admin->id,
+        ]);
+
+        // Deleting IN mutation should reduce stock (120 - 50 = 70)
+        $responseInDel = $this->actingAs($this->admin)->delete(route('raw-materials.mutations.destroy', $mutIn));
+        $responseInDel->assertRedirect(route('raw-materials.index'));
+        $this->assertEquals(70, $material->fresh()->stock_qty);
+        $this->assertDatabaseMissing('raw_material_mutations', ['id' => $mutIn->id]);
     }
 }

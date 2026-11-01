@@ -7,37 +7,27 @@
 <!-- Quick Action & Monthly Snapshot Banner -->
 <div class="card border-0 shadow-sm mb-4 bg-white" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
     <div class="card-body p-3 p-lg-4">
-        <div class="row align-items-center g-3">
-            <div class="col-md-7">
-                <h4 class="font-serif mb-1 fw-bold text-dark">Selamat Datang di Scentpeep Management System</h4>
-                <p class="text-muted small mb-0">
-                    Bulan ini tercatat <strong class="text-dark">{{ $thisMonthTxCount }} transaksi</strong> dengan pemasukan 
-                    <strong class="text-success">+Rp {{ number_format($thisMonthIncome, 0, ',', '.') }}</strong> dan pengeluaran 
-                    <strong class="text-danger">-Rp {{ number_format($thisMonthOutcome, 0, ',', '.') }}</strong>.
-                </p>
-            </div>
-            <div class="col-md-5 d-flex flex-wrap gap-2 justify-content-md-end">
-                <a href="{{ route('invoices.create') }}" class="btn btn-scent fw-semibold">
-                    <i class="bi bi-receipt-cutoff me-1"></i> Buat Invoice
-                </a>
-                <a href="{{ route('transactions.create') }}" class="btn btn-scent-outline fw-semibold">
-                    <i class="bi bi-wallet2 me-1"></i> Catat Kas
-                </a>
-                @if(!$isReseller)
-                <a href="{{ route('stocks.transfer.create') }}" class="btn btn-scent-outline fw-semibold">
-                    <i class="bi bi-arrow-left-right me-1"></i> Transfer Stok
-                </a>
-                @endif
-                <a href="{{ route('stocks.index') }}" class="btn btn-scent-outline fw-semibold">
-                    <i class="bi bi-box-seam me-1"></i> Ringkasan Stok
-                </a>
-            </div>
+        <!-- Baris Pertama: Judul & Subjudul Ringkasan -->
+        <div>
+            <h4 class="font-serif mb-1 fw-bold text-dark fs-5">Selamat Datang di Scentpeep Management System</h4>
+            <p class="text-muted small mb-0">
+                Bulan ini tercatat <strong class="text-dark">{{ $thisMonthTxCount }} transaksi</strong> dengan pemasukan 
+                <strong class="text-success">+Rp {{ number_format($thisMonthIncome, 0, ',', '.') }}</strong> dan pengeluaran 
+                <strong class="text-danger">-Rp {{ number_format($thisMonthOutcome, 0, ',', '.') }}</strong>.
+            </p>
+        </div>
 
-            @if(!$isReseller && $allLocations->isNotEmpty())
-            <div class="col-12 mt-3 pt-3 border-top d-flex align-items-center justify-content-between flex-wrap gap-2" style="border-color: var(--color-border-subtle, #f0eee9) !important;">
-                <form method="GET" action="{{ route('dashboard') }}" class="d-flex align-items-center gap-2">
+        <!-- Pemisah Visual -->
+        <hr class="my-3 opacity-25">
+
+        <!-- Baris Kedua: Toolbar Filter Lokasi di Kiri & 4 Tombol Aksi di Kanan -->
+        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
+            <!-- Sisi Kiri: Filter Berdasarkan Lokasi -->
+            <div>
+                @if(!$isReseller && $allLocations->isNotEmpty())
+                <form method="GET" action="{{ route('dashboard') }}" class="d-flex align-items-center gap-2 flex-wrap m-0">
                     <label class="small fw-semibold text-muted text-nowrap mb-0"><i class="bi bi-funnel me-1"></i>Filter Berdasarkan Lokasi:</label>
-                    <select name="location_id" class="form-select form-select-sm" style="min-width: 240px; border-radius: 8px;" onchange="this.form.submit()">
+                    <select name="location_id" class="form-select form-select-sm rounded-3 py-2" style="width: auto; min-width: 180px;" onchange="this.form.submit()">
                         <option value="">Semua Lokasi Stok</option>
                         @foreach($allLocations as $loc)
                             <option value="{{ $loc->id }}" {{ $selectedLocationId == $loc->id ? 'selected' : '' }}>
@@ -46,14 +36,32 @@
                         @endforeach
                     </select>
                     @if($selectedLocationId)
-                        <a href="{{ route('dashboard') }}" class="btn btn-sm btn-light border text-danger px-3">Reset</a>
+                        <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-2 d-inline-flex align-items-center" title="Reset Filter">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+                        <span class="badge bg-light text-dark border">Data khusus lokasi terpilih</span>
                     @endif
                 </form>
-                @if($selectedLocationId)
-                    <span class="badge bg-light text-dark border">Menampilkan data khusus lokasi terpilih</span>
                 @endif
             </div>
-            @endif
+
+            <!-- Sisi Kanan: 4 Tombol Aksi Sejajar -->
+            <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
+                <a href="{{ route('stocks.index') }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap fw-semibold">
+                    <i class="bi bi-box-seam"></i> Ringkasan Stok
+                </a>
+                @if(!$isReseller)
+                <a href="{{ route('stocks.transfer.create') }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap fw-semibold">
+                    <i class="bi bi-arrow-left-right"></i> Transfer Stok
+                </a>
+                @endif
+                <a href="{{ route('transactions.create') }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap fw-semibold">
+                    <i class="bi bi-wallet2"></i> Catat Kas
+                </a>
+                <a href="{{ route('invoices.create') }}" class="btn btn-dark btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap fw-semibold shadow-sm">
+                    <i class="bi bi-receipt-cutoff"></i> Buat Invoice
+                </a>
+            </div>
         </div>
     </div>
 </div>

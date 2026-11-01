@@ -5,28 +5,27 @@
 
 @section('content')
 <div class="card mb-4">
-    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
-        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
-        <div class="d-flex flex-column justify-content-between">
+    <div class="card-header bg-white py-3 border-bottom d-block">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <!-- Sisi Kiri: Judul & Subtitle -->
             <div>
-                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Master Lokasi Stok Fisik</h3>
+                <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Master Lokasi Stok Fisik</h3>
                 <small class="text-muted d-block">Kelola toko fisik, gudang pusat, dan partner reseller konsinyasi (RIZKY, IWAN, TOKO GPI).</small>
             </div>
-            <div class="d-flex align-items-center gap-2 mt-4">
-                <a href="{{ route('locations.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah Lokasi
-                </a>
-            </div>
-        </div>
 
-        <!-- Kolom Kanan: Fitur Search -->
-        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
-            <div class="input-group input-group-sm">
-                <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
-                <input type="search" id="liveLocationSearch" class="form-control border-start-0 ps-2" placeholder="Filter baris lokasi&hellip;" aria-label="Filter rows">
-                <button type="button" class="btn btn-sm btn-scent px-3" title="Cari">
-                    <i class="bi bi-arrow-right"></i>
-                </button>
+            <!-- Sisi Kanan: Search Bar & Tombol Tambah Lokasi Sejajar -->
+            <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <span class="input-group-text bg-white border-end-0 text-muted ps-3 rounded-start-3"><i class="bi bi-search"></i></span>
+                    <input type="search" id="liveLocationSearch" class="form-control border-start-0 ps-2" placeholder="Filter baris lokasi&hellip;" aria-label="Filter rows">
+                    <button type="button" class="btn btn-dark px-3 rounded-end-3" title="Cari">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+
+                <a href="{{ route('locations.create') }}" class="btn btn-dark btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap fw-semibold">
+                    <i class="bi bi-plus-lg"></i> Tambah Lokasi
+                </a>
             </div>
         </div>
     </div>
@@ -34,14 +33,14 @@
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table align-middle table-hover m-0" id="locationsTable">
-                <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
+                <thead style="background-color: var(--color-surface-hover, #f4f3f0);" class="text-nowrap align-middle">
                     <tr>
-                        <th style="width: 50px;" class="py-2 px-3 text-muted small fw-semibold">#</th>
+                        <th style="width: 50px;" class="py-2 px-3 text-muted small fw-semibold text-nowrap">#</th>
                         <th class="py-2 px-3 text-muted small fw-semibold">Nama Lokasi</th>
-                        <th class="text-center py-2 px-3 text-muted small fw-semibold" style="width: 140px;">Tipe</th>
-                        <th class="text-center py-2 px-3 text-muted small fw-semibold" style="width: 140px;">Varian Terdaftar</th>
-                        <th class="text-center py-2 px-3 text-muted small fw-semibold" style="width: 150px;">Total Unit Fisik</th>
-                        <th class="text-end py-2 px-3 text-muted small fw-semibold" style="width: 100px;">Aksi</th>
+                        <th class="text-center py-2 px-3 text-muted small fw-semibold text-nowrap" style="width: 140px;">Tipe</th>
+                        <th class="text-center py-2 px-3 text-muted small fw-semibold text-nowrap" style="width: 140px;">Varian Terdaftar</th>
+                        <th class="text-center py-2 px-3 text-muted small fw-semibold text-nowrap" style="width: 150px;">Total Unit Fisik</th>
+                        <th class="text-end py-2 px-3 text-muted small fw-semibold text-nowrap pe-4" style="width: 100px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="locationsTableBody">
@@ -51,11 +50,11 @@
                             $skuCount = $loc->stocks->where('qty', '>', 0)->count();
                         @endphp
                         <tr>
-                            <td class="text-muted small py-2 px-3">{{ $locations->firstItem() + $index }}</td>
+                            <td class="text-muted small py-2 px-3 text-nowrap">{{ $locations->firstItem() + $index }}</td>
                             <td class="py-2 px-3">
                                 @php $pal = $loc->getColorPalette(); @endphp
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="badge" style="background-color: {{ $pal['badge_bg'] }}; color: {{ $pal['badge_text'] }}; border: 1px solid {{ $pal['border'] }}; font-weight: 700; font-size: 0.85rem;">
+                                    <span class="badge text-uppercase" style="background-color: {{ $pal['badge_bg'] }}; color: {{ $pal['badge_text'] }}; border: 1px solid {{ $pal['border'] }}; font-weight: 700; font-size: 0.85rem;">
                                         <i class="bi bi-geo-alt-fill me-1"></i>{{ $loc->name }}
                                     </span>
                                 </div>
@@ -65,29 +64,29 @@
                                     </div>
                                 @endif
                             </td>
-                            <td class="text-center py-2 px-3">
+                            <td class="text-center py-2 px-3 text-nowrap">
                                 @if($loc->type === 'reseller')
                                     <span class="badge bg-light text-dark border fw-bold px-2 py-1">RESELLER</span>
                                 @else
                                     <span class="badge bg-secondary-subtle text-dark border fw-bold px-2 py-1">GUDANG</span>
                                 @endif
                             </td>
-                            <td class="text-center py-2 px-3">
+                            <td class="text-center py-2 px-3 text-nowrap">
                                 <span class="badge bg-light text-muted border">{{ $skuCount }} SKU</span>
                             </td>
-                            <td class="text-center py-2 px-3">
+                            <td class="text-center py-2 px-3 text-nowrap">
                                 <span class="badge bg-light text-dark border font-mono-num fw-bold fs-6">{{ number_format($locTotalQty, 0, ',', '.') }} pcs</span>
                             </td>
-                            <td class="text-end text-nowrap py-2 px-3">
-                                <div class="d-inline-flex gap-1">
-                                    <a href="{{ route('locations.edit', $loc->id) }}" class="btn btn-sm btn-icon btn-outline-secondary rounded-circle" data-bs-toggle="tooltip" title="Edit Lokasi">
-                                        <i class="bi bi-pencil"></i>
+                            <td class="text-end text-nowrap py-2 px-3 pe-4">
+                                <div class="d-inline-flex align-items-center gap-2">
+                                    <a href="{{ route('locations.edit', $loc->id) }}" class="btn btn-outline-secondary btn-sm rounded-3 py-1 px-2" data-bs-toggle="tooltip" title="Edit Lokasi">
+                                        <i class="bi bi-pencil small"></i>
                                     </a>
                                     <form action="{{ route('locations.destroy', $loc->id) }}" method="POST" onsubmit="return confirmAction(this, 'Hapus Lokasi Stok', 'Apakah Anda yakin ingin menghapus lokasi {{ addslashes($loc->name) }}?{{ $locTotalQty > 0 ? ' Catatan: Lokasi ini masih memiliki ' . $locTotalQty . ' pcs stok aktif.' : '' }}')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-icon btn-outline-danger rounded-circle" data-bs-toggle="tooltip" title="Hapus Lokasi">
-                                            <i class="bi bi-trash"></i>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-2" data-bs-toggle="tooltip" title="Hapus Lokasi">
+                                            <i class="bi bi-trash small"></i>
                                         </button>
                                     </form>
                                 </div>

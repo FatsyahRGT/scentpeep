@@ -4,45 +4,43 @@
 @section('page-header', 'Riwayat Transfer Stok Antar Lokasi')
 
 @section('content')
-<div class="card mb-4">
-    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-start gap-3">
-        <!-- Kolom Kiri: Judul, Subtitle & Tombol Aksi -->
-        <div class="d-flex flex-column justify-content-between">
-            <div>
-                <h3 class="card-title mb-1 font-serif fw-bold text-dark">Log Riwayat Transfer Stok</h3>
-                <small class="text-muted d-block">Catatan mutasi pergerakan unit parfum dari gudang ke gudang atau ke reseller</small>
-            </div>
-            <div class="d-flex align-items-center gap-2 mt-4">
-                @if(!Auth::user()->isReseller())
-                <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-scent fw-semibold">
-                    <i class="bi bi-arrow-left-right me-1"></i> Buat Transfer Baru
-                </a>
-                @endif
-                <a href="{{ route('stocks.index') }}" class="btn btn-sm btn-scent-outline fw-semibold">
-                    <i class="bi bi-box-seam me-1"></i> Ringkasan Stok
-                </a>
-            </div>
+<div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important; border-radius: 12px;">
+    <div class="card-header py-3 bg-white border-bottom d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
+        <!-- Kolom Kiri: Judul & Subtitle -->
+        <div>
+            <h3 class="card-title mb-1 font-serif fw-bold text-dark fs-5">Log Riwayat Transfer Stok</h3>
+            <small class="text-muted d-block">Catatan mutasi pergerakan unit parfum dari gudang ke gudang atau ke reseller</small>
         </div>
 
-        <!-- Kolom Kanan: Fitur Search -->
-        <div style="width: 100%; max-width: 320px;" class="ms-md-auto">
-            <form method="GET" action="{{ route('stocks.transfers') }}" class="d-flex flex-column gap-2 m-0">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white border-end-0 text-muted ps-3"><i class="bi bi-search"></i></span>
-                    <input type="search" class="form-control border-start-0 ps-2" name="search" value="{{ request('search') }}" placeholder="Filter baris transfer&hellip;" aria-label="Filter rows">
-                    <button type="submit" class="btn btn-sm btn-scent px-3" title="Cari">
+        <!-- Kolom Kanan: Container Horizontal (Search -> Ringkasan Stok -> Buat Transfer Baru) -->
+        <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
+            <!-- Input Search -->
+            <form method="GET" action="{{ route('stocks.transfers') }}" class="d-flex align-items-center gap-1 m-0 flex-grow-1 flex-xl-grow-0">
+                <div class="input-group input-group-sm" style="width: 240px; max-width: 100%;">
+                    <span class="input-group-text bg-white border-end-0 text-muted ps-2"><i class="bi bi-search"></i></span>
+                    <input type="search" class="form-control border-start-0 ps-1" name="search" value="{{ request('search') }}" placeholder="Filter baris transfer&hellip;" aria-label="Filter rows">
+                    <button type="submit" class="btn btn-sm btn-scent px-2" title="Cari">
                         <i class="bi bi-arrow-right"></i>
                     </button>
                 </div>
-
                 @if(request()->filled('search'))
-                <div class="text-center mt-1">
-                    <a href="{{ route('stocks.transfers') }}" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" title="Reset Filter">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
-                    </a>
-                </div>
+                <a href="{{ route('stocks.transfers') }}" class="btn btn-sm btn-outline-secondary rounded-3 py-1 px-2" style="font-size: 0.78rem;" title="Reset Filter">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
                 @endif
             </form>
+
+            <!-- Tombol Ringkasan Stok (Sekunder/Outline) -->
+            <a href="{{ route('stocks.index') }}" class="btn btn-sm btn-outline-secondary fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap" title="Buka Ringkasan Stok">
+                <i class="bi bi-box-seam"></i> Ringkasan Stok
+            </a>
+
+            <!-- Tombol Buat Transfer Baru (Primary btn-dark / btn-scent di posisi paling kanan) -->
+            @if(!Auth::user()->isReseller())
+            <a href="{{ route('stocks.transfer.create') }}" class="btn btn-sm btn-scent fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap">
+                <i class="bi bi-arrow-left-right"></i> Buat Transfer Baru
+            </a>
+            @endif
         </div>
     </div>
 
@@ -50,31 +48,31 @@
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table align-middle table-hover m-0">
-                <thead style="background-color: var(--color-surface-hover, #f4f3f0);">
+                <thead class="text-nowrap align-middle" style="background-color: var(--color-surface-hover, #f4f3f0);">
                     <tr>
-                        <th style="width: 40px;" class="py-2 px-3 text-muted small fw-semibold">#</th>
-                        <th style="width: 140px;" class="py-2 px-3 text-muted small fw-semibold">No. Transfer</th>
-                        <th style="width: 120px;" class="py-2 px-3 text-muted small fw-semibold">Tanggal</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Lokasi Asal</th>
-                        <th style="width: 30px;" class="text-center py-2 px-3"></th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Lokasi Tujuan</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Varian Produk</th>
-                        <th class="text-center py-2 px-3 text-muted small fw-semibold" style="width: 100px;">Jumlah</th>
-                        <th class="py-2 px-3 text-muted small fw-semibold">Catatan & Diproses Oleh</th>
-                        <th class="text-end py-2 px-3 text-muted small fw-semibold" style="width: 100px;">Aksi</th>
+                        <th style="width: 45px;" class="py-2 px-3 text-muted small fw-semibold text-center text-nowrap">#</th>
+                        <th style="width: 140px;" class="py-2 px-3 text-muted small fw-semibold text-nowrap">No. Transfer</th>
+                        <th style="width: 110px;" class="py-2 px-3 text-muted small fw-semibold text-nowrap">Tanggal</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-nowrap">Lokasi Asal</th>
+                        <th style="width: 1%;" class="text-center py-2 px-1"></th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-nowrap">Lokasi Tujuan</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-nowrap" style="min-width: 180px;">Varian Produk</th>
+                        <th class="text-center py-2 px-3 text-muted small fw-semibold text-nowrap" style="width: 100px;">Jumlah</th>
+                        <th class="py-2 px-3 text-muted small fw-semibold text-nowrap" style="min-width: 180px;">Catatan &amp; Diproses Oleh</th>
+                        <th class="text-end py-2 px-3 pe-4 text-muted small fw-semibold text-nowrap" style="width: 110px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($transfers as $index => $trf)
                     <tr>
-                        <td class="text-muted small py-2 px-3">{{ $transfers->firstItem() + $index }}</td>
-                        <td class="py-2 px-3">
+                        <td class="text-muted small py-2 px-3 text-center text-nowrap">{{ $transfers->firstItem() + $index }}</td>
+                        <td class="py-2 px-3 text-nowrap">
                             <span class="badge bg-light text-dark border font-mono-num">{{ $trf->transfer_no ?? '-' }}</span>
                         </td>
                         <td class="text-muted small text-nowrap py-2 px-3">
                             {{ \Carbon\Carbon::parse($trf->tanggal)->translatedFormat('d M Y') }}
                         </td>
-                        <td class="py-2 px-3">
+                        <td class="py-2 px-3 text-nowrap">
                             @if($trf->fromLocation)
                                 @php $fromPal = $trf->fromLocation->getColorPalette(); @endphp
                                 <span class="badge" style="background-color: {{ $fromPal['badge_bg'] }}; color: {{ $fromPal['badge_text'] }}; border: 1px solid {{ $fromPal['border'] }}; font-weight: 700; font-size: 0.78rem;">
@@ -84,10 +82,10 @@
                                 <span class="badge bg-light text-muted border fw-semibold">Gudang</span>
                             @endif
                         </td>
-                        <td class="text-center text-muted py-2 px-3">
+                        <td class="text-center text-muted py-2 px-1" style="width: 1%;">
                             <i class="bi bi-arrow-right"></i>
                         </td>
-                        <td class="py-2 px-3">
+                        <td class="py-2 px-3 text-nowrap">
                             @if($trf->toLocation)
                                 @php $toPal = $trf->toLocation->getColorPalette(); @endphp
                                 <span class="badge" style="background-color: {{ $toPal['badge_bg'] }}; color: {{ $toPal['badge_text'] }}; border: 1px solid {{ $toPal['border'] }}; font-weight: 700; font-size: 0.78rem;">
@@ -103,24 +101,24 @@
                                 <span class="badge bg-light text-muted border font-mono-num" style="font-size: 0.68rem;">{{ $trf->product->code }}</span>
                             @endif
                         </td>
-                        <td class="text-center py-2 px-3">
+                        <td class="text-center py-2 px-3 text-nowrap">
                             <span class="badge bg-success-subtle text-success border fw-bold px-2 py-1 font-mono-num fs-6">
                                 {{ $trf->qty }} pcs
                             </span>
                         </td>
-                        <td class="py-2 px-3">
+                        <td class="py-2 px-3" style="min-width: 180px;">
                             <div class="small text-dark">{{ $trf->notes ?: '-' }}</div>
-                            <div class="text-muted" style="font-size: 0.72rem;">
+                            <div class="text-muted text-nowrap" style="font-size: 0.72rem;">
                                 <i class="bi bi-person me-1"></i>{{ $trf->creator?->name ?? 'Sistem' }}
                             </div>
                         </td>
-                        <td class="text-end py-2 px-3">
+                        <td class="text-end py-2 px-3 pe-4 text-nowrap">
                             @if(!Auth::user()->isReseller())
-                            <div class="d-inline-flex gap-1 align-items-center">
-                                <a href="{{ route('stocks.transfer.edit', $trf) }}" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Edit Transfer">
+                            <div class="d-inline-flex align-items-center gap-2">
+                                <a href="{{ route('stocks.transfer.edit', $trf) }}" class="btn btn-sm btn-outline-secondary rounded-3 py-1 px-2" title="Edit Transfer">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" data-bs-toggle="modal" data-bs-target="#modalDeleteTransfer{{ $trf->id }}" title="Batalkan & Hapus Transfer">
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-3 py-1 px-2" data-bs-toggle="modal" data-bs-target="#modalDeleteTransfer{{ $trf->id }}" title="Batalkan & Hapus Transfer">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
