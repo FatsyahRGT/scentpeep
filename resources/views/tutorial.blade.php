@@ -19,9 +19,11 @@
                             <p class="text-muted small m-0 mt-1">Petunjuk komprehensif langkah demi langkah penggunaan seluruh fitur sidebar pada Scentpeep Management System.</p>
                         </div>
                     </div>
-                    <span class="badge bg-light text-dark border px-3 py-2 font-mono" style="font-size: 0.8rem;">
-                        <i class="bi bi-shield-check me-1 text-success"></i> Scentpeep v2.6 Ready
-                    </span>
+                    <button type="button" class="btn btn-sm btn-light border px-3 py-2 font-mono shadow-xs d-inline-flex align-items-center gap-2 text-nowrap rounded-3 text-dark text-decoration-none" data-bs-toggle="modal" data-bs-target="#changelogModal" style="font-size: 0.82rem; cursor: pointer; transition: all 0.2s;" title="Klik untuk melihat Histori Versi &amp; Catatan Rilis">
+                        <i class="bi bi-shield-check text-success fs-6"></i>
+                        <span class="fw-semibold">Scentpeep v2.6 Ready</span>
+                        <span class="badge bg-dark text-white rounded-pill px-2 py-1" style="font-size: 0.65rem;">Histori Versi</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -379,6 +381,168 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- Modal Histori Versi & Catatan Rilis -->
+<div class="modal fade" id="changelogModal" tabindex="-1" aria-labelledby="changelogModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content border-0 shadow" style="border-radius: 14px; overflow: hidden;">
+            <div class="modal-header border-bottom py-3 px-4 bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle bg-dark text-white d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="bi bi-clock-history fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title font-serif fw-bold text-dark m-0 fs-5" id="changelogModalLabel">Catatan Rilis &amp; Histori Versi</h5>
+                        <p class="text-muted small m-0">Rekam jejak pembaruan, penambahan fitur, dan optimasi Scentpeep</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="max-height: 70vh;">
+                <!-- Timeline Container -->
+                <div class="timeline-changelog d-flex flex-column gap-4">
+
+                    <!-- v2.6 (Current) -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid var(--color-dark, #111827) !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-dark text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.6</span>
+                                <h6 class="fw-bold text-dark m-0">Buku Panduan Sistem &amp; Optimasi Performa</h6>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill font-mono" style="font-size: 0.72rem;">
+                                <i class="bi bi-check-circle me-1"></i> Versi Aktif
+                            </span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Halaman Panduan &amp; Tutorial (/tutorial)</strong>: Pusat edukasi langkah demi langkah dengan lambang tanda tanya (<i class="bi bi-question-circle-fill"></i>) di sidebar &amp; topbar berisikan 7 tab panduan alur bisnis interaktif.</li>
+                            <li><strong class="text-dark">Optimasi Kueri Database &amp; Anti N+1</strong>: Penyatuan logika distribusi sales di <code class="font-mono">DashboardController</code> serta perampingan pembacaan kolom spesifik pada <code class="font-mono">StockController</code>.</li>
+                            <li><strong class="text-dark">Standar Kualitas Bersih (Clean Code)</strong>: Pembersihan komentar repetitif (anti-slop) dan pengujian otomatis 100% lulus (74 tests passed).</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.5 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #4b5563 !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.5</span>
+                                <h6 class="fw-bold text-dark m-0">Pemisahan Kas dari Invoice &amp; Kustom Tanggal</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Pemisahan Kas Murni (Decoupled Cash Flow)</strong>: Status LUNAS / BELUM LUNAS pada invoice murni sebagai penanda piutang &amp; operasional pesanan. Uang lunas tidak otomatis masuk kas utama agar pencatatan kas riil diinput manual saat dana benar-benar masuk ke kasir/rekening.</li>
+                            <li><strong class="text-dark">Kustom Tanggal Invoice (CRUD Tanggal)</strong>: Penambahan kolom <code class="font-mono">tanggal</code> di nota invoice dengan datepicker di formulir create/edit dan dukungan pencatatan nota tanggal lampau (backdating).</li>
+                            <li><strong class="text-dark">Pembersihan Ringkasan Redundan</strong>: Menghapus 5 kartu ringkasan ganda di daftar invoice untuk memangkas beban query agregat.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.4 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #6b7280 !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.4</span>
+                                <h6 class="fw-bold text-dark m-0">Pemisahan Menu Tambah Stock &amp; Deep-Link Restock</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Menu Baru Tambah Stock (/stocks/restock)</strong>: Memindahkan tabel katalog stok fisik lengkap 15 item/halaman dari dashboard ke menu mandiri di atas Ringkasan Stok.</li>
+                            <li><strong class="text-dark">Filter Status Ketersediaan</strong>: Tombol filter cepat (Semua, Ready, Menipis, Habis) dan modal penambahan stok sehabis produksi.</li>
+                            <li><strong class="text-dark">Pembersihan Dashboard Stok</strong>: Tampilan dashboard difokuskan pada kartu KPI dan tombol varian habis terhubung langsung (deep-link) ke halaman Tambah Stock.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.3 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #9ca3af !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.3</span>
+                                <h6 class="fw-bold text-dark m-0">Transfer Stok Multi-Lokasi &amp; Isolasi Kas Murni</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Full CRUD Transfer Stok (/stocks/transfers)</strong>: Mutasi stok antar-lokasi dengan nomor audit otomatis (<code class="font-mono">TRF/YYYYMMDD/xxxx</code>), kalkulator stok real-time, dan fitur edit/cancel transfer atomik.</li>
+                            <li><strong class="text-dark">Isolasi Penuh Buku Kas (/transactions)</strong>: Formulir kas dikhususkan 100% pada kas operasional murni (iklan, operasional, gaji, packaging) tanpa tumpang-tindih mutasi parfum.</li>
+                            <li><strong class="text-dark">CRUD Dinamis Kategori Bahan Mentah</strong>: Pengelolaan fleksibel kategori material kemasan di luar box dan botol standar.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.2 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #d1d5db !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark border px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.2</span>
+                                <h6 class="fw-bold text-dark m-0">Manajemen Reseller, Evaluasi YoY, &amp; Sub-Dashboard</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Manajemen Akun Reseller (/users)</strong>: CRUD user reseller internal dengan pembatasan hak akses rute internal.</li>
+                            <li><strong class="text-dark">Evaluasi Penjualan Tahunan (YoY)</strong>: Analisis performa omset bulanan dan tahunan per sales.</li>
+                            <li><strong class="text-dark">Pusat Dashboard Terorganisir</strong>: 4 tab sub-dashboard terarah (Utama, Stok, Penjualan, dan Bahan Mentah).</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.0 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #e5e7eb !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark border px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.0</span>
+                                <h6 class="fw-bold text-dark m-0">Invoice Penjualan, Pre-Order, Bahan Mentah &amp; Palet HSL</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Mayor</span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Penerbitan Invoice Penjualan</strong>: Invoice per varian dengan pemotongan stok otomatis dari lokasi pemegang barang (<code class="font-mono">IWAN</code> atau <code class="font-mono">RIZKY</code>).</li>
+                            <li><strong class="text-dark">Pre-Order (PO) &amp; Stok Pending</strong>: Segmen antrean produksi barang di luar stok utama sebelum siap dipindahkan.</li>
+                            <li><strong class="text-dark">Pengadaan Bahan Mentah</strong>: Inventaris material packaging (Box Packaging &amp; Botol Kaca) lengkap dengan riwayat mutasi masuk/keluar.</li>
+                            <li><strong class="text-dark">Katalog Publik Reseller (/stok-reseller)</strong>: Monitoring ketersediaan stok tanpa login untuk dropshipper/reseller.</li>
+                            <li><strong class="text-dark">Palet Warna HSL Sudut Emas</strong>: Warna identitas deterministik otomatis untuk tiap pemegang stok (Iwan hijau, Rizky biru, Vanny crimson).</li>
+                        </ul>
+                    </div>
+
+                    <!-- v1.5 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #f3f4f6 !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark border px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v1.5</span>
+                                <h6 class="fw-bold text-dark m-0">Modernisasi UI Luxury Monochrome &amp; Chart.js</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Desain Luxury Monochrome</strong>: Standarisasi antarmuka berbasis Bootstrap 5.3.3 + AdminLTE 4 Components + Bootstrap Icons via CDN.</li>
+                            <li><strong class="text-dark">Grafik Interaktif</strong>: Visualisasi tren arus kas dan pergerakan stok parfum berbasis Chart.js.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v1.0 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #f9fafb !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark border px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v1.0</span>
+                                <h6 class="fw-bold text-dark m-0">Fondasi Awal Sistem &amp; Manajemen Stok Multi-Lokasi</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Rilis Awal</span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Struktur Data Inti</strong>: Master produk parfum, master lokasi toko/gudang, dan matriks stok fisik.</li>
+                            <li><strong class="text-dark">Autentikasi &amp; Kas Harian</strong>: Manajemen user Admin/Staff dan pencatatan kas masuk/keluar dasar.</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-4 bg-light border-top d-flex justify-content-between align-items-center">
+                <span class="text-muted small font-mono" style="font-size: 0.75rem;">
+                    <i class="bi bi-cpu me-1"></i> Laravel 12 &bull; PHP 8.2+ &bull; MySQL &bull; Bootstrap 5.3.3
+                </span>
+                <button type="button" class="btn btn-sm btn-dark px-3 py-1 rounded-2" data-bs-dismiss="modal">Tutup</button>
+            </div>
         </div>
     </div>
 </div>
