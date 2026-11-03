@@ -73,47 +73,375 @@
             <!-- TAB 1: PETA ALUR BISNIS -->
             <div class="tab-pane fade show active" id="tab-flow" role="tabpanel">
                 <div class="card border-0 shadow-sm p-4 mb-4" style="border: 1px solid var(--color-border) !important; border-radius: 12px;">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <i class="bi bi-compass-fill fs-4 text-dark"></i>
-                        <h4 class="font-serif fw-bold m-0 fs-5">Peta Alur Siklus Operasional Scentpeep</h4>
-                    </div>
-                    <p class="text-muted small">Scentpeep Management System memisahkan secara tegas dan aman antara <strong>siklus inventori fisik parfum</strong> dan <strong>siklus pembukuan kas riil</strong> guna mencegah kerancuan keuangan.</p>
-
-                    <div class="row g-3 my-2">
-                        <div class="col-md-3">
-                            <div class="border rounded-3 p-3 h-100 bg-light">
-                                <span class="badge bg-dark text-white mb-2">Tahap 1</span>
-                                <h6 class="fw-bold mb-1"><i class="bi bi-boxes me-1 text-primary"></i> Pengadaan Bahan</h6>
-                                <p class="text-muted small m-0">Beli kardus (Box) &amp; Botol kaca. Dicatat di menu <strong>Barang Mentah</strong>. Biaya belanja dapat disinkronkan ke pengeluaran kas.</p>
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3 pb-2 border-bottom">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-diagram-3-fill fs-4 text-dark"></i>
+                            <div>
+                                <h4 class="font-serif fw-bold m-0 fs-5">Peta Alur Siklus Operasional &amp; Diagram Interkoneksi Fitur</h4>
+                                <p class="text-muted small m-0">Panduan visual menyeluruh hubungan antar-fitur berdasarkan spesifikasi PRD, DFD, dan ERD dalam bahasa awam.</p>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="border rounded-3 p-3 h-100 bg-light">
-                                <span class="badge bg-dark text-white mb-2">Tahap 2</span>
-                                <h6 class="fw-bold mb-1"><i class="bi bi-box-arrow-in-down me-1 text-success"></i> Produksi &amp; Restock</h6>
-                                <p class="text-muted small m-0">Parfum selesai diracik atau barang PO selesai. Ditambahkan ke stok fisik melalui menu <strong>Tambah Stock</strong> atau konfirmasi PO.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="border rounded-3 p-3 h-100 bg-light">
-                                <span class="badge bg-dark text-white mb-2">Tahap 3</span>
-                                <h6 class="fw-bold mb-1"><i class="bi bi-receipt me-1 text-warning"></i> Penjualan (Invoice)</h6>
-                                <p class="text-muted small m-0">Terbitkan Invoice per varian. <strong>Stok fisik langsung terpotong otomatis</strong> dari lokasi terpilih. Penanda piutang tercatat.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="border rounded-3 p-3 h-100 bg-light">
-                                <span class="badge bg-dark text-white mb-2">Tahap 4</span>
-                                <h6 class="fw-bold mb-1"><i class="bi bi-wallet2 me-1 text-success"></i> Penerimaan Kas Riil</h6>
-                                <p class="text-muted small m-0">Saat uang pembayaran benar-benar masuk ke kasir/rekening, catat secara manual di menu <strong>Buku Kas</strong>. Kas utama terjaga 100% akurat.</p>
-                            </div>
-                        </div>
+                        <span class="badge bg-dark text-white font-mono px-3 py-2 rounded-pill" style="font-size: 0.75rem;">
+                            <i class="bi bi-shuffle me-1"></i> End-to-End Workflow
+                        </span>
                     </div>
 
-                    <div class="alert alert-secondary mt-3 mb-0 d-flex align-items-center gap-2 small" role="alert">
-                        <i class="bi bi-info-circle-fill text-dark fs-5"></i>
-                        <div>
-                            <strong>Prinsip Inti Sistem:</strong> Setiap mutasi kuantitas stok dijamin atomik (bebas minus) dengan <em>database transaction</em>. Seluruh fitur laporan terhubung otomatis ke tanggal transaksi kustom yang Anda tentukan.
+                    <!-- 1. DIAGRAM ALUR VISUAL SVG (RESPONSIF & INTERAKTIF) -->
+                    <div class="my-3 p-3 bg-light rounded-3 border">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold small text-dark d-flex align-items-center gap-1">
+                                <i class="bi bi-bezier2 text-primary"></i> Diagram Pemetaan Interkoneksi Antar Fitur (Visual Map)
+                            </span>
+                            <span class="text-muted small font-mono" style="font-size: 0.7rem;">Vector Crisp Flowchart</span>
+                        </div>
+
+                        <!-- SVG Flowchart Container -->
+                        <div class="table-responsive bg-white rounded-3 border p-2 text-center shadow-xs">
+                            <svg viewBox="0 0 960 480" class="w-100" style="min-width: 760px; max-height: 480px;" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#1f2937" />
+                                    </marker>
+                                    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#15803d" />
+                                    </marker>
+                                    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#1d4ed8" />
+                                    </marker>
+                                    <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#b91c1c" />
+                                    </marker>
+                                    <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="115%">
+                                        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.06"/>
+                                    </filter>
+                                </defs>
+
+                                <!-- CONNECTING ARROWS & PATHS -->
+                                <!-- 1. Bahan Mentah -> Kas Keluar (Sinkron Biaya) -->
+                                <path d="M 230 70 L 690 70" fill="none" stroke="#b91c1c" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow-red)" />
+                                <rect x="390" y="58" width="150" height="22" rx="11" fill="#fee2e2" stroke="#fca5a5" stroke-width="1" />
+                                <text x="465" y="73" font-size="10" font-weight="600" fill="#991b1b" text-anchor="middle">Biaya Belanja Bahan (Opsional)</text>
+
+                                <!-- 2. Bahan Mentah -> Tambah Stock (Dipakai Produksi) -->
+                                <path d="M 125 115 L 125 170" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
+                                <rect x="55" y="130" width="140" height="20" rx="10" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1" />
+                                <text x="125" y="144" font-size="10" font-weight="600" fill="#374151" text-anchor="middle">Dipakai Racik Parfum</text>
+
+                                <!-- 3. Pre-Order -> Stok Gudang (Saat Selesai) -->
+                                <path d="M 290 220 L 360 220" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#arrow-green)" />
+                                <rect x="280" y="209" width="90" height="20" rx="10" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
+                                <text x="325" y="223" font-size="9" font-weight="bold" fill="#166534" text-anchor="middle">PO Selesai (+)</text>
+
+                                <!-- 4. Tambah Stock -> Stok Gudang (Restock Selesai) -->
+                                <path d="M 205 220 L 370 220" fill="none" stroke="#15803d" stroke-width="2" />
+
+                                <!-- 5. Stok Gudang -> Transfer Stok (Pindah Lokasi) -->
+                                <path d="M 455 265 L 455 330" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow-blue)" />
+                                <rect x="385" y="285" width="140" height="20" rx="10" fill="#dbeafe" stroke="#93c5fd" stroke-width="1" />
+                                <text x="455" y="299" font-size="10" font-weight="600" fill="#1e40af" text-anchor="middle">Pindah Tangan (Kas Tetap)</text>
+
+                                <!-- 6. Stok Gudang -> Penjualan Invoice (Pelanggan Beli) -->
+                                <path d="M 540 220 L 610 220" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
+
+                                <!-- 7. Invoice -> Pemotongan Stok Fisik (Feedback Loop Atomik) -->
+                                <path d="M 680 180 C 680 145, 520 145, 470 170" fill="none" stroke="#b91c1c" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arrow-red)" />
+                                <rect x="520" y="133" width="130" height="22" rx="11" fill="#fee2e2" stroke="#fca5a5" stroke-width="1" />
+                                <text x="585" y="148" font-size="10" font-weight="bold" fill="#991b1b" text-anchor="middle">&#9889; Potong Stok Otomatis</text>
+
+                                <!-- 8. Invoice -> Buku Kas (Pemasukan Uang Riil) -->
+                                <path d="M 750 180 L 785 115" fill="none" stroke="#15803d" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow-green)" />
+                                <rect x="740" y="140" width="135" height="22" rx="11" fill="#f0fdf4" stroke="#86efac" stroke-width="1" />
+                                <text x="807" y="155" font-size="10" font-weight="600" fill="#166534" text-anchor="middle">Input Kas (Saat Uang Ada)</text>
+
+                                <!-- 9. Invoice -> Dashboard (Omset & Sales) -->
+                                <path d="M 720 265 L 720 330" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
+
+                                <!-- 10. Kas -> Dashboard (Saldo Uang Riil) -->
+                                <path d="M 870 115 L 870 330" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
+
+                                <!-- 11. Stok -> Dashboard (Stok Menipis & Donut) -->
+                                <path d="M 500 265 L 610 350" fill="none" stroke="#1f2937" stroke-width="1.5" stroke-dasharray="3,3" />
+
+                                <!-- NODES / BOXES -->
+
+                                <!-- NODE 1: BARANG MENTAH -->
+                                <g filter="url(#card-shadow)">
+                                    <rect x="20" y="30" width="210" height="85" rx="10" fill="#ffffff" stroke="#111827" stroke-width="1.5" />
+                                    <rect x="30" y="42" width="26" height="26" rx="6" fill="#111827" />
+                                    <text x="43" y="59" fill="#ffffff" font-size="14" text-anchor="middle">&#128230;</text>
+                                    <text x="65" y="52" font-size="13" font-weight="bold" fill="#111827">1. Bahan Mentah</text>
+                                    <text x="65" y="66" font-size="10" fill="#6b7280">Box Packaging &amp; Botol Kaca</text>
+                                    <line x1="30" y1="77" x2="220" y2="77" stroke="#f3f4f6" stroke-width="1" />
+                                    <text x="32" y="93" font-size="9.5" fill="#4b5563">&bull; Catat stok wadah parfum</text>
+                                    <text x="32" y="106" font-size="9.5" fill="#4b5563">&bull; Pantau botol siap pakai</text>
+                                </g>
+
+                                <!-- NODE 2A: RESTOCK PRODUKSI & PO -->
+                                <g filter="url(#card-shadow)">
+                                    <rect x="20" y="175" width="210" height="90" rx="10" fill="#ffffff" stroke="#15803d" stroke-width="1.5" />
+                                    <rect x="30" y="187" width="26" height="26" rx="6" fill="#15803d" />
+                                    <text x="43" y="204" fill="#ffffff" font-size="14" text-anchor="middle">&#10010;</text>
+                                    <text x="65" y="197" font-size="13" font-weight="bold" fill="#15803d">2. Tambah Stock &amp; PO</text>
+                                    <text x="65" y="211" font-size="10" fill="#6b7280">Hasil Racik &amp; Antrean Inden</text>
+                                    <line x1="30" y1="222" x2="220" y2="222" stroke="#f3f4f6" stroke-width="1" />
+                                    <text x="32" y="238" font-size="9.5" fill="#4b5563">&bull; Tambah Stock sehabis produksi</text>
+                                    <text x="32" y="252" font-size="9.5" fill="#4b5563">&bull; PO selesai &rarr; Auto-tambah unit</text>
+                                </g>
+
+                                <!-- NODE 3: GUDANG STOK FISIK -->
+                                <g filter="url(#card-shadow)">
+                                    <rect x="370" y="175" width="170" height="90" rx="10" fill="#ffffff" stroke="#111827" stroke-width="2" />
+                                    <rect x="382" y="187" width="26" height="26" rx="6" fill="#111827" />
+                                    <text x="395" y="204" fill="#ffffff" font-size="14" text-anchor="middle">&#127978;</text>
+                                    <text x="416" y="197" font-size="13" font-weight="bold" fill="#111827">3. Stok Fisik</text>
+                                    <text x="416" y="211" font-size="10" fill="#6b7280">Gudang Iwan &amp; Rizky</text>
+                                    <line x1="382" y1="222" x2="530" y2="222" stroke="#f3f4f6" stroke-width="1" />
+                                    <text x="384" y="238" font-size="9.5" fill="#4b5563">&bull; Pantau unit ready/habis</text>
+                                    <text x="384" y="252" font-size="9.5" fill="#4b5563">&bull; Real-time per pemegang</text>
+                                </g>
+
+                                <!-- NODE 3B: TRANSFER STOK -->
+                                <g filter="url(#card-shadow)">
+                                    <rect x="360" y="335" width="190" height="85" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.5" />
+                                    <rect x="372" y="347" width="26" height="26" rx="6" fill="#1d4ed8" />
+                                    <text x="385" y="364" fill="#ffffff" font-size="14" text-anchor="middle">&#8644;</text>
+                                    <text x="406" y="357" font-size="13" font-weight="bold" fill="#1d4ed8">Transfer Stok</text>
+                                    <text x="406" y="371" font-size="10" fill="#6b7280">Mutasi Antar-Lokasi</text>
+                                    <line x1="372" y1="382" x2="540" y2="382" stroke="#f3f4f6" stroke-width="1" />
+                                    <text x="374" y="398" font-size="9.5" fill="#4b5563">&bull; Kirim Iwan &harr; Rizky/Reseller</text>
+                                    <text x="374" y="411" font-size="9.5" fill="#4b5563">&bull; Aman tanpa sentuh uang kas</text>
+                                </g>
+
+                                <!-- NODE 4: PENJUALAN (INVOICE) -->
+                                <g filter="url(#card-shadow)">
+                                    <rect x="615" y="175" width="210" height="90" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="2" />
+                                    <rect x="627" y="187" width="26" height="26" rx="6" fill="#e11d48" />
+                                    <text x="640" y="204" fill="#ffffff" font-size="14" text-anchor="middle">&#129534;</text>
+                                    <text x="660" y="197" font-size="13" font-weight="bold" fill="#e11d48">4. Penjualan (Invoice)</text>
+                                    <text x="660" y="211" font-size="10" fill="#6b7280">Nota Transaksi Pelanggan</text>
+                                    <line x1="627" y1="222" x2="815" y2="222" stroke="#f3f4f6" stroke-width="1" />
+                                    <text x="629" y="238" font-size="9.5" fill="#4b5563">&bull; Tanggal kustom / backdate</text>
+                                    <text x="629" y="252" font-size="9.5" fill="#4b5563">&bull; Penanda LUNAS / Belum Lunas</text>
+                                </g>
+
+                                <!-- NODE 5: BUKU KAS OPERASIONAL -->
+                                <g filter="url(#card-shadow)">
+                                    <rect x="700" y="30" width="240" height="85" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="2" />
+                                    <rect x="712" y="42" width="26" height="26" rx="6" fill="#16a34a" />
+                                    <text x="725" y="59" fill="#ffffff" font-size="14" text-anchor="middle">&#128181;</text>
+                                    <text x="746" y="52" font-size="13" font-weight="bold" fill="#16a34a">5. Buku Kas &amp; Keuangan</text>
+                                    <text x="746" y="66" font-size="10" fill="#6b7280">Arus Uang Riil (Cash Flow)</text>
+                                    <line x1="712" y1="77" x2="930" y2="77" stroke="#f3f4f6" stroke-width="1" />
+                                    <text x="714" y="93" font-size="9.5" fill="#4b5563">&bull; Kas Masuk (Input saat uang cair)</text>
+                                    <text x="714" y="106" font-size="9.5" fill="#4b5563">&bull; Beban Usaha (Iklan, operasional)</text>
+                                </g>
+
+                                <!-- NODE 6: DASHBOARD & EVALUASI -->
+                                <g filter="url(#card-shadow)">
+                                    <rect x="615" y="335" width="325" height="85" rx="10" fill="#ffffff" stroke="#111827" stroke-width="2" />
+                                    <rect x="627" y="347" width="26" height="26" rx="6" fill="#111827" />
+                                    <text x="640" y="364" fill="#ffffff" font-size="14" text-anchor="middle">&#128202;</text>
+                                    <text x="660" y="357" font-size="13" font-weight="bold" fill="#111827">6. Pusat Dashboard &amp; Evaluasi</text>
+                                    <text x="660" y="371" font-size="10" fill="#6b7280">Muara Seluruh Laporan Otomatis</text>
+                                    <line x1="627" y1="382" x2="930" y2="382" stroke="#f3f4f6" stroke-width="1" />
+                                    <text x="629" y="398" font-size="9.5" fill="#4b5563">&bull; Saldo Kas Riil dihitung dari Buku Kas</text>
+                                    <text x="629" y="411" font-size="9.5" fill="#4b5563">&bull; Omset &amp; Tren Sales dihitung dari Invoice</text>
+                                </g>
+
+                                <!-- Legend Pill -->
+                                <rect x="20" y="440" width="920" height="30" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+                                <text x="35" y="460" font-size="10" font-weight="bold" fill="#334155">Petunjuk Aliran:</text>
+                                <circle cx="140" cy="456" r="4" fill="#b91c1c" />
+                                <text x="150" y="460" font-size="9.5" fill="#475569">Garis Merah Putus-Putus: Pemotongan Stok Fisik Otomatis</text>
+                                <circle cx="445" cy="456" r="4" fill="#15803d" />
+                                <text x="455" y="460" font-size="9.5" fill="#475569">Garis Hijau: Penambahan Stok / Aliran Dana Riil</text>
+                                <circle cx="715" cy="456" r="4" fill="#1d4ed8" />
+                                <text x="725" y="460" font-size="9.5" fill="#475569">Garis Biru: Mutasi Antar-Lokasi</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- 2. TABEL PEMETAAN INTERKONEKSI FITUR (BAHASA AWAM) -->
+                    <div class="my-3">
+                        <h6 class="fw-bold text-dark mb-2">
+                            <i class="bi bi-table text-primary me-1"></i> Rincian Pemetaan: Dari Fitur Mana Terhubung ke Fitur Mana?
+                        </h6>
+                        <div class="table-responsive border rounded-3">
+                            <table class="table table-sm table-hover align-middle mb-0 font-sans" style="font-size: 0.84rem;">
+                                <thead class="table-light border-bottom">
+                                    <tr>
+                                        <th class="py-2 px-3 fw-bold text-dark" style="width: 20%;">Fitur Asal (Sumber Data)</th>
+                                        <th class="py-2 px-3 fw-bold text-dark text-center" style="width: 14%;">Arah / Alur</th>
+                                        <th class="py-2 px-3 fw-bold text-dark" style="width: 22%;">Fitur Tujuan (Muara)</th>
+                                        <th class="py-2 px-3 fw-bold text-dark">Apa yang Terjadi di Balik Layar? (Bahasa Awam)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="py-2 px-3 fw-semibold text-dark">
+                                            <i class="bi bi-boxes text-primary me-1"></i> Pengadaan Bahan Mentah
+                                            <div class="text-muted small font-mono">/raw-materials</div>
+                                        </td>
+                                        <td class="py-2 px-3 text-center">
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle font-mono">
+                                                Biaya Belanja &rarr;
+                                            </span>
+                                        </td>
+                                        <td class="py-2 px-3 fw-semibold">
+                                            <i class="bi bi-wallet2 text-success me-1"></i> Buku Kas (Pengeluaran)
+                                        </td>
+                                        <td class="py-2 px-3 text-muted">
+                                            Saat membeli kardus (box) atau botol kaca dari supplier, Anda bisa memilih <em>"Catat Biaya ke Buku Kas"</em>. Saldo kas toko akan langsung terpotong sebagai pengeluaran modal bahan baku tanpa perlu Anda input dua kali.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 fw-semibold text-dark">
+                                            <i class="bi bi-box-arrow-in-down text-success me-1"></i> Tambah Stock (Restock)
+                                            <div class="text-muted small font-mono">/stocks/restock</div>
+                                        </td>
+                                        <td class="py-2 px-3 text-center">
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle font-mono">
+                                                Unit Jadi (+) &rarr;
+                                            </span>
+                                        </td>
+                                        <td class="py-2 px-3 fw-semibold">
+                                            <i class="bi bi-box-seam text-dark me-1"></i> Ringkasan Stok (Gudang)
+                                        </td>
+                                        <td class="py-2 px-3 text-muted">
+                                            Setelah parfum selesai diracik, klik <strong>+ Restock</strong> di varian parfum yang bersangkutan. Masukkan jumlah botol ke lokasi IWAN atau RIZKY. Kuantitas stok fisik siap jual seketika bertambah.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 fw-semibold text-dark">
+                                            <i class="bi bi-hourglass-split text-warning me-1"></i> Pre-Order (PO)
+                                            <div class="text-muted small font-mono">/pre-orders</div>
+                                        </td>
+                                        <td class="py-2 px-3 text-center">
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle font-mono">
+                                                Saat Selesai &rarr;
+                                            </span>
+                                        </td>
+                                        <td class="py-2 px-3 fw-semibold">
+                                            <i class="bi bi-box-seam text-dark me-1"></i> Ringkasan Stok (Gudang)
+                                        </td>
+                                        <td class="py-2 px-3 text-muted">
+                                            Pesanan khusus/inden konsumen disimpan di antrean PO terpisah agar stok ready tidak kacau. Begitu racikan selesai dan status diubah menjadi <strong>SELESAI</strong>, unit botol otomatis disuntikkan ke stok gudang tujuan.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 fw-semibold text-dark">
+                                            <i class="bi bi-arrow-left-right text-primary me-1"></i> Transfer Stok Antar Lokasi
+                                            <div class="text-muted small font-mono">/stocks/transfers</div>
+                                        </td>
+                                        <td class="py-2 px-3 text-center">
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-mono">
+                                                Mutasi Fisik &harr;
+                                            </span>
+                                        </td>
+                                        <td class="py-2 px-3 fw-semibold">
+                                            <i class="bi bi-geo-alt text-primary me-1"></i> Lokasi Iwan / Rizky / Mitra
+                                        </td>
+                                        <td class="py-2 px-3 text-muted">
+                                            Memindahkan botol parfum dari tangan Iwan ke Rizky (atau ke toko Reseller). Stok pengirim berkurang, stok penerima bertambah. <strong>Uang kas sama sekali tidak tersentuh</strong> karena ini murni perpindahan barang fisik.
+                                        </td>
+                                    </tr>
+                                    <tr class="table-warning table-opacity-10">
+                                        <td class="py-2 px-3 fw-semibold text-dark">
+                                            <i class="bi bi-receipt-cutoff text-danger me-1"></i> Penjualan (Invoice)
+                                            <div class="text-muted small font-mono">/invoices/create</div>
+                                        </td>
+                                        <td class="py-2 px-3 text-center">
+                                            <span class="badge bg-danger text-white font-mono">
+                                                &#9889; Potong Otomatis
+                                            </span>
+                                        </td>
+                                        <td class="py-2 px-3 fw-semibold text-danger">
+                                            <i class="bi bi-box-seam me-1"></i> Stok Fisik di Lokasi Asal
+                                        </td>
+                                        <td class="py-2 px-3 text-muted">
+                                            <strong>Krusial:</strong> Begitu tombol <em>"Terbitkan Invoice"</em> diklik, stok parfum di gudang yang Anda pilih langsung berkurang detik itu juga. Jika Anda mengedit/menghapus invoice, botol parfum otomatis dikembalikan ke gudang tanpa repot hitung manual.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 fw-semibold text-dark">
+                                            <i class="bi bi-receipt text-danger me-1"></i> Invoice Penjualan (Lunas)
+                                            <div class="text-muted small font-mono">Status: LUNAS</div>
+                                        </td>
+                                        <td class="py-2 px-3 text-center">
+                                            <span class="badge bg-light text-dark border font-mono">
+                                                Input Manual &rarr;
+                                            </span>
+                                        </td>
+                                        <td class="py-2 px-3 fw-semibold">
+                                            <i class="bi bi-wallet2 text-success me-1"></i> Buku Kas (Pemasukan)
+                                        </td>
+                                        <td class="py-2 px-3 text-muted">
+                                            Status <em>LUNAS</em> di invoice berfungsi sebagai bukti nota transaksi pembeli. Uang hasil penjualan diinput secara manual ke menu <strong>Buku Kas</strong> pada saat uang fisik atau transfer bank benar-benar sudah masuk ke kasir/rekening toko.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 fw-semibold text-dark">
+                                            <i class="bi bi-database-check text-dark me-1"></i> Invoice + Stok + Kas
+                                            <div class="text-muted small font-mono">Seluruh Modul</div>
+                                        </td>
+                                        <td class="py-2 px-3 text-center">
+                                            <span class="badge bg-dark text-white font-mono">
+                                                Kompilasi &rarr;
+                                            </span>
+                                        </td>
+                                        <td class="py-2 px-3 fw-semibold">
+                                            <i class="bi bi-speedometer2 text-dark me-1"></i> Dashboard &amp; Evaluasi YoY
+                                        </td>
+                                        <td class="py-2 px-3 text-muted">
+                                            Pusat Dashboard otomatis menarik data dari ketiga pilar: <strong>Omset Penjualan</strong> dihitung dari Invoice, <strong>Saldo Uang Kas</strong> dihitung dari Buku Kas, dan <strong>Stok Menipis/Habis</strong> dihitung dari tabel Stok fisik.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 3. ATURAN EMAS SISTEM (Kamus Singkat Operasional) -->
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="border rounded-3 p-3 h-100 bg-light">
+                                <h6 class="fw-bold text-dark small mb-1">
+                                    <i class="bi bi-shield-check text-success me-1"></i> Stok Terpotong Seketika
+                                </h6>
+                                <p class="text-muted small m-0" style="font-size: 0.78rem;">
+                                    Tidak perlu mengurangi stok manual setelah jualan. Cukup terbitkan 1 invoice, stok botol otomatis berkurang dari pemegang yang Anda tentukan.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="border rounded-3 p-3 h-100 bg-light">
+                                <h6 class="fw-bold text-dark small mb-1">
+                                    <i class="bi bi-cash-stack text-primary me-1"></i> Uang Kas Riil Mandiri
+                                </h6>
+                                <p class="text-muted small m-0" style="font-size: 0.78rem;">
+                                    Status lunas nota tidak mencampur saldo kas. Kasir mencatat uang masuk saat uang tunai/transfer bank benar-benar ada di tangan.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="border rounded-3 p-3 h-100 bg-light">
+                                <h6 class="fw-bold text-dark small mb-1">
+                                    <i class="bi bi-calendar3 text-warning me-1"></i> Bebas Tanggal (Backdate)
+                                </div>
+                                <p class="text-muted small m-0" style="font-size: 0.78rem;">
+                                    Lupa catat transaksi kemarin? Formulir Invoice mendukung kustom tanggal lampau. Evaluasi bulanan dan tahunan akan otomatis menyesuaikan.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="border rounded-3 p-3 h-100 bg-light">
+                                <h6 class="fw-bold text-dark small mb-1">
+                                    <i class="bi bi-arrow-counterclockwise text-danger me-1"></i> Batal / Edit Aman
+                                </h6>
+                                <p class="text-muted small m-0" style="font-size: 0.78rem;">
+                                    Salah input nota atau customer ganti varian? Cukup edit atau hapus invoice. Sistem secara otomatis mengembalikan stok lama ke gudang.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
