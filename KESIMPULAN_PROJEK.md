@@ -83,6 +83,13 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 9. **Halaman Panduan & Tutorial Alur Operasional (`/tutorial`) dengan Lambang Tanda Tanya (?)**:
    - Disediakan menu navigasi khusus di sidebar dengan lambang tanda tanya (`bi bi-question-circle-fill`) serta tombol cepat di topbar header desktop untuk memfasilitasi pengguna (Admin, Staff, Reseller) dalam memahami cara kerja sistem secara mandiri.
    - Menyajikan 7 tab panduan interaktif komprehensif: Peta Alur Bisnis (End-to-End), Penjualan & Invoice (alasan pemisahan kas riil & kustom tanggal), Stok Parfum, Tambah Stock & PO, Keuangan & Buku Kas, Pengadaan Bahan Mentah, Pusat Dashboard, serta Master Data & Alur Persetujuan Reseller.
+   - **Diagram Pemetaan Interkoneksi Fitur (Visual Map Interaktif SVG & JavaScript)**:
+     - Dilengkapi fitur drag & pan kanvas (alat tangan geser) responsif di desktop maupun layar sentuh tanpa lag.
+     - Filter cepat *Fokus Alur* (Racik & Restock, Penjualan/Invoice, Transfer Stok, Buku Kas Riil, dan Semua Alur) dengan transisi auto-zoom viewBox adaptif.
+     - Mode inspektur kartu satu per satu dengan zoom seragam rata-rata ~160%, menyorot alur masuk/keluar serta aturan logika transaksi otomatis secara terperinci.
+     - Tombol shortcut langsung (*Buka Panduan Modul* & *Buka Menu Fitur*) dengan proteksi layout anti-overlap dan anti-offside.
+     - Fitur simulasi transaksi interaktif (*Simulasi: Jual & Potong Stok*) dengan animasi alur visual dinamis.
+     - Legenda petunjuk aliran terdistribusi proporsional bebas offside dengan standar tipografi Luxury Monochrome.
 10. **Dashboard Utama**:
    - Ringkasan Saldo Uang Kas (Pemasukan, Pengeluaran, Saldo Real).
    - Widget Monitoring Barang Mentah (Stok Box & Botol).

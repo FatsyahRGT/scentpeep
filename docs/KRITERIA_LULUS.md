@@ -21,6 +21,7 @@ Dokumentasi komprehensif kepatuhan fungsionalitas sistem, pengujian integritas b
 | **11** | **Pengadaan Bahan Mentah (Box & Botol) & CRUD Mutasi**: Manajemen kategori material dinamis, pemantauan stok bahan pengemasan, mutasi logistik IN/OUT, dan sinkronisasi kas belanja. | ✅ **LULUS** | [`RawMaterialController.php`](file:///c:/laragon/www/scentpeep-management-system/app/Http/Controllers/RawMaterialController.php)<br>[`RawMaterial.php`](file:///c:/laragon/www/scentpeep-management-system/app/Models/RawMaterial.php) | [`RawMaterialCrudTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/RawMaterialCrudTest.php) |
 | **12** | **Palet Warna Otomatis HSL Golden Angle**: Penentuan warna dinamis terdistribusi matematis tanpa tabrakan warna melintasi spektrum $360^\circ$ dengan standar kontras WCAG AAA. | ✅ **LULUS** | [`Location.php`](file:///c:/laragon/www/scentpeep-management-system/app/Models/Location.php#L35-L95) | Unit & Feature Views Testing |
 | **13** | **Keamanan Role Middleware**: Pembatasan ketat bagi akun staf dan reseller dari menu administratif dan master data. | ✅ **LULUS** | [`RoleMiddleware.php`](file:///c:/laragon/www/scentpeep-management-system/app/Http/Middleware/RoleMiddleware.php) | [`TransactionAndStockTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/TransactionAndStockTest.php) |
+| **14** | **Peta Alur Interaktif & Inspektur Visual (`/tutorial`)**: Diagram alir visual interaktif berbasis Pure SVG + Vanilla JS, multi-filter fokus alur, drag & pan kanvas, simulasi alur transaksi, dan inspektur kartu satu per satu tanpa ketergantungan library eksternal. | ✅ **LULUS** | [`tutorial.blade.php`](file:///c:/laragon/www/scentpeep-management-system/resources/views/tutorial.blade.php) | Feature Views & Automated Tests |
 
 ---
 
@@ -32,7 +33,7 @@ Seluruh komponen inti, controller, model, request validation, dan database trans
 ======================================================================
 PHPUnit Test Execution Summary:
 Total Tests:      74 Passed (100%)
-Total Assertions: 437 Passed
+Total Assertions: 439 Passed
 Errors:           0
 Failures:         0
 Warnings:         0

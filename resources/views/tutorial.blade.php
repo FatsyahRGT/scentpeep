@@ -21,7 +21,7 @@
                     </div>
                     <button type="button" class="btn btn-sm btn-light border px-3 py-2 font-mono shadow-xs d-inline-flex align-items-center gap-2 text-nowrap rounded-3 text-dark text-decoration-none" data-bs-toggle="modal" data-bs-target="#changelogModal" style="font-size: 0.82rem; cursor: pointer; transition: all 0.2s;" title="Klik untuk melihat Histori Versi &amp; Catatan Rilis">
                         <i class="bi bi-shield-check text-success fs-6"></i>
-                        <span class="fw-semibold">Scentpeep v2.6 Ready</span>
+                        <span class="fw-semibold">Scentpeep v2.7 Ready</span>
                         <span class="badge bg-dark text-white rounded-pill px-2 py-1" style="font-size: 0.65rem;">Histori Versi</span>
                     </button>
                 </div>
@@ -88,16 +88,68 @@
 
                     <!-- 1. DIAGRAM ALUR VISUAL SVG (RESPONSIF & INTERAKTIF) -->
                     <div class="my-3 p-3 bg-light rounded-3 border">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-bold small text-dark d-flex align-items-center gap-1">
-                                <i class="bi bi-bezier2 text-primary"></i> Diagram Pemetaan Interkoneksi Antar Fitur (Visual Map)
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
+                            <span class="fw-bold small text-dark d-flex align-items-center gap-2">
+                                <i class="bi bi-bezier2 text-primary"></i> Diagram Pemetaan Interkoneksi Antar Fitur (Visual Map Interaktif)
                             </span>
-                            <span class="text-muted small font-mono" style="font-size: 0.7rem;">Vector Crisp Flowchart</span>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="badge bg-white text-dark border font-sans fw-normal d-inline-flex align-items-center gap-1 shadow-xs" style="font-size: 0.76rem;">
+                                    <i class="bi bi-hand-index-thumb text-primary"></i> Klik tahan &amp; geser diagram dengan mouse/layar sentuh
+                                </span>
+                                <span id="flowCanvasStatusBadge" class="badge bg-dark text-white font-mono shadow-xs" style="font-size: 0.76rem;">
+                                    Mode: Menampilkan Seluruh Alur
+                                </span>
+                            </div>
                         </div>
 
-                        <!-- SVG Flowchart Container -->
-                        <div class="table-responsive bg-white rounded-3 border p-3 text-center shadow-xs">
-                            <svg viewBox="0 0 980 540" class="w-100 h-auto" style="max-width: 100%; max-height: 520px;" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Interactive Filter & Simulation Toolbar -->
+                        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center gap-2 mb-3 p-2 bg-white rounded-3 border shadow-xs">
+                            <div class="d-flex align-items-center gap-1 flex-wrap" id="flowFilterButtons">
+                                <span class="text-dark small fw-bold me-1 font-sans" style="font-size: 0.80rem;">Fokus Alur:</span>
+                                <button type="button" class="btn btn-xs btn-dark py-1.5 px-2.5 rounded-2 fw-semibold shadow-xs flow-filter-btn" data-filter="all" style="font-size: 0.78rem;">
+                                    Semua Alur
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-1.5 px-2.5 rounded-2 fw-semibold flow-filter-btn" data-filter="restock" style="font-size: 0.78rem;">
+                                    Racik &amp; Restock
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-1.5 px-2.5 rounded-2 fw-semibold flow-filter-btn" data-filter="invoice" style="font-size: 0.78rem;">
+                                    Penjualan (Invoice)
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-1.5 px-2.5 rounded-2 fw-semibold flow-filter-btn" data-filter="transfer" style="font-size: 0.78rem;">
+                                    Transfer Stok
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-1.5 px-2.5 rounded-2 fw-semibold flow-filter-btn" data-filter="cash" style="font-size: 0.78rem;">
+                                    Buku Kas Riil
+                                </button>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" id="btnSimulateInvoiceFlow" class="btn btn-xs btn-danger text-white py-1.5 px-2.5 rounded-2 fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                                    <i class="bi bi-play-circle-fill"></i>
+                                    <span>Simulasi: Jual &amp; Potong Stok</span>
+                                </button>
+                                <button type="button" id="btnResetFlowDiagram" class="btn btn-xs btn-light border py-1.5 px-2.5 rounded-2 text-muted fw-semibold" style="font-size: 0.78rem;" title="Reset filter dan sorotan">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SVG Flowchart Container with Dynamic Zoom Controls -->
+                        <div class="table-responsive bg-white rounded-3 border p-3 text-center shadow-xs position-relative overflow-hidden" id="flowSvgViewport">
+                            <!-- Floating Zoom Controls -->
+                            <div class="position-absolute end-0 top-0 m-3 d-flex align-items-center gap-1 bg-white p-1 rounded-3 border shadow-sm" style="z-index: 10;">
+                                <button type="button" id="btnZoomIn" class="btn btn-xs btn-light border py-1 px-2 text-dark rounded-2 fw-bold" style="font-size: 0.75rem;" title="Perbesar (Zoom In)">
+                                    <i class="bi bi-zoom-in"></i>
+                                </button>
+                                <button type="button" id="btnZoomOut" class="btn btn-xs btn-light border py-1 px-2 text-dark rounded-2 fw-bold" style="font-size: 0.75rem;" title="Perkecil (Zoom Out)">
+                                    <i class="bi bi-zoom-out"></i>
+                                </button>
+                                <button type="button" id="btnZoomReset" class="btn btn-xs btn-light border py-1 px-2 text-dark rounded-2 fw-semibold d-inline-flex align-items-center gap-1" style="font-size: 0.75rem;" title="Kembalikan Tampilan Penuh (100%)">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                    <span id="flowZoomLevelIndicator" class="font-mono">100%</span>
+                                </button>
+                            </div>
+
+                            <svg id="interactiveOperationsSvg" viewBox="0 0 980 540" class="w-100 h-auto" style="max-width: 100%; min-height: 480px; user-select: none; cursor: grab; touch-action: none;" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
                                     <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                                         <path d="M 0 1 L 10 5 L 0 9 z" fill="#1f2937" />
@@ -115,352 +167,435 @@
                                         <path d="M 0 1 L 10 5 L 0 9 z" fill="#b45309" />
                                     </marker>
                                     <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="115%">
-                                        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.06"/>
+                                        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.08"/>
                                     </filter>
                                 </defs>
 
                                 <!-- LAYER 1: CONNECTING PATHS & LINES -->
 
                                 <!-- 1. Bahan Mentah -> Kas Keluar (Sinkron Biaya) -->
-                                <path d="M 240 72 L 680 72" fill="none" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrow-red)" />
+                                <path id="flow-path-raw-cash" data-flow="cash" d="M 240 72 L 680 72" fill="none" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrow-red)" />
 
                                 <!-- 2. Bahan Mentah -> Tambah Stock (Dipakai Produksi) -->
-                                <path d="M 135 115 L 135 165" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
+                                <path id="flow-path-raw-restock" data-flow="restock" d="M 135 115 L 135 165" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
 
                                 <!-- 3. Tambah Stock (Reguler) -> Stok Gudang -->
-                                <path d="M 240 207 C 295 207, 305 235, 360 235" fill="none" stroke="#15803d" stroke-width="2.5" marker-end="url(#arrow-green)" />
+                                <path id="flow-path-restock-stock" data-flow="restock" d="M 240 207 C 295 207, 305 235, 360 235" fill="none" stroke="#15803d" stroke-width="2.5" marker-end="url(#arrow-green)" />
 
                                 <!-- 4. Pre-Order (PO Inden) -> Stok Gudang (Saat Selesai) -->
-                                <path d="M 240 342 C 295 342, 305 275, 360 275" fill="none" stroke="#b45309" stroke-width="2.5" marker-end="url(#arrow-amber)" />
+                                <path id="flow-path-po-stock" data-flow="restock" d="M 240 342 C 295 342, 305 275, 360 275" fill="none" stroke="#b45309" stroke-width="2.5" marker-end="url(#arrow-amber)" />
 
                                 <!-- 5. Stok Gudang -> Transfer Stok (Pindah Lokasi) -->
-                                <path d="M 460 305 L 460 390" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow-blue)" />
+                                <path id="flow-path-stock-transfer" data-flow="transfer" d="M 460 305 L 460 390" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow-blue)" />
 
                                 <!-- 6. Stok Gudang -> Penjualan Invoice (Pelanggan Beli) -->
-                                <path d="M 560 255 L 680 255" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
+                                <path id="flow-path-stock-invoice" data-flow="invoice" d="M 560 255 L 665 255" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
 
                                 <!-- 7. Invoice -> Pemotongan Stok Fisik (Feedback Loop Atomik) -->
-                                <path d="M 720 205 C 720 145, 520 145, 520 205" fill="none" stroke="#b91c1c" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arrow-red)" />
+                                <path id="flow-path-invoice-stock" data-flow="invoice" d="M 720 205 C 720 145, 520 145, 520 205" fill="none" stroke="#b91c1c" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arrow-red)" />
 
                                 <!-- 8. Invoice -> Buku Kas (Pemasukan Uang Riil) -->
-                                <path d="M 795 205 L 795 115" fill="none" stroke="#15803d" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow-green)" />
+                                <path id="flow-path-invoice-cash" data-flow="cash" d="M 765 205 L 765 115" fill="none" stroke="#15803d" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow-green)" />
 
                                 <!-- 9. Invoice -> Dashboard (Omset & Sales) -->
-                                <path d="M 750 305 L 750 390" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
+                                <path id="flow-path-invoice-dash" data-flow="invoice" d="M 730 305 L 730 390" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
 
                                 <!-- 10. Kas -> Dashboard (Saldo Uang Riil) -->
-                                <path d="M 922 115 L 922 390" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#arrow-green)" />
+                                <path id="flow-path-cash-dash" data-flow="cash" d="M 926 115 L 926 390" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#arrow-green)" />
 
                                 <!-- 11. Transfer Stok -> Dashboard -->
-                                <path d="M 560 432 L 630 432" fill="none" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,3" />
+                                <path id="flow-path-transfer-dash" data-flow="transfer" d="M 560 432 L 630 432" fill="none" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,3" />
 
                                 <!-- LAYER 2: DIRECTIONAL BADGE PILLS (Rendered on top of paths) -->
 
                                 <!-- Pill 1: Belanja Modal Bahan -->
-                                <g>
-                                    <rect x="385" y="60" width="160" height="24" rx="12" fill="#fee2e2" stroke="#fca5a5" stroke-width="1" />
-                                    <text x="465" y="76" font-size="10" font-weight="bold" fill="#991b1b" text-anchor="middle">Biaya Belanja Bahan (Opsional)</text>
+                                <g id="flow-pill-raw-cash" data-flow="cash">
+                                    <rect x="380" y="59" width="170" height="26" rx="13" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.2" />
+                                    <text x="465" y="76" font-size="11" font-weight="bold" fill="#991b1b" text-anchor="middle">Biaya Belanja Bahan (Opsional)</text>
                                 </g>
 
                                 <!-- Pill 2: Dipakai Racik Parfum -->
-                                <g>
-                                    <rect x="70" y="128" width="130" height="22" rx="11" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1" />
-                                    <text x="135" y="143" font-size="9.5" font-weight="600" fill="#374151" text-anchor="middle">Dipakai Racik Parfum</text>
+                                <g id="flow-pill-raw-restock" data-flow="restock">
+                                    <rect x="65" y="127" width="140" height="24" rx="12" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1.2" />
+                                    <text x="135" y="143" font-size="11" font-weight="bold" fill="#374151" text-anchor="middle">Dipakai Racik Parfum</text>
                                 </g>
 
                                 <!-- Pill 3: Restock Selesai (+) -->
-                                <g>
-                                    <rect x="250" y="195" width="105" height="23" rx="11" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
-                                    <text x="302" y="211" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">+ Restock Selesai</text>
+                                <g id="flow-pill-restock-stock" data-flow="restock">
+                                    <rect x="245" y="194" width="115" height="24" rx="12" fill="#dcfce7" stroke="#86efac" stroke-width="1.2" />
+                                    <text x="302" y="210" font-size="11" font-weight="bold" fill="#166534" text-anchor="middle">+ Restock Selesai</text>
                                 </g>
 
                                 <!-- Pill 4: Saat PO Selesai (+) -->
-                                <g>
-                                    <rect x="250" y="330" width="105" height="23" rx="11" fill="#fef3c7" stroke="#fcd34d" stroke-width="1" />
-                                    <text x="302" y="346" font-size="10" font-weight="bold" fill="#92400e" text-anchor="middle">Saat PO Selesai (+)</text>
+                                <g id="flow-pill-po-stock" data-flow="restock">
+                                    <rect x="245" y="329" width="115" height="24" rx="12" fill="#fef3c7" stroke="#fcd34d" stroke-width="1.2" />
+                                    <text x="302" y="345" font-size="11" font-weight="bold" fill="#92400e" text-anchor="middle">Saat PO Selesai (+)</text>
                                 </g>
 
                                 <!-- Pill 5: Pindah Tangan -->
-                                <g>
-                                    <rect x="385" y="336" width="150" height="22" rx="11" fill="#dbeafe" stroke="#93c5fd" stroke-width="1" />
-                                    <text x="460" y="351" font-size="10" font-weight="600" fill="#1e40af" text-anchor="middle">Pindah Tangan (Kas Rp 0)</text>
+                                <g id="flow-pill-transfer" data-flow="transfer">
+                                    <rect x="380" y="335" width="160" height="24" rx="12" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.2" />
+                                    <text x="460" y="351" font-size="11" font-weight="bold" fill="#1e40af" text-anchor="middle">Pindah Tangan (Kas Rp 0)</text>
                                 </g>
 
                                 <!-- Pill 6: Pelanggan Beli -->
-                                <g>
-                                    <rect x="575" y="244" width="90" height="22" rx="11" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1" />
-                                    <text x="620" y="259" font-size="9.5" font-weight="bold" fill="#1f2937" text-anchor="middle">Pelanggan Beli</text>
+                                <g id="flow-pill-sell" data-flow="invoice">
+                                    <rect x="568" y="243" width="90" height="24" rx="12" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.2" />
+                                    <text x="613" y="259" font-size="11" font-weight="bold" fill="#1f2937" text-anchor="middle">Pelanggan Beli</text>
                                 </g>
 
                                 <!-- Pill 7: Potong Stok Otomatis -->
-                                <g>
-                                    <rect x="545" y="132" width="150" height="24" rx="12" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.2" />
-                                    <text x="620" y="148" font-size="10" font-weight="bold" fill="#991b1b" text-anchor="middle">&#9889; Potong Stok Otomatis</text>
+                                <g id="flow-pill-invoice-stock" data-flow="invoice">
+                                    <rect x="540" y="131" width="160" height="26" rx="13" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.3" />
+                                    <text x="620" y="148" font-size="11" font-weight="bold" fill="#991b1b" text-anchor="middle">&#9889; Potong Stok Otomatis</text>
                                 </g>
 
                                 <!-- Pill 8: Input Kas Saat Uang Ada -->
-                                <g>
-                                    <rect x="715" y="148" width="160" height="24" rx="12" fill="#f0fdf4" stroke="#86efac" stroke-width="1" />
-                                    <text x="795" y="164" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">Input Kas (Saat Uang Cair)</text>
+                                <g id="flow-pill-invoice-cash" data-flow="cash">
+                                    <rect x="680" y="147" width="170" height="26" rx="13" fill="#f0fdf4" stroke="#86efac" stroke-width="1.2" />
+                                    <text x="765" y="164" font-size="11" font-weight="bold" fill="#166534" text-anchor="middle">Input Kas (Saat Uang Cair)</text>
                                 </g>
 
                                 <!-- Pill 9: Omset & Sales -->
-                                <g>
-                                    <rect x="695" y="336" width="110" height="22" rx="11" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1" />
-                                    <text x="750" y="351" font-size="9.5" font-weight="600" fill="#374151" text-anchor="middle">Omset &amp; Sales</text>
+                                <g id="flow-pill-invoice-dash" data-flow="invoice">
+                                    <rect x="670" y="335" width="120" height="24" rx="12" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1.2" />
+                                    <text x="730" y="351" font-size="11" font-weight="bold" fill="#374151" text-anchor="middle">Omset &amp; Sales</text>
                                 </g>
 
                                 <!-- Pill 10: Saldo Uang Riil (Digeser ke Kanan Bebas Hambatan) -->
-                                <g>
-                                    <rect x="870" y="244" width="104" height="22" rx="11" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
-                                    <text x="922" y="259" font-size="9.5" font-weight="bold" fill="#166534" text-anchor="middle">Saldo Uang Riil</text>
+                                <g id="flow-pill-cash-dash" data-flow="cash">
+                                    <rect x="876" y="243" width="100" height="24" rx="12" fill="#dcfce7" stroke="#86efac" stroke-width="1.2" />
+                                    <text x="926" y="259" font-size="11" font-weight="bold" fill="#166534" text-anchor="middle">Saldo Uang Riil</text>
                                 </g>
 
                                 <!-- LAYER 3: INTERACTIVE NODE CARDS -->
 
                                 <!-- NODE 1: BARANG MENTAH -->
-                                <g filter="url(#card-shadow)">
-                                    <rect x="30" y="30" width="210" height="85" rx="10" fill="#ffffff" stroke="#111827" stroke-width="1.5" />
+                                <g id="flow-node-raw" class="flow-interactive-node" data-node="raw" role="button" tabindex="0" filter="url(#card-shadow)">
+                                    <rect x="30" y="30" width="210" height="85" rx="10" fill="#ffffff" stroke="#111827" stroke-width="1.8" />
                                     <rect x="42" y="42" width="26" height="26" rx="6" fill="#111827" />
                                     <text x="55" y="59" fill="#ffffff" font-size="14" text-anchor="middle">&#128230;</text>
-                                    <text x="77" y="52" font-size="13" font-weight="bold" fill="#111827">1. Bahan Mentah</text>
-                                    <text x="77" y="66" font-size="10" fill="#6b7280">Box Packaging &amp; Botol Kaca</text>
+                                    <text x="77" y="52" font-size="14.5" font-weight="bold" fill="#111827">1. Bahan Mentah</text>
+                                    <text x="77" y="67" font-size="11.5" fill="#6b7280">Box Packaging &amp; Botol Kaca</text>
                                     <line x1="42" y1="77" x2="228" y2="77" stroke="#f3f4f6" stroke-width="1" />
-                                    <text x="44" y="93" font-size="9.5" fill="#4b5563">&bull; Catat stok wadah parfum</text>
-                                    <text x="44" y="106" font-size="9.5" fill="#4b5563">&bull; Pantau botol siap pakai</text>
+                                    <text x="44" y="94" font-size="11" fill="#4b5563">&bull; Catat stok wadah parfum</text>
+                                    <text x="44" y="108" font-size="11" fill="#4b5563">&bull; Pantau botol siap pakai</text>
                                 </g>
 
                                 <!-- NODE 2A: RESTOCK PRODUKSI -->
-                                <g filter="url(#card-shadow)">
-                                    <rect x="30" y="165" width="210" height="85" rx="10" fill="#ffffff" stroke="#15803d" stroke-width="1.8" />
+                                <g id="flow-node-restock" class="flow-interactive-node" data-node="restock" role="button" tabindex="0" filter="url(#card-shadow)">
+                                    <rect x="30" y="165" width="210" height="85" rx="10" fill="#ffffff" stroke="#15803d" stroke-width="2" />
                                     <rect x="42" y="177" width="26" height="26" rx="6" fill="#15803d" />
                                     <text x="55" y="194" fill="#ffffff" font-size="14" text-anchor="middle">&#10010;</text>
-                                    <text x="77" y="187" font-size="13" font-weight="bold" fill="#15803d">2A. Tambah Stock</text>
-                                    <text x="77" y="201" font-size="10" fill="#6b7280">Hasil Racik Reguler</text>
+                                    <text x="77" y="187" font-size="14.5" font-weight="bold" fill="#15803d">2A. Tambah Stock</text>
+                                    <text x="77" y="202" font-size="11.5" fill="#6b7280">Hasil Racik Reguler</text>
                                     <line x1="42" y1="212" x2="228" y2="212" stroke="#f3f4f6" stroke-width="1" />
-                                    <text x="44" y="228" font-size="9.5" fill="#4b5563">&bull; Restock sehabis parfum jadi</text>
-                                    <text x="44" y="241" font-size="9.5" fill="#4b5563">&bull; Langsung siap dijual</text>
+                                    <text x="44" y="229" font-size="11" fill="#4b5563">&bull; Restock sehabis parfum jadi</text>
+                                    <text x="44" y="243" font-size="11" fill="#4b5563">&bull; Langsung siap dijual</text>
                                 </g>
 
                                 <!-- NODE 2B: PRE-ORDER (PO INDEN) -->
-                                <g filter="url(#card-shadow)">
-                                    <rect x="30" y="300" width="210" height="85" rx="10" fill="#ffffff" stroke="#b45309" stroke-width="1.8" />
+                                <g id="flow-node-po" class="flow-interactive-node" data-node="po" role="button" tabindex="0" filter="url(#card-shadow)">
+                                    <rect x="30" y="300" width="210" height="85" rx="10" fill="#ffffff" stroke="#b45309" stroke-width="2" />
                                     <rect x="42" y="312" width="26" height="26" rx="6" fill="#b45309" />
                                     <text x="55" y="329" fill="#ffffff" font-size="14" text-anchor="middle">&#9203;</text>
-                                    <text x="77" y="322" font-size="13" font-weight="bold" fill="#b45309">2B. Pre-Order (PO)</text>
-                                    <text x="77" y="336" font-size="10" fill="#6b7280">Antrean Inden Konsumen</text>
+                                    <text x="77" y="322" font-size="14.5" font-weight="bold" fill="#b45309">2B. Pre-Order (PO)</text>
+                                    <text x="77" y="337" font-size="11.5" fill="#6b7280">Antrean Inden Konsumen</text>
                                     <line x1="42" y1="347" x2="228" y2="347" stroke="#f3f4f6" stroke-width="1" />
-                                    <text x="44" y="363" font-size="9.5" fill="#4b5563">&bull; Terpisah dari stok ready</text>
-                                    <text x="44" y="376" font-size="9.5" fill="#4b5563">&bull; Status Selesai &rarr; Masuk stok</text>
+                                    <text x="44" y="364" font-size="11" fill="#4b5563">&bull; Terpisah dari stok ready</text>
+                                    <text x="44" y="378" font-size="11" fill="#4b5563">&bull; Status Selesai &rarr; Masuk stok</text>
                                 </g>
 
                                 <!-- NODE 3: GUDANG STOK FISIK -->
-                                <g filter="url(#card-shadow)">
+                                <g id="flow-node-stock" class="flow-interactive-node" data-node="stock" role="button" tabindex="0" filter="url(#card-shadow)">
                                     <rect x="360" y="205" width="200" height="100" rx="10" fill="#ffffff" stroke="#111827" stroke-width="2.5" />
                                     <rect x="372" y="217" width="26" height="26" rx="6" fill="#111827" />
                                     <text x="385" y="234" fill="#ffffff" font-size="14" text-anchor="middle">&#127978;</text>
-                                    <text x="406" y="227" font-size="13" font-weight="bold" fill="#111827">3. Stok Fisik</text>
-                                    <text x="406" y="241" font-size="10" fill="#6b7280">Gudang Iwan &amp; Rizky</text>
+                                    <text x="406" y="227" font-size="14.5" font-weight="bold" fill="#111827">3. Stok Fisik</text>
+                                    <text x="406" y="242" font-size="11.5" fill="#6b7280">Gudang Iwan &amp; Rizky</text>
                                     <line x1="372" y1="252" x2="548" y2="252" stroke="#f3f4f6" stroke-width="1" />
-                                    <text x="374" y="268" font-size="9.5" fill="#4b5563">&bull; Ketersediaan real-time</text>
-                                    <text x="374" y="282" font-size="9.5" fill="#4b5563">&bull; Pemegang stok terpisah</text>
-                                    <text x="374" y="295" font-size="9.5" fill="#15803d" font-weight="600">&bull; Siap dikirim ke pembeli</text>
+                                    <text x="374" y="269" font-size="11" fill="#4b5563">&bull; Ketersediaan real-time</text>
+                                    <text x="374" y="283" font-size="11" fill="#4b5563">&bull; Pemegang stok terpisah</text>
+                                    <text x="374" y="297" font-size="11" fill="#15803d" font-weight="600">&bull; Siap dikirim ke pembeli</text>
                                 </g>
 
                                 <!-- NODE 3B: TRANSFER STOK -->
-                                <g filter="url(#card-shadow)">
-                                    <rect x="360" y="390" width="200" height="85" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.8" />
+                                <g id="flow-node-transfer" class="flow-interactive-node" data-node="transfer" role="button" tabindex="0" filter="url(#card-shadow)">
+                                    <rect x="360" y="390" width="200" height="85" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="2" />
                                     <rect x="372" y="402" width="26" height="26" rx="6" fill="#1d4ed8" />
                                     <text x="385" y="419" fill="#ffffff" font-size="14" text-anchor="middle">&#8644;</text>
-                                    <text x="406" y="412" font-size="13" font-weight="bold" fill="#1d4ed8">Transfer Stok</text>
-                                    <text x="406" y="426" font-size="10" fill="#6b7280">Mutasi Antar-Lokasi</text>
+                                    <text x="406" y="412" font-size="14.5" font-weight="bold" fill="#1d4ed8">Transfer Stok</text>
+                                    <text x="406" y="427" font-size="11.5" fill="#6b7280">Mutasi Antar-Lokasi</text>
                                     <line x1="372" y1="437" x2="548" y2="437" stroke="#f3f4f6" stroke-width="1" />
-                                    <text x="374" y="453" font-size="9.5" fill="#4b5563">&bull; Kirim Iwan &harr; Rizky/Reseller</text>
-                                    <text x="374" y="466" font-size="9.5" fill="#4b5563">&bull; Aman tanpa sentuh uang kas</text>
+                                    <text x="374" y="454" font-size="11" fill="#4b5563">&bull; Kirim Iwan &harr; Rizky/Reseller</text>
+                                    <text x="374" y="468" font-size="11" fill="#4b5563">&bull; Aman tanpa sentuh uang kas</text>
                                 </g>
 
-                                <!-- NODE 4: PENJUALAN (INVOICE) (Lebar Disesuaikan Agar Teks Riil Tidak Terhalang) -->
-                                <g filter="url(#card-shadow)">
-                                    <rect x="680" y="205" width="180" height="100" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="2.5" />
-                                    <rect x="692" y="217" width="26" height="26" rx="6" fill="#e11d48" />
-                                    <text x="705" y="234" fill="#ffffff" font-size="14" text-anchor="middle">&#129534;</text>
-                                    <text x="726" y="227" font-size="13" font-weight="bold" fill="#e11d48">4. Penjualan (Invoice)</text>
-                                    <text x="726" y="241" font-size="10" fill="#6b7280">Nota Transaksi Pelanggan</text>
-                                    <line x1="692" y1="252" x2="848" y2="252" stroke="#f3f4f6" stroke-width="1" />
-                                    <text x="694" y="268" font-size="9.5" fill="#4b5563">&bull; Tanggal kustom / backdate</text>
-                                    <text x="694" y="282" font-size="9.5" fill="#4b5563">&bull; Penanda LUNAS / Belum</text>
-                                    <text x="694" y="295" font-size="9.5" fill="#b91c1c" font-weight="600">&bull; Potong unit seketika</text>
+                                <!-- NODE 4: PENJUALAN (INVOICE) (Lebar Disesuaikan Agar Teks Riil Tidak Terhalang & Tidak Offside) -->
+                                <g id="flow-node-invoice" class="flow-interactive-node" data-node="invoice" role="button" tabindex="0" filter="url(#card-shadow)">
+                                    <rect x="665" y="205" width="190" height="100" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="2.5" />
+                                    <rect x="676" y="217" width="24" height="24" rx="6" fill="#e11d48" />
+                                    <text x="688" y="234" fill="#ffffff" font-size="13" text-anchor="middle">&#129534;</text>
+                                    <text x="707" y="227" font-size="14" font-weight="bold" fill="#e11d48">4. Penjualan (Invoice)</text>
+                                    <text x="707" y="242" font-size="11.5" fill="#6b7280">Nota Transaksi Pelanggan</text>
+                                    <line x1="676" y1="250" x2="845" y2="250" stroke="#f3f4f6" stroke-width="1" />
+                                    <text x="678" y="268" font-size="11" fill="#4b5563">&bull; Tanggal kustom / backdate</text>
+                                    <text x="678" y="282" font-size="11" fill="#4b5563">&bull; Penanda LUNAS / Belum</text>
+                                    <text x="678" y="296" font-size="11" fill="#b91c1c" font-weight="600">&bull; Potong unit seketika</text>
                                 </g>
 
                                 <!-- NODE 5: BUKU KAS OPERASIONAL -->
-                                <g filter="url(#card-shadow)">
-                                    <rect x="680" y="30" width="260" height="85" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="2" />
+                                <g id="flow-node-cash" class="flow-interactive-node" data-node="cash" role="button" tabindex="0" filter="url(#card-shadow)">
+                                    <rect x="680" y="30" width="260" height="85" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="2.2" />
                                     <rect x="692" y="42" width="26" height="26" rx="6" fill="#16a34a" />
                                     <text x="705" y="59" fill="#ffffff" font-size="14" text-anchor="middle">&#128181;</text>
-                                    <text x="726" y="52" font-size="13" font-weight="bold" fill="#16a34a">5. Buku Kas &amp; Keuangan</text>
-                                    <text x="726" y="66" font-size="10" fill="#6b7280">Arus Uang Riil (Cash Flow)</text>
+                                    <text x="726" y="52" font-size="14.5" font-weight="bold" fill="#16a34a">5. Buku Kas &amp; Keuangan</text>
+                                    <text x="726" y="67" font-size="11.5" fill="#6b7280">Arus Uang Riil (Cash Flow)</text>
                                     <line x1="692" y1="77" x2="925" y2="77" stroke="#f3f4f6" stroke-width="1" />
-                                    <text x="694" y="93" font-size="9.5" fill="#4b5563">&bull; Kas Masuk (Input saat uang cair)</text>
-                                    <text x="694" y="106" font-size="9.5" fill="#4b5563">&bull; Beban Usaha (Iklan, operasional)</text>
+                                    <text x="694" y="94" font-size="11" fill="#4b5563">&bull; Kas Masuk (Input saat uang cair)</text>
+                                    <text x="694" y="108" font-size="11" fill="#4b5563">&bull; Beban Usaha (Iklan, operasional)</text>
                                 </g>
 
                                 <!-- NODE 6: DASHBOARD & EVALUASI -->
-                                <g filter="url(#card-shadow)">
-                                    <rect x="630" y="390" width="325" height="85" rx="10" fill="#ffffff" stroke="#111827" stroke-width="2" />
+                                <g id="flow-node-dash" class="flow-interactive-node" data-node="dash" role="button" tabindex="0" filter="url(#card-shadow)">
+                                    <rect x="630" y="390" width="325" height="85" rx="10" fill="#ffffff" stroke="#111827" stroke-width="2.2" />
                                     <rect x="642" y="402" width="26" height="26" rx="6" fill="#111827" />
                                     <text x="655" y="419" fill="#ffffff" font-size="14" text-anchor="middle">&#128202;</text>
-                                    <text x="676" y="412" font-size="13" font-weight="bold" fill="#111827">6. Pusat Dashboard &amp; Evaluasi</text>
-                                    <text x="676" y="426" font-size="10" fill="#6b7280">Muara Seluruh Laporan Otomatis</text>
+                                    <text x="676" y="412" font-size="14.5" font-weight="bold" fill="#111827">6. Pusat Dashboard &amp; Evaluasi</text>
+                                    <text x="676" y="427" font-size="11.5" fill="#6b7280">Muara Seluruh Laporan Otomatis</text>
                                     <line x1="642" y1="437" x2="940" y2="437" stroke="#f3f4f6" stroke-width="1" />
-                                    <text x="644" y="453" font-size="9.5" fill="#4b5563">&bull; Saldo Kas Riil dihitung dari Buku Kas</text>
-                                    <text x="644" y="466" font-size="9.5" fill="#4b5563">&bull; Omset &amp; Tren Sales dihitung dari Invoice</text>
+                                    <text x="644" y="454" font-size="11" fill="#4b5563">&bull; Saldo Kas Riil dihitung dari Buku Kas</text>
+                                    <text x="644" y="468" font-size="11" fill="#4b5563">&bull; Omset &amp; Tren Sales dihitung dari Invoice</text>
                                 </g>
 
-                                <!-- Legend Pill -->
-                                <rect x="30" y="495" width="910" height="32" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-                                <text x="45" y="515" font-size="10" font-weight="bold" fill="#334155">Petunjuk Aliran:</text>
-                                <circle cx="150" cy="511" r="4.5" fill="#b91c1c" />
-                                <text x="160" y="515" font-size="9.5" fill="#475569">Garis Merah Putus-Putus: Pemotongan Stok Fisik Otomatis</text>
-                                <circle cx="455" cy="511" r="4.5" fill="#15803d" />
-                                <text x="465" y="515" font-size="9.5" fill="#475569">Garis Hijau: Penambahan Stok Jadi / Aliran Dana Riil</text>
-                                <circle cx="735" cy="511" r="4.5" fill="#1d4ed8" />
-                                <text x="745" y="515" font-size="9.5" fill="#475569">Garis Biru: Mutasi Antar-Lokasi</text>
+                                <!-- Legend Pill (Lebar & Jarak Teks Disesuaikan Bebas Offside) -->
+                                <rect x="20" y="490" width="940" height="36" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+                                <text x="35" y="513" font-size="11.5" font-weight="bold" fill="#1e293b">Petunjuk Aliran:</text>
+                                <circle cx="140" cy="509" r="4.5" fill="#b91c1c" />
+                                <text x="150" y="513" font-size="11" fill="#334155" font-weight="500">Garis Merah Putus-Putus: Pemotongan Stok Fisik Otomatis</text>
+                                <circle cx="455" cy="509" r="4.5" fill="#15803d" />
+                                <text x="465" y="513" font-size="11" fill="#334155" font-weight="500">Garis Hijau: Penambahan Stok / Aliran Dana Riil</text>
+                                <circle cx="730" cy="509" r="4.5" fill="#1d4ed8" />
+                                <text x="740" y="513" font-size="11" fill="#334155" font-weight="500">Garis Biru: Mutasi Antar-Lokasi</text>
                             </svg>
                         </div>
+
+                        <!-- Live Interactive Inspector Card -->
+                        <div class="mt-3 p-3 bg-white rounded-3 border shadow-xs" id="flowLiveInspectorCard">
+                            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-2 pb-2.5 mb-2.5 border-bottom">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span id="inspectorBadgePill" class="badge bg-dark text-white font-mono px-2.5 py-1.5" style="font-size: 0.80rem;">
+                                        INSPEKTUR MODUL
+                                    </span>
+                                    <h5 id="inspectorTitle" class="fw-bold text-dark m-0" style="font-size: 1.12rem;">
+                                        Klik Salah Satu Kotak Fitur di Atas
+                                    </h5>
+                                </div>
+                                <div id="inspectorTabJumpContainer" class="d-flex align-items-center gap-2 flex-nowrap flex-shrink-0">
+                                    <button type="button" id="btnJumpToGuideTab" class="btn btn-sm btn-dark px-3 py-1.5 rounded-2 fw-semibold d-none align-items-center gap-2 shadow-xs text-nowrap" style="font-size: 0.85rem;">
+                                        <i class="bi bi-book-half fs-6"></i>
+                                        <span>Buka Panduan</span>
+                                        <i class="bi bi-arrow-right-short fs-6"></i>
+                                    </button>
+                                    <a id="btnDirectFeatureLink" href="#" class="btn btn-sm btn-outline-primary px-3 py-1.5 rounded-2 fw-semibold d-none align-items-center gap-2 shadow-xs text-nowrap" style="font-size: 0.85rem;">
+                                        <i class="bi bi-box-arrow-up-right fs-6"></i>
+                                        <span>Buka Menu Fitur</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row g-3 font-sans">
+                                <div class="col-md-5">
+                                    <div class="p-3 rounded-3 bg-light border-start border-4 border-dark h-100">
+                                        <div class="text-dark fw-bold mb-1.5 d-flex align-items-center gap-1.5" style="font-size: 0.90rem;">
+                                            <i class="bi bi-info-circle-fill text-dark"></i> Peran &amp; Deskripsi Operasional:
+                                        </div>
+                                        <p id="inspectorDesc" class="text-dark m-0" style="line-height: 1.65; font-size: 0.92rem;">
+                                            Klik salah satu kartu pada diagram untuk melihat keterhubungannya, aksi staf, serta aturan transaksi otomatisnya.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="p-3 rounded-3 bg-light border-start border-4 border-primary h-100">
+                                        <div class="row g-2.5">
+                                            <div class="col-sm-6">
+                                                <span class="fw-bold text-dark d-block mb-1" style="font-size: 0.89rem;">
+                                                    <i class="bi bi-box-arrow-in-down-right text-primary me-1"></i> Aliran Masuk (Input):
+                                                </span>
+                                                <span id="inspectorInputs" class="text-dark d-block" style="font-size: 0.92rem; line-height: 1.6;">-</span>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <span class="fw-bold text-dark d-block mb-1" style="font-size: 0.89rem;">
+                                                    <i class="bi bi-box-arrow-up-right text-success me-1"></i> Aliran Keluar (Output):
+                                                </span>
+                                                <span id="inspectorOutputs" class="text-dark d-block" style="font-size: 0.92rem; line-height: 1.6;">-</span>
+                                            </div>
+                                            <div class="col-12 pt-2 mt-1 border-top">
+                                                <span class="fw-bold text-danger d-block mb-1" style="font-size: 0.89rem;">
+                                                    <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> Aturan Logika Krusial:
+                                                </span>
+                                                <span id="inspectorRule" class="text-dark d-block fw-semibold" style="font-size: 0.92rem; line-height: 1.6;">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Live Simulation Status Alert (Hidden by default) -->
+                            <div id="flowSimulationAlert" class="alert alert-danger py-2.5 px-3 mt-3 mb-0 d-none align-items-center gap-2 rounded-2" style="font-size: 0.88rem;">
+                                <div class="spinner-grow spinner-grow-sm text-danger flex-shrink-0" role="status"></div>
+                                <div id="flowSimulationStepText">
+                                    <strong>Simulasi Transaksi Berjalan:</strong> Mengamati pemotongan stok otomatis...
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- 2. TABEL PEMETAAN INTERKONEKSI FITUR (BAHASA AWAM) -->
-                    <div class="my-3">
-                        <h6 class="fw-bold text-dark mb-2">
-                            <i class="bi bi-table text-primary me-1"></i> Rincian Pemetaan: Dari Fitur Mana Terhubung ke Fitur Mana?
-                        </h6>
-                        <div class="table-responsive border rounded-3">
-                            <table class="table table-sm table-hover align-middle mb-0 font-sans" style="font-size: 0.84rem;">
+                    <div class="my-4">
+                        <h5 class="fw-bold text-dark mb-2.5 d-flex align-items-center gap-2" style="font-size: 1.12rem;">
+                            <i class="bi bi-table text-primary"></i> Rincian Pemetaan: Dari Fitur Mana Terhubung ke Fitur Mana?
+                        </h5>
+                        <div class="table-responsive border rounded-3 shadow-xs">
+                            <table class="table table-hover align-middle mb-0 font-sans" style="font-size: 0.92rem;">
                                 <thead class="table-light border-bottom">
                                     <tr>
-                                        <th class="py-2 px-3 fw-bold text-dark" style="width: 20%;">Fitur Asal (Sumber Data)</th>
-                                        <th class="py-2 px-3 fw-bold text-dark text-center" style="width: 14%;">Arah / Alur</th>
-                                        <th class="py-2 px-3 fw-bold text-dark" style="width: 22%;">Fitur Tujuan (Muara)</th>
-                                        <th class="py-2 px-3 fw-bold text-dark">Apa yang Terjadi di Balik Layar? (Bahasa Awam)</th>
+                                        <th class="py-3 px-3.5 fw-bold text-dark" style="width: 22%; font-size: 0.90rem;">Fitur Asal (Sumber Data)</th>
+                                        <th class="py-3 px-3 fw-bold text-dark text-center" style="width: 15%; font-size: 0.90rem;">Arah / Alur</th>
+                                        <th class="py-3 px-3.5 fw-bold text-dark" style="width: 23%; font-size: 0.90rem;">Fitur Tujuan (Muara)</th>
+                                        <th class="py-3 px-3.5 fw-bold text-dark" style="font-size: 0.90rem;">Apa yang Terjadi di Balik Layar? (Bahasa Awam)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="py-2 px-3 fw-semibold text-dark">
-                                            <i class="bi bi-boxes text-primary me-1"></i> 1. Pengadaan Bahan Mentah
-                                            <div class="text-muted small font-mono">/raw-materials</div>
+                                        <td class="py-3 px-3.5">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                <i class="bi bi-boxes text-primary me-1.5"></i> 1. Pengadaan Bahan Mentah
+                                            </div>
+                                            <div class="text-secondary small font-mono mt-1" style="font-size: 0.82rem;">/raw-materials</div>
                                         </td>
-                                        <td class="py-2 px-3 text-center">
-                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle font-mono">
+                                        <td class="py-3 px-3 text-center">
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle font-mono px-2.5 py-1.5" style="font-size: 0.82rem;">
                                                 Biaya Belanja &rarr;
                                             </span>
                                         </td>
-                                        <td class="py-2 px-3 fw-semibold">
-                                            <i class="bi bi-wallet2 text-success me-1"></i> 5. Buku Kas (Pengeluaran)
+                                        <td class="py-3 px-3.5 fw-bold text-dark" style="font-size: 0.95rem;">
+                                            <i class="bi bi-wallet2 text-success me-1.5"></i> 5. Buku Kas (Pengeluaran)
                                         </td>
-                                        <td class="py-2 px-3 text-muted">
+                                        <td class="py-3 px-3.5 text-dark" style="line-height: 1.65; font-size: 0.92rem;">
                                             Saat membeli kardus (box) atau botol kaca dari supplier, Anda bisa memilih <em>"Catat Biaya ke Buku Kas"</em>. Saldo kas toko akan langsung terpotong sebagai pengeluaran modal bahan baku tanpa perlu Anda input dua kali.
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="py-2 px-3 fw-semibold text-dark">
-                                            <i class="bi bi-box-arrow-in-down text-success me-1"></i> 2A. Tambah Stock (Restock)
-                                            <div class="text-muted small font-mono">/stocks/restock</div>
+                                        <td class="py-3 px-3.5">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                <i class="bi bi-box-arrow-in-down text-success me-1.5"></i> 2A. Tambah Stock (Restock)
+                                            </div>
+                                            <div class="text-secondary small font-mono mt-1" style="font-size: 0.82rem;">/stocks/restock</div>
                                         </td>
-                                        <td class="py-2 px-3 text-center">
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle font-mono">
+                                        <td class="py-3 px-3 text-center">
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle font-mono px-2.5 py-1.5" style="font-size: 0.82rem;">
                                                 Unit Jadi (+) &rarr;
                                             </span>
                                         </td>
-                                        <td class="py-2 px-3 fw-semibold">
-                                            <i class="bi bi-box-seam text-dark me-1"></i> 3. Stok Fisik (Gudang)
+                                        <td class="py-3 px-3.5 fw-bold text-dark" style="font-size: 0.95rem;">
+                                            <i class="bi bi-box-seam text-dark me-1.5"></i> 3. Stok Fisik (Gudang)
                                         </td>
-                                        <td class="py-2 px-3 text-muted">
+                                        <td class="py-3 px-3.5 text-dark" style="line-height: 1.65; font-size: 0.92rem;">
                                             Setelah parfum selesai diracik dari bahan mentah, buka menu <strong>Tambah Stock</strong> lalu klik <strong>+ Restock</strong>. Masukkan jumlah botol ke lokasi IWAN atau RIZKY. Kuantitas stok fisik siap jual seketika bertambah.
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="py-2 px-3 fw-semibold text-dark">
-                                            <i class="bi bi-hourglass-split text-warning me-1"></i> 2B. Pre-Order (PO Inden)
-                                            <div class="text-muted small font-mono">/pre-orders</div>
+                                        <td class="py-3 px-3.5">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                <i class="bi bi-hourglass-split text-warning me-1.5"></i> 2B. Pre-Order (PO Inden)
+                                            </div>
+                                            <div class="text-secondary small font-mono mt-1" style="font-size: 0.82rem;">/pre-orders</div>
                                         </td>
-                                        <td class="py-2 px-3 text-center">
-                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle font-mono">
+                                        <td class="py-3 px-3 text-center">
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle font-mono px-2.5 py-1.5" style="font-size: 0.82rem;">
                                                 Saat PO Selesai &rarr;
                                             </span>
                                         </td>
-                                        <td class="py-2 px-3 fw-semibold">
-                                            <i class="bi bi-box-seam text-dark me-1"></i> 3. Stok Fisik (Gudang)
+                                        <td class="py-3 px-3.5 fw-bold text-dark" style="font-size: 0.95rem;">
+                                            <i class="bi bi-box-seam text-dark me-1.5"></i> 3. Stok Fisik (Gudang)
                                         </td>
-                                        <td class="py-2 px-3 text-muted">
+                                        <td class="py-3 px-3.5 text-dark" style="line-height: 1.65; font-size: 0.92rem;">
                                             Pesanan khusus/inden konsumen disimpan di antrean PO terpisah agar tidak mengacaukan stok ready. Begitu pesanan selesai diracik dan status diubah menjadi <strong>SELESAI</strong>, unit botol otomatis disuntikkan ke stok gudang tujuan.
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="py-2 px-3 fw-semibold text-dark">
-                                            <i class="bi bi-arrow-left-right text-primary me-1"></i> 3B. Transfer Stok Antar Lokasi
-                                            <div class="text-muted small font-mono">/stocks/transfers</div>
+                                        <td class="py-3 px-3.5">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                <i class="bi bi-arrow-left-right text-primary me-1.5"></i> 3B. Transfer Stok Antar Lokasi
+                                            </div>
+                                            <div class="text-secondary small font-mono mt-1" style="font-size: 0.82rem;">/stocks/transfers</div>
                                         </td>
-                                        <td class="py-2 px-3 text-center">
-                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-mono">
+                                        <td class="py-3 px-3 text-center">
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-mono px-2.5 py-1.5" style="font-size: 0.82rem;">
                                                 Mutasi Fisik &harr;
                                             </span>
                                         </td>
-                                        <td class="py-2 px-3 fw-semibold">
-                                            <i class="bi bi-geo-alt text-primary me-1"></i> Lokasi Iwan / Rizky / Mitra
+                                        <td class="py-3 px-3.5 fw-bold text-dark" style="font-size: 0.95rem;">
+                                            <i class="bi bi-geo-alt text-primary me-1.5"></i> Lokasi Iwan / Rizky / Mitra
                                         </td>
-                                        <td class="py-2 px-3 text-muted">
+                                        <td class="py-3 px-3.5 text-dark" style="line-height: 1.65; font-size: 0.92rem;">
                                             Memindahkan botol parfum dari tangan Iwan ke Rizky (atau ke toko Reseller). Stok pengirim berkurang, stok penerima bertambah. <strong>Uang kas sama sekali tidak tersentuh</strong> karena ini murni perpindahan barang fisik.
                                         </td>
                                     </tr>
                                     <tr class="table-warning table-opacity-10">
-                                        <td class="py-2 px-3 fw-semibold text-dark">
-                                            <i class="bi bi-receipt-cutoff text-danger me-1"></i> 4. Penjualan (Invoice)
-                                            <div class="text-muted small font-mono">/invoices/create</div>
+                                        <td class="py-3 px-3.5">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                <i class="bi bi-receipt-cutoff text-danger me-1.5"></i> 4. Penjualan (Invoice)
+                                            </div>
+                                            <div class="text-secondary small font-mono mt-1" style="font-size: 0.82rem;">/invoices/create</div>
                                         </td>
-                                        <td class="py-2 px-3 text-center">
-                                            <span class="badge bg-danger text-white font-mono">
+                                        <td class="py-3 px-3 text-center">
+                                            <span class="badge bg-danger text-white font-mono px-2.5 py-1.5" style="font-size: 0.82rem;">
                                                 &#9889; Potong Otomatis
                                             </span>
                                         </td>
-                                        <td class="py-2 px-3 fw-semibold text-danger">
-                                            <i class="bi bi-box-seam me-1"></i> 3. Stok Fisik di Lokasi Asal
+                                        <td class="py-3 px-3.5 fw-bold text-danger" style="font-size: 0.95rem;">
+                                            <i class="bi bi-box-seam me-1.5"></i> 3. Stok Fisik di Lokasi Asal
                                         </td>
-                                        <td class="py-2 px-3 text-muted">
+                                        <td class="py-3 px-3.5 text-dark" style="line-height: 1.65; font-size: 0.92rem;">
                                             <strong>Krusial:</strong> Begitu tombol <em>"Terbitkan Invoice"</em> diklik, stok parfum di gudang yang Anda pilih langsung berkurang detik itu juga. Jika Anda mengedit/menghapus invoice, botol parfum otomatis dikembalikan ke gudang tanpa repot hitung manual.
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="py-2 px-3 fw-semibold text-dark">
-                                            <i class="bi bi-receipt text-danger me-1"></i> 4. Invoice Penjualan (Lunas)
-                                            <div class="text-muted small font-mono">Status: LUNAS</div>
+                                        <td class="py-3 px-3.5">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                <i class="bi bi-receipt text-danger me-1.5"></i> 4. Invoice Penjualan (Lunas)
+                                            </div>
+                                            <div class="text-secondary small font-mono mt-1" style="font-size: 0.82rem;">Status: LUNAS</div>
                                         </td>
-                                        <td class="py-2 px-3 text-center">
-                                            <span class="badge bg-light text-dark border font-mono">
+                                        <td class="py-3 px-3 text-center">
+                                            <span class="badge bg-light text-dark border font-mono px-2.5 py-1.5" style="font-size: 0.82rem;">
                                                 Input Manual &rarr;
                                             </span>
                                         </td>
-                                        <td class="py-2 px-3 fw-semibold">
-                                            <i class="bi bi-wallet2 text-success me-1"></i> 5. Buku Kas (Pemasukan)
+                                        <td class="py-3 px-3.5 fw-bold text-dark" style="font-size: 0.95rem;">
+                                            <i class="bi bi-wallet2 text-success me-1.5"></i> 5. Buku Kas (Pemasukan)
                                         </td>
-                                        <td class="py-2 px-3 text-muted">
+                                        <td class="py-3 px-3.5 text-dark" style="line-height: 1.65; font-size: 0.92rem;">
                                             Status <em>LUNAS</em> di invoice berfungsi sebagai bukti nota transaksi pembeli. Uang hasil penjualan diinput secara manual ke menu <strong>Buku Kas</strong> pada saat uang fisik atau transfer bank benar-benar sudah masuk ke kasir/rekening toko.
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="py-2 px-3 fw-semibold text-dark">
-                                            <i class="bi bi-database-check text-dark me-1"></i> 6. Invoice + Stok + Kas
-                                            <div class="text-muted small font-mono">Seluruh Modul</div>
+                                        <td class="py-3 px-3.5">
+                                            <div class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                                <i class="bi bi-database-check text-dark me-1.5"></i> 6. Invoice + Stok + Kas
+                                            </div>
+                                            <div class="text-secondary small font-mono mt-1" style="font-size: 0.82rem;">Seluruh Modul</div>
                                         </td>
-                                        <td class="py-2 px-3 text-center">
-                                            <span class="badge bg-dark text-white font-mono">
+                                        <td class="py-3 px-3 text-center">
+                                            <span class="badge bg-dark text-white font-mono px-2.5 py-1.5" style="font-size: 0.82rem;">
                                                 Kompilasi &rarr;
                                             </span>
                                         </td>
-                                        <td class="py-2 px-3 fw-semibold">
-                                            <i class="bi bi-speedometer2 text-dark me-1"></i> Pusat Dashboard &amp; Evaluasi
+                                        <td class="py-3 px-3.5 fw-bold text-dark" style="font-size: 0.95rem;">
+                                            <i class="bi bi-speedometer2 text-dark me-1.5"></i> Pusat Dashboard &amp; Evaluasi
                                         </td>
-                                        <td class="py-2 px-3 text-muted">
+                                        <td class="py-3 px-3.5 text-dark" style="line-height: 1.65; font-size: 0.92rem;">
                                             Pusat Dashboard otomatis menarik data dari ketiga pilar: <strong>Omset Penjualan</strong> dihitung dari Invoice, <strong>Saldo Uang Kas</strong> dihitung dari Buku Kas, dan <strong>Stok Menipis/Habis</strong> dihitung dari tabel Stok fisik.
                                         </td>
                                     </tr>
@@ -801,16 +936,33 @@
                 <!-- Timeline Container -->
                 <div class="timeline-changelog d-flex flex-column gap-4">
 
-                    <!-- v2.6 (Current) -->
+                    <!-- v2.7 (Current) -->
                     <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid var(--color-dark, #111827) !important;">
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-dark text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.6</span>
-                                <h6 class="fw-bold text-dark m-0">Buku Panduan Sistem &amp; Optimasi Performa</h6>
+                                <span class="badge bg-dark text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.7</span>
+                                <h6 class="fw-bold text-dark m-0">Peta Alur Interaktif (Visual Map), Drag &amp; Pan Kanvas, &amp; Inspektur Modul</h6>
                             </div>
                             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill font-mono" style="font-size: 0.72rem;">
                                 <i class="bi bi-check-circle me-1"></i> Versi Aktif
                             </span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Visual Map Vektor Interaktif (Pure SVG &amp; Vanilla JS)</strong>: Diagram interkoneksi alur operasional end-to-end tanpa dependensi eksternal, dilengkapi fitur geser kanvas interaktif (alat tangan / drag &amp; pan) berbasis pointer capture.</li>
+                            <li><strong class="text-dark">Multi-Filter Fokus Alur &amp; Auto-Zoom ViewBox</strong>: 5 mode filter alur (Racik, Penjualan, Transfer, Kas Riil, Semua) dengan animasi transisi zoom adaptif serta eliminasi outlier zoom pada mutasi stok.</li>
+                            <li><strong class="text-dark">Inspektur Modul Interaktif &amp; Simulasi Transaksi</strong>: Pemilihan kartu modul satu per satu dengan framing seragam rata-rata ~160%, kartu inspektur dinamis yang menyorot alur masuk/keluar serta aturan logika transaksi, tombol aksi horizontal anti-stacking, dan simulasi alur invoice real-time.</li>
+                            <li><strong class="text-dark">Perbaikan Tata Letak Anti-Offside &amp; Anti-Overlap</strong>: Penyesuaian presisi Box 4 (Penjualan), garis saldo riil, serta kotak legenda petunjuk aliran dengan jarak bebas lega 65px bebas offside.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.6 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #4b5563 !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.6</span>
+                                <h6 class="fw-bold text-dark m-0">Buku Panduan Sistem &amp; Optimasi Performa</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
                         </div>
                         <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
                             <li><strong class="text-dark">Halaman Panduan &amp; Tutorial (/tutorial)</strong>: Pusat edukasi langkah demi langkah dengan lambang tanda tanya (<i class="bi bi-question-circle-fill"></i>) di sidebar &amp; topbar berisikan 7 tab panduan alur bisnis interaktif.</li>
@@ -943,8 +1095,67 @@
     </div>
 </div>
 
+<style>
+@keyframes flowDashes {
+    to {
+        stroke-dashoffset: -20;
+    }
+}
+.flow-line-active {
+    animation: flowDashes 1.2s linear infinite;
+}
+.flow-interactive-node {
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease, opacity 0.25s ease;
+    outline: none;
+}
+.flow-interactive-node:hover {
+    transform: translateY(-2.5px);
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.12));
+}
+.flow-dimmed {
+    opacity: 0.18 !important;
+    transition: opacity 0.3s ease;
+}
+.flow-path-highlighted {
+    stroke-width: 3.5px !important;
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.2));
+    transition: stroke-width 0.2s ease;
+}
+#interactiveOperationsSvg {
+    cursor: grab;
+    touch-action: none;
+}
+#interactiveOperationsSvg.is-panning {
+    cursor: grabbing !important;
+}
+#inspectorTabJumpContainer {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+#btnJumpToGuideTab.d-inline-flex, #btnDirectFeatureLink.d-inline-flex {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+#btnJumpToGuideTab.d-none, #btnDirectFeatureLink.d-none {
+    display: none !important;
+}
+#btnJumpToGuideTab i, #btnDirectFeatureLink i {
+    display: inline-flex !important;
+    align-items: center;
+    flex-shrink: 0;
+}
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // 1. Auto-scroll halus saat navigasi pill berganti
     const guideTabs = document.querySelectorAll('#guideTabs button[data-bs-toggle="pill"]');
     guideTabs.forEach(function(tab) {
         tab.addEventListener('shown.bs.tab', function() {
@@ -954,7 +1165,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const elementPosition = content.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
                 
-                // Jika posisi scroll saat ini berada di bawah target content, scroll naik ke atas secara halus
                 if (window.pageYOffset > offsetPosition) {
                     window.scrollTo({
                         top: Math.max(0, offsetPosition),
@@ -964,6 +1174,580 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // 2. Interactive Flowchart Engine
+    const nodeDetails = {
+        raw: {
+            title: "1. Pengadaan Bahan Mentah",
+            badge: "MODUL INPUT",
+            badgeClass: "bg-dark text-white",
+            targetTab: "#raw-tab",
+            tabLabel: "Bahan Mentah & Packaging",
+            pageUrl: "{{ route('raw-materials.index') }}",
+            desc: "Pencatatan persediaan botol kaca kosong dan box kardus packaging. Memastikan wadah siap sebelum parfum diracik.",
+            inputs: "Data supplier & nota pengeluaran belanja kardus/botol.",
+            outputs: "Botol siap isi dialirkan ke racik parfum (Tambah Stock & PO). Biaya opsional ke Buku Kas.",
+            rule: "Biaya belanja bahan TIDAK memotong saldo kas kecuali opsi 'Catat Biaya ke Buku Kas' dicentang."
+        },
+        restock: {
+            title: "2A. Tambah Stock (Restock Hasil Racik)",
+            badge: "PRODUKSI",
+            badgeClass: "bg-success text-white",
+            targetTab: "#stock-tab",
+            tabLabel: "Stok, Restock & PO",
+            pageUrl: "{{ route('stocks.restock') }}",
+            desc: "Menu input hasil racikan parfum siap botol untuk stok reguler yang langsung siap dijual ke konsumen.",
+            inputs: "Parfum siap botol hasil racikan tim produksi.",
+            outputs: "Menambah kuantitas stok fisik di lokasi gudang tujuan (Iwan / Rizky).",
+            rule: "Restock murni menambah fisik barang. Saldo uang kas toko tidak bertambah/berkurang di tahap ini."
+        },
+        po: {
+            title: "2B. Pre-Order (PO Inden)",
+            badge: "ANTREAN INDEN",
+            badgeClass: "bg-warning text-dark",
+            targetTab: "#stock-tab",
+            tabLabel: "Stok, Restock & PO",
+            pageUrl: "{{ route('pre-orders.index') }}",
+            desc: "Antrean pesanan inden khusus pelanggan. Dipisahkan dari stok ready agar tidak mengacaukan perhitungan gudang.",
+            inputs: "Pesanan inden pelanggan dengan DP / tanda jadi.",
+            outputs: "Saat status PO diubah menjadi 'SELESAI', parfum otomatis disuntikkan ke stok gudang tujuan.",
+            rule: "Selama status PO masih 'PENDING', kuantitas fisik di gudang tidak bertambah."
+        },
+        stock: {
+            title: "3. Stok Fisik (Gudang Iwan & Rizky)",
+            badge: "INVENTORY PUSAT",
+            badgeClass: "bg-dark text-white",
+            targetTab: "#stock-tab",
+            tabLabel: "Stok, Restock & PO",
+            pageUrl: "{{ route('stocks.index') }}",
+            desc: "Jantung inventaris fisik. Menampilkan ketersediaan botol parfum yang nyata ada di tangan pemegang secara real-time.",
+            inputs: "Restock parfum jadi (+) atau PO selesai (+).",
+            outputs: "Dipindahkan ke pemegang lain via Transfer Stok, atau dipotong saat kasir menerbitkan Invoice.",
+            rule: "Stok diupdate atomik di dalam DB::transaction. Stok tidak bisa minus (penjualan ditolak jika stok kurang)."
+        },
+        transfer: {
+            title: "3B. Transfer Stok Antar Lokasi",
+            badge: "MUTASI",
+            badgeClass: "bg-primary text-white",
+            targetTab: "#stock-tab",
+            tabLabel: "Stok, Restock & PO",
+            pageUrl: "{{ route('stocks.transfers') }}",
+            desc: "Memindahkan kepemilikan botol parfum antar-lokasi (misal: dari Gudang Iwan ke Toko Rizky atau Reseller).",
+            inputs: "Stok fisik pemegang pengirim.",
+            outputs: "Stok pengirim berkurang, stok penerima bertambah dalam detik yang sama.",
+            rule: "Sama sekali TIDAK menyentuh uang kas toko karena ini murni mutasi perpindahan fisik barang internal."
+        },
+        invoice: {
+            title: "4. Penjualan (Invoice)",
+            badge: "TRANSAKSI KASIR",
+            badgeClass: "bg-danger text-white",
+            targetTab: "#invoice-tab",
+            tabLabel: "Penjualan & Invoice",
+            pageUrl: "{{ route('invoices.create') }}",
+            desc: "Menerbitkan nota penjualan pelanggan dengan dukungan tanggal lampau (backdate) dan penanda status Lunas / Belum Lunas.",
+            inputs: "Pesanan pelanggan & pilihan lokasi stok pengirim.",
+            outputs: "SEKETIKA memotong stok fisik di gudang pemegang, serta mencatat omset ke Dashboard.",
+            rule: "Status LUNAS invoice tidak mencampur kas. Uang kas riil dicatat mandiri di Buku Kas saat uang nyata di tangan."
+        },
+        cash: {
+            title: "5. Buku Kas & Keuangan",
+            badge: "ARUS KAS RIIL",
+            badgeClass: "bg-success text-white",
+            targetTab: "#cash-tab",
+            tabLabel: "Buku Kas & Keuangan",
+            pageUrl: "{{ route('transactions.index') }}",
+            desc: "Pencatatan kas masuk & kas keluar nyata toko (uang tunai di laci kasir atau saldo mutasi rekening bank).",
+            inputs: "Input kasir saat uang penjualan cair, atau pengeluaran operasional toko (iklan, operasional, belanja bahan).",
+            outputs: "Menjadi dasar perhitungan Saldo Kas Riil di dashboard utama.",
+            rule: "Hanya catat saat uang benar-benar ada di tangan/rekening. Memastikan uang fisik selalu klop dengan catatan."
+        },
+        dash: {
+            title: "6. Pusat Dashboard & Evaluasi",
+            badge: "MUARA LAPORAN",
+            badgeClass: "bg-dark text-white",
+            targetTab: "#dash-tab",
+            tabLabel: "Pusat Dashboard",
+            pageUrl: "{{ route('dashboard') }}",
+            desc: "Pusat evaluasi bisnis otomatis yang mengonsolidasikan data dari Invoice, Stok Fisik, dan Buku Kas.",
+            inputs: "Invoice (Omset/Tren), Buku Kas (Saldo Kas Riil), Stok Fisik (Peringatan Stok Tipis/Habis).",
+            outputs: "Laporan performa sales, laba estimasi, dan tren penjualan per varian.",
+            rule: "Seluruh laporan terhitung otomatis tanpa perlu rekonsiliasi manual akhir bulan."
+        }
+    };
+
+    const flowPaths = {
+        restock: ['flow-path-raw-restock', 'flow-path-restock-stock', 'flow-path-po-stock'],
+        invoice: ['flow-path-stock-invoice', 'flow-path-invoice-stock', 'flow-path-invoice-dash'],
+        transfer: ['flow-path-stock-transfer', 'flow-path-transfer-dash'],
+        cash: ['flow-path-raw-cash', 'flow-path-invoice-cash', 'flow-path-cash-dash']
+    };
+
+    const flowPills = {
+        restock: ['flow-pill-raw-restock', 'flow-pill-restock-stock', 'flow-pill-po-stock'],
+        invoice: ['flow-pill-sell', 'flow-pill-invoice-stock', 'flow-pill-invoice-dash'],
+        transfer: ['flow-pill-transfer'],
+        cash: ['flow-pill-raw-cash', 'flow-pill-invoice-cash', 'flow-pill-cash-dash']
+    };
+
+    const flowNodes = {
+        restock: ['flow-node-raw', 'flow-node-restock', 'flow-node-po', 'flow-node-stock'],
+        invoice: ['flow-node-stock', 'flow-node-invoice', 'flow-node-dash'],
+        transfer: ['flow-node-stock', 'flow-node-transfer', 'flow-node-dash'],
+        cash: ['flow-node-raw', 'flow-node-cash', 'flow-node-invoice', 'flow-node-dash']
+    };
+
+    // Koordinat ViewBox untuk Fitur Fokus Alur (Menyesuaikan cakupan visual kelompok alur fitur)
+    const workflowViewBoxes = {
+        all: [0, 0, 980, 540],
+        restock: [15, 15, 570, 395],
+        invoice: [330, 15, 645, 480],
+        transfer: [310, 175, 580, 325],
+        cash: [15, 15, 960, 485]
+    };
+
+    // Koordinat ViewBox saat mengeklik bagan/kartu satu per satu (Seragam rata-rata ~160%)
+    const nodeViewBoxes = {
+        raw: [10, 10, 612.5, 337.5],
+        restock: [10, 60, 612.5, 337.5],
+        po: [10, 160, 612.5, 337.5],
+        stock: [160, 110, 612.5, 337.5],
+        transfer: [180, 165, 612.5, 337.5],
+        invoice: [300, 120, 612.5, 337.5],
+        cash: [350, 20, 612.5, 337.5],
+        dash: [340, 170, 612.5, 337.5]
+    };
+
+    let currentViewBox = [0, 0, 980, 540];
+    let zoomAnimId = null;
+
+    // Mesin Animasi Transisi Halus (Smooth Interpolation)
+    function animateViewBox(target, duration = 450) {
+        if (zoomAnimId) cancelAnimationFrame(zoomAnimId);
+        const start = [...currentViewBox];
+        const startTime = performance.now();
+        const svg = document.getElementById('interactiveOperationsSvg');
+        if (!svg) return;
+
+        function step(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(1, elapsed / duration);
+            // Cubic ease in-out
+            const ease = progress < 0.5 
+                ? 4 * progress * progress * progress 
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+            const cur = [
+                start[0] + (target[0] - start[0]) * ease,
+                start[1] + (target[1] - start[1]) * ease,
+                start[2] + (target[2] - start[2]) * ease,
+                start[3] + (target[3] - start[3]) * ease
+            ];
+
+            svg.setAttribute('viewBox', `${cur[0]} ${cur[1]} ${cur[2]} ${cur[3]}`);
+            currentViewBox = cur;
+
+            const zoomPct = Math.round((980 / cur[2]) * 100);
+            const zoomIndicator = document.getElementById('flowZoomLevelIndicator');
+            if (zoomIndicator) zoomIndicator.textContent = `${zoomPct}%`;
+
+            if (progress < 1) {
+                zoomAnimId = requestAnimationFrame(step);
+            } else {
+                currentViewBox = [...target];
+                svg.setAttribute('viewBox', `${target[0]} ${target[1]} ${target[2]} ${target[3]}`);
+            }
+        }
+        zoomAnimId = requestAnimationFrame(step);
+    }
+
+    // Mesin Drag & Pan Interaktif (Fitur Tangan Geser Kanvas)
+    const svgCanvas = document.getElementById('interactiveOperationsSvg');
+    let isPanning = false;
+    let startScreenX = 0;
+    let startScreenY = 0;
+    let origViewBoxX = 0;
+    let origViewBoxY = 0;
+    let hasDragged = false;
+
+    if (svgCanvas) {
+        svgCanvas.addEventListener('pointerdown', function(e) {
+            if (e.button && e.button !== 0) return;
+            if (zoomAnimId) cancelAnimationFrame(zoomAnimId);
+            isPanning = true;
+            hasDragged = false;
+            startScreenX = e.clientX;
+            startScreenY = e.clientY;
+            origViewBoxX = currentViewBox[0];
+            origViewBoxY = currentViewBox[1];
+        });
+
+        svgCanvas.addEventListener('pointermove', function(e) {
+            if (!isPanning) return;
+            const dx = e.clientX - startScreenX;
+            const dy = e.clientY - startScreenY;
+
+            if (!hasDragged) {
+                if (Math.hypot(dx, dy) > 5) {
+                    hasDragged = true;
+                    svgCanvas.classList.add('is-panning');
+                    try {
+                        svgCanvas.setPointerCapture(e.pointerId);
+                    } catch (err) {}
+                } else {
+                    return;
+                }
+            }
+
+            const rect = svgCanvas.getBoundingClientRect();
+            const scaleX = currentViewBox[2] / rect.width;
+            const scaleY = currentViewBox[3] / rect.height;
+
+            let newX = origViewBoxX - (dx * scaleX);
+            let newY = origViewBoxY - (dy * scaleY);
+
+            // Batas geser halus agar diagram tidak hilang dari pandangan
+            const minX = -120;
+            const maxX = 980 - currentViewBox[2] + 120;
+            const minY = -100;
+            const maxY = 540 - currentViewBox[3] + 100;
+
+            newX = Math.max(minX, Math.min(maxX, newX));
+            newY = Math.max(minY, Math.min(maxY, newY));
+
+            currentViewBox[0] = newX;
+            currentViewBox[1] = newY;
+            svgCanvas.setAttribute('viewBox', `${currentViewBox[0]} ${currentViewBox[1]} ${currentViewBox[2]} ${currentViewBox[3]}`);
+        });
+
+        function endPanning(e) {
+            if (!isPanning) return;
+            isPanning = false;
+            svgCanvas.classList.remove('is-panning');
+            try {
+                if (svgCanvas.hasPointerCapture(e.pointerId)) {
+                    svgCanvas.releasePointerCapture(e.pointerId);
+                }
+            } catch (err) {}
+
+            // Jika dilepas tanpa geser/drag (murni klik / tap pada kartu node)
+            if (!hasDragged && e) {
+                const targetNode = e.target ? e.target.closest('.flow-interactive-node') : null;
+                if (targetNode && targetNode.dataset && targetNode.dataset.node) {
+                    selectNode(targetNode.dataset.node);
+                }
+            }
+
+            setTimeout(function() {
+                hasDragged = false;
+            }, 60);
+        }
+
+        svgCanvas.addEventListener('pointerup', endPanning);
+        svgCanvas.addEventListener('pointercancel', endPanning);
+    }
+
+    function resetHighlights() {
+        document.querySelectorAll('#interactiveOperationsSvg .flow-interactive-node').forEach(el => el.classList.remove('flow-dimmed'));
+        document.querySelectorAll('#interactiveOperationsSvg path').forEach(el => {
+            el.classList.remove('flow-dimmed', 'flow-path-highlighted', 'flow-line-active');
+        });
+        document.querySelectorAll('#interactiveOperationsSvg [id^="flow-pill-"]').forEach(el => el.classList.remove('flow-dimmed'));
+        const badge = document.getElementById('flowCanvasStatusBadge');
+        if (badge) badge.textContent = "Mode: Menampilkan Seluruh Alur";
+    }
+
+    function applyFilter(filter) {
+        resetHighlights();
+        
+        // Picu animasi Zoom In / Zoom Out sesuai workflow yang dipilih
+        animateViewBox(workflowViewBoxes[filter] || [0, 0, 980, 540], 450);
+
+        if (filter === 'all') return;
+
+        const activePaths = flowPaths[filter] || [];
+        const activePills = flowPills[filter] || [];
+        const activeNodes = flowNodes[filter] || [];
+
+        document.querySelectorAll('#interactiveOperationsSvg .flow-interactive-node').forEach(el => {
+            if (!activeNodes.includes(el.id)) el.classList.add('flow-dimmed');
+        });
+
+        document.querySelectorAll('#interactiveOperationsSvg path').forEach(el => {
+            if (activePaths.includes(el.id)) {
+                el.classList.add('flow-path-highlighted', 'flow-line-active');
+            } else {
+                el.classList.add('flow-dimmed');
+            }
+        });
+
+        document.querySelectorAll('#interactiveOperationsSvg [id^="flow-pill-"]').forEach(el => {
+            if (!activePills.includes(el.id)) el.classList.add('flow-dimmed');
+        });
+
+        const filterNames = {
+            restock: "Fokus Alur: Racik & Restock Parfum",
+            invoice: "Fokus Alur: Penjualan & Pemotongan Stok Otomatis",
+            transfer: "Fokus Alur: Mutasi Antar-Lokasi Fisik",
+            cash: "Fokus Alur: Arus Kas & Keuangan Riil"
+        };
+        const badge = document.getElementById('flowCanvasStatusBadge');
+        if (badge) badge.textContent = filterNames[filter] || filter;
+    }
+
+    let activeSelectedTargetTab = null;
+
+    function selectNode(nodeKey) {
+        const data = nodeDetails[nodeKey];
+        if (!data) return;
+
+        // Auto zoom in ke node yang diklik beserta keterhubungannya
+        if (nodeViewBoxes[nodeKey]) {
+            animateViewBox(nodeViewBoxes[nodeKey], 450);
+        }
+
+        // Update Inspector DOM
+        document.getElementById('inspectorTitle').textContent = data.title;
+        document.getElementById('inspectorBadgePill').textContent = data.badge;
+        document.getElementById('inspectorBadgePill').className = `badge font-mono px-2 py-1 ${data.badgeClass}`;
+        document.getElementById('inspectorDesc').textContent = data.desc;
+        document.getElementById('inspectorInputs').textContent = data.inputs;
+        document.getElementById('inspectorOutputs').textContent = data.outputs;
+        document.getElementById('inspectorRule').textContent = data.rule;
+
+        // Show Jump & Direct Link Buttons
+        activeSelectedTargetTab = data.targetTab;
+        const jumpBtn = document.getElementById('btnJumpToGuideTab');
+        if (jumpBtn) {
+            jumpBtn.classList.remove('d-none');
+            jumpBtn.classList.add('d-inline-flex');
+            jumpBtn.querySelector('span').textContent = `Buka Panduan: ${data.tabLabel}`;
+        }
+
+        const directLink = document.getElementById('btnDirectFeatureLink');
+        if (directLink && data.pageUrl) {
+            directLink.href = data.pageUrl;
+            directLink.classList.remove('d-none');
+            directLink.classList.add('d-inline-flex');
+            directLink.querySelector('span').textContent = `Buka Menu: ${data.tabLabel}`;
+        }
+
+        // Spotlight Element & Connected Paths
+        resetHighlights();
+        document.querySelectorAll('#interactiveOperationsSvg .flow-interactive-node').forEach(el => {
+            if (el.dataset.node !== nodeKey) el.classList.add('flow-dimmed');
+        });
+
+        const relatedPaths = [];
+        if (nodeKey === 'raw') relatedPaths.push('flow-path-raw-restock', 'flow-path-raw-cash');
+        if (nodeKey === 'restock') relatedPaths.push('flow-path-raw-restock', 'flow-path-restock-stock');
+        if (nodeKey === 'po') relatedPaths.push('flow-path-po-stock');
+        if (nodeKey === 'stock') relatedPaths.push('flow-path-restock-stock', 'flow-path-po-stock', 'flow-path-stock-transfer', 'flow-path-stock-invoice', 'flow-path-invoice-stock');
+        if (nodeKey === 'transfer') relatedPaths.push('flow-path-stock-transfer', 'flow-path-transfer-dash');
+        if (nodeKey === 'invoice') relatedPaths.push('flow-path-stock-invoice', 'flow-path-invoice-stock', 'flow-path-invoice-cash', 'flow-path-invoice-dash');
+        if (nodeKey === 'cash') relatedPaths.push('flow-path-raw-cash', 'flow-path-invoice-cash', 'flow-path-cash-dash');
+        if (nodeKey === 'dash') relatedPaths.push('flow-path-invoice-dash', 'flow-path-cash-dash', 'flow-path-transfer-dash');
+
+        document.querySelectorAll('#interactiveOperationsSvg path').forEach(el => {
+            if (relatedPaths.includes(el.id)) {
+                el.classList.add('flow-path-highlighted', 'flow-line-active');
+            } else {
+                el.classList.add('flow-dimmed');
+            }
+        });
+
+        const badge = document.getElementById('flowCanvasStatusBadge');
+        if (badge) badge.textContent = `Menyorot Modul: ${data.title}`;
+    }
+
+    // Attach Event Listeners to Nodes (dengan proteksi drag/pan)
+    document.querySelectorAll('#interactiveOperationsSvg .flow-interactive-node').forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (hasDragged) return; // Abaikan klik jika baru saja menggeser/drag kanvas dengan tangan
+            selectNode(this.dataset.node);
+        });
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectNode(this.dataset.node);
+            }
+        });
+    });
+
+    // Floating Manual Zoom Buttons
+    const btnZoomIn = document.getElementById('btnZoomIn');
+    if (btnZoomIn) {
+        btnZoomIn.addEventListener('click', function() {
+            const cur = currentViewBox;
+            const factor = 0.8;
+            const newW = Math.max(280, cur[2] * factor);
+            const newH = Math.max(154, cur[3] * factor);
+            const newX = cur[0] + (cur[2] - newW) / 2;
+            const newY = cur[1] + (cur[3] - newH) / 2;
+            animateViewBox([newX, newY, newW, newH], 260);
+        });
+    }
+
+    const btnZoomOut = document.getElementById('btnZoomOut');
+    if (btnZoomOut) {
+        btnZoomOut.addEventListener('click', function() {
+            const cur = currentViewBox;
+            const factor = 1.25;
+            const newW = Math.min(980, cur[2] * factor);
+            const newH = Math.min(540, cur[3] * factor);
+            let newX = cur[0] + (cur[2] - newW) / 2;
+            let newY = cur[1] + (cur[3] - newH) / 2;
+            newX = Math.max(0, Math.min(980 - newW, newX));
+            newY = Math.max(0, Math.min(540 - newH, newY));
+            animateViewBox([newX, newY, newW, newH], 260);
+        });
+    }
+
+    const btnZoomReset = document.getElementById('btnZoomReset');
+    if (btnZoomReset) {
+        btnZoomReset.addEventListener('click', function() {
+            animateViewBox([0, 0, 980, 540], 400);
+        });
+    }
+
+    // Jump to Tab Button (Pindah Tab & Auto-Scroll)
+    const jumpBtn = document.getElementById('btnJumpToGuideTab');
+    if (jumpBtn) {
+        jumpBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (activeSelectedTargetTab) {
+                const targetButton = document.querySelector(activeSelectedTargetTab) || 
+                                     document.querySelector(`#guideTabs button[data-bs-target="${activeSelectedTargetTab}"]`) ||
+                                     document.getElementById(activeSelectedTargetTab.replace('#', ''));
+                if (targetButton) {
+                    // 1. Tampilkan Tab
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                        const tabTrigger = bootstrap.Tab.getOrCreateInstance(targetButton);
+                        tabTrigger.show();
+                    } else {
+                        targetButton.click();
+                    }
+
+                    // 2. Scroll ke konten tab
+                    const targetPaneSelector = targetButton.getAttribute('data-bs-target');
+                    if (targetPaneSelector) {
+                        const targetPane = document.querySelector(targetPaneSelector);
+                        if (targetPane) {
+                            setTimeout(function() {
+                                const headerOffset = 70;
+                                const elementPosition = targetPane.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                                window.scrollTo({
+                                    top: Math.max(0, offsetPosition),
+                                    behavior: 'smooth'
+                                });
+                            }, 150);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Attach Filter Buttons
+    document.querySelectorAll('.flow-filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.flow-filter-btn').forEach(b => {
+                b.className = "btn btn-xs btn-outline-secondary py-1 px-2 rounded-2 fw-semibold flow-filter-btn";
+            });
+            this.className = "btn btn-xs btn-dark py-1 px-2 rounded-2 fw-semibold shadow-xs flow-filter-btn";
+            applyFilter(this.dataset.filter);
+        });
+    });
+
+    // Reset Button
+    const resetBtn = document.getElementById('btnResetFlowDiagram');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            document.querySelectorAll('.flow-filter-btn').forEach(b => {
+                b.className = "btn btn-xs btn-outline-secondary py-1 px-2 rounded-2 fw-semibold flow-filter-btn";
+            });
+            const allBtn = document.querySelector('.flow-filter-btn[data-filter="all"]');
+            if (allBtn) allBtn.className = "btn btn-xs btn-dark py-1 px-2 rounded-2 fw-semibold shadow-xs flow-filter-btn";
+            resetHighlights();
+            animateViewBox([0, 0, 980, 540], 400);
+
+            document.getElementById('inspectorTitle').textContent = "Klik Salah Satu Kotak Fitur di Atas";
+            document.getElementById('inspectorBadgePill').textContent = "INSPEKTUR MODUL";
+            document.getElementById('inspectorBadgePill').className = "badge bg-dark text-white font-mono px-2 py-1";
+            document.getElementById('inspectorDesc').textContent = "Klik salah satu kartu pada diagram untuk melihat keterhubungannya, aksi staf, serta aturan transaksi otomatisnya.";
+            document.getElementById('inspectorInputs').textContent = "-";
+            document.getElementById('inspectorOutputs').textContent = "-";
+            document.getElementById('inspectorRule').textContent = "-";
+
+            const jumpBtn = document.getElementById('btnJumpToGuideTab');
+            if (jumpBtn) {
+                jumpBtn.classList.add('d-none');
+                jumpBtn.classList.remove('d-inline-flex');
+            }
+
+            const directLink = document.getElementById('btnDirectFeatureLink');
+            if (directLink) {
+                directLink.classList.add('d-none');
+                directLink.classList.remove('d-inline-flex');
+                directLink.href = "#";
+            }
+
+            const alertBox = document.getElementById('flowSimulationAlert');
+            if (alertBox) {
+                alertBox.classList.add('d-none');
+                alertBox.classList.remove('d-flex');
+            }
+        });
+    }
+
+    // Interactive Transaction Simulation
+    let simulationTimer = null;
+    const simBtn = document.getElementById('btnSimulateInvoiceFlow');
+    if (simBtn) {
+        simBtn.addEventListener('click', function() {
+            if (simulationTimer) clearTimeout(simulationTimer);
+            const alertBox = document.getElementById('flowSimulationAlert');
+            const stepText = document.getElementById('flowSimulationStepText');
+            if (alertBox) {
+                alertBox.classList.remove('d-none');
+                alertBox.classList.add('d-flex');
+            }
+
+            // Step 1: Kasir terbitkan invoice
+            selectNode('invoice');
+            if (stepText) {
+                stepText.innerHTML = "<strong>Langkah 1 (Kasir):</strong> Kasir memilih pemegang (misal: Gudang Iwan) lalu klik <em>'Terbitkan Invoice'</em>.";
+            }
+
+            simulationTimer = setTimeout(function() {
+                // Step 2: Potong stok seketika
+                resetHighlights();
+                document.getElementById('flow-node-invoice').classList.remove('flow-dimmed');
+                document.getElementById('flow-node-stock').classList.remove('flow-dimmed');
+                const cutPath = document.getElementById('flow-path-invoice-stock');
+                if (cutPath) cutPath.classList.add('flow-path-highlighted', 'flow-line-active');
+                if (stepText) {
+                    stepText.innerHTML = "<strong>Langkah 2 (Sistem Otomatis):</strong> Stok fisik botol parfum di Gudang Iwan langsung terpotong detik itu juga secara atomik.";
+                }
+
+                simulationTimer = setTimeout(function() {
+                    // Step 3: Uang kas mandiri
+                    selectNode('cash');
+                    if (stepText) {
+                        stepText.innerHTML = "<strong>Langkah 3 (Kasir / Kas Toko):</strong> Uang kas mandiri: Kasir baru mencatat kas masuk di Buku Kas saat uang fisik/transfer bank benar-benar cair.";
+                    }
+
+                    simulationTimer = setTimeout(function() {
+                        selectNode('dash');
+                        if (stepText) {
+                            stepText.innerHTML = "<strong>Selesai:</strong> Pusat Dashboard otomatis merekap Omset dari Invoice dan Saldo Uang Riil dari Buku Kas tanpa rekonsiliasi manual!";
+                        }
+                    }, 3500);
+                }, 3500);
+            }, 3000);
+        });
+    }
 });
 </script>
 @endsection

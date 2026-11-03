@@ -1,7 +1,7 @@
-# Graph Report - scentpeep-management-system  (2026-11-03)
+# Graph Report - scentpeep-management-system  (2026-11-04)
 
 ## Corpus Check
-- 160 files · ~96,871 words
+- 160 files · ~103,789 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: (none) 18, .example 2, .conf 2)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a8baf7ac`
+- Built from commit: `894dcd11`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
