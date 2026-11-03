@@ -966,9 +966,9 @@
     "semantic_hash": ""
   },
   "resources/views/tutorial.blade.php": {
-    "mtime": 1793723278.0852914,
-    "seen": 1793723304.2735012,
-    "ast_hash": "744f510a00f780cc3debc11df573bc82",
+    "mtime": 1793724252.7543213,
+    "seen": 1793724280.1692302,
+    "ast_hash": "320c1fe28781285025f15770ea25cf69",
     "semantic_hash": ""
   }
 }

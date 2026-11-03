@@ -149,7 +149,7 @@
                                 <path d="M 750 305 L 750 390" fill="none" stroke="#1f2937" stroke-width="2" marker-end="url(#arrow)" />
 
                                 <!-- 10. Kas -> Dashboard (Saldo Uang Riil) -->
-                                <path d="M 890 115 L 890 390" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#arrow-green)" />
+                                <path d="M 922 115 L 922 390" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#arrow-green)" />
 
                                 <!-- 11. Transfer Stok -> Dashboard -->
                                 <path d="M 560 432 L 630 432" fill="none" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,3" />
@@ -210,10 +210,10 @@
                                     <text x="750" y="351" font-size="9.5" font-weight="600" fill="#374151" text-anchor="middle">Omset &amp; Sales</text>
                                 </g>
 
-                                <!-- Pill 10: Saldo Uang Riil -->
+                                <!-- Pill 10: Saldo Uang Riil (Digeser ke Kanan Bebas Hambatan) -->
                                 <g>
-                                    <rect x="835" y="244" width="110" height="22" rx="11" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
-                                    <text x="890" y="259" font-size="9.5" font-weight="bold" fill="#166534" text-anchor="middle">Saldo Uang Riil</text>
+                                    <rect x="870" y="244" width="104" height="22" rx="11" fill="#dcfce7" stroke="#86efac" stroke-width="1" />
+                                    <text x="922" y="259" font-size="9.5" font-weight="bold" fill="#166534" text-anchor="middle">Saldo Uang Riil</text>
                                 </g>
 
                                 <!-- LAYER 3: INTERACTIVE NODE CARDS -->
@@ -279,39 +279,39 @@
                                     <text x="374" y="466" font-size="9.5" fill="#4b5563">&bull; Aman tanpa sentuh uang kas</text>
                                 </g>
 
-                                <!-- NODE 4: PENJUALAN (INVOICE) -->
+                                <!-- NODE 4: PENJUALAN (INVOICE) (Lebar Disesuaikan Agar Teks Riil Tidak Terhalang) -->
                                 <g filter="url(#card-shadow)">
-                                    <rect x="680" y="205" width="230" height="100" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="2.5" />
+                                    <rect x="680" y="205" width="180" height="100" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="2.5" />
                                     <rect x="692" y="217" width="26" height="26" rx="6" fill="#e11d48" />
                                     <text x="705" y="234" fill="#ffffff" font-size="14" text-anchor="middle">&#129534;</text>
                                     <text x="726" y="227" font-size="13" font-weight="bold" fill="#e11d48">4. Penjualan (Invoice)</text>
                                     <text x="726" y="241" font-size="10" fill="#6b7280">Nota Transaksi Pelanggan</text>
-                                    <line x1="692" y1="252" x2="898" y2="252" stroke="#f3f4f6" stroke-width="1" />
+                                    <line x1="692" y1="252" x2="848" y2="252" stroke="#f3f4f6" stroke-width="1" />
                                     <text x="694" y="268" font-size="9.5" fill="#4b5563">&bull; Tanggal kustom / backdate</text>
-                                    <text x="694" y="282" font-size="9.5" fill="#4b5563">&bull; Penanda LUNAS / Belum Lunas</text>
-                                    <text x="694" y="295" font-size="9.5" fill="#b91c1c" font-weight="600">&bull; Potong unit botol seketika</text>
+                                    <text x="694" y="282" font-size="9.5" fill="#4b5563">&bull; Penanda LUNAS / Belum</text>
+                                    <text x="694" y="295" font-size="9.5" fill="#b91c1c" font-weight="600">&bull; Potong unit seketika</text>
                                 </g>
 
                                 <!-- NODE 5: BUKU KAS OPERASIONAL -->
                                 <g filter="url(#card-shadow)">
-                                    <rect x="680" y="30" width="230" height="85" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="2" />
+                                    <rect x="680" y="30" width="260" height="85" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="2" />
                                     <rect x="692" y="42" width="26" height="26" rx="6" fill="#16a34a" />
                                     <text x="705" y="59" fill="#ffffff" font-size="14" text-anchor="middle">&#128181;</text>
                                     <text x="726" y="52" font-size="13" font-weight="bold" fill="#16a34a">5. Buku Kas &amp; Keuangan</text>
                                     <text x="726" y="66" font-size="10" fill="#6b7280">Arus Uang Riil (Cash Flow)</text>
-                                    <line x1="692" y1="77" x2="898" y2="77" stroke="#f3f4f6" stroke-width="1" />
+                                    <line x1="692" y1="77" x2="925" y2="77" stroke="#f3f4f6" stroke-width="1" />
                                     <text x="694" y="93" font-size="9.5" fill="#4b5563">&bull; Kas Masuk (Input saat uang cair)</text>
                                     <text x="694" y="106" font-size="9.5" fill="#4b5563">&bull; Beban Usaha (Iklan, operasional)</text>
                                 </g>
 
                                 <!-- NODE 6: DASHBOARD & EVALUASI -->
                                 <g filter="url(#card-shadow)">
-                                    <rect x="630" y="390" width="310" height="85" rx="10" fill="#ffffff" stroke="#111827" stroke-width="2" />
+                                    <rect x="630" y="390" width="325" height="85" rx="10" fill="#ffffff" stroke="#111827" stroke-width="2" />
                                     <rect x="642" y="402" width="26" height="26" rx="6" fill="#111827" />
                                     <text x="655" y="419" fill="#ffffff" font-size="14" text-anchor="middle">&#128202;</text>
                                     <text x="676" y="412" font-size="13" font-weight="bold" fill="#111827">6. Pusat Dashboard &amp; Evaluasi</text>
                                     <text x="676" y="426" font-size="10" fill="#6b7280">Muara Seluruh Laporan Otomatis</text>
-                                    <line x1="642" y1="437" x2="928" y2="437" stroke="#f3f4f6" stroke-width="1" />
+                                    <line x1="642" y1="437" x2="940" y2="437" stroke="#f3f4f6" stroke-width="1" />
                                     <text x="644" y="453" font-size="9.5" fill="#4b5563">&bull; Saldo Kas Riil dihitung dari Buku Kas</text>
                                     <text x="644" y="466" font-size="9.5" fill="#4b5563">&bull; Omset &amp; Tren Sales dihitung dari Invoice</text>
                                 </g>
