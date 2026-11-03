@@ -29,7 +29,7 @@
         </div>
 
         <!-- Navigation Pills -->
-        <ul class="nav nav-pills flex-nowrap overflow-x-auto pb-2 mb-4 gap-2 border-bottom" id="guideTabs" role="tablist" style="scrollbar-width: thin;">
+        <ul class="nav nav-pills d-flex flex-wrap pb-3 mb-4 gap-2 border-bottom" id="guideTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="flow-tab" data-bs-toggle="pill" data-bs-target="#tab-flow" type="button" role="tab">
                     <i class="bi bi-diagram-3-fill"></i> Peta Alur Bisnis
@@ -97,7 +97,7 @@
 
                         <!-- SVG Flowchart Container -->
                         <div class="table-responsive bg-white rounded-3 border p-3 text-center shadow-xs">
-                            <svg viewBox="0 0 980 540" class="w-100" style="min-width: 820px; max-height: 540px;" xmlns="http://www.w3.org/2000/svg">
+                            <svg viewBox="0 0 980 540" class="w-100 h-auto" style="max-width: 100%; max-height: 520px;" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
                                     <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                                         <path d="M 0 1 L 10 5 L 0 9 z" fill="#1f2937" />
@@ -942,4 +942,28 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const guideTabs = document.querySelectorAll('#guideTabs button[data-bs-toggle="pill"]');
+    guideTabs.forEach(function(tab) {
+        tab.addEventListener('shown.bs.tab', function() {
+            const content = document.getElementById('guideTabsContent');
+            if (content) {
+                const headerOffset = 85;
+                const elementPosition = content.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                // Jika posisi scroll saat ini berada di bawah target content, scroll naik ke atas secara halus
+                if (window.pageYOffset > offsetPosition) {
+                    window.scrollTo({
+                        top: Math.max(0, offsetPosition),
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
+});
+</script>
 @endsection
