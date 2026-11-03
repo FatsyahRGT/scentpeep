@@ -31,8 +31,8 @@ Seluruh komponen inti, controller, model, request validation, dan database trans
 ```text
 ======================================================================
 PHPUnit Test Execution Summary:
-Total Tests:      73 Passed (100%)
-Total Assertions: 430 Passed
+Total Tests:      74 Passed (100%)
+Total Assertions: 437 Passed
 Errors:           0
 Failures:         0
 Warnings:         0
@@ -85,7 +85,14 @@ Execution Status: GREEN (PASS)
    - `Filter status empty displays out of stock products`
    - `Reseller is blocked from restock page`
    - `Reseller dashboard links empty variants to restock page`
-9. **Tests\Feature\PreOrderTest & LocationTest**:
+9. **Tests\Feature\InvoiceAndProcurementTest** (9 test):
+   - `Can create invoice with custom no and deducts stock automatically`
+   - `Can create invoice with any dynamic user as sales`
+   - `Invoice creation fails if stock insufficient`
+   - `Marking invoice paid updates status without inserting cash transaction (decoupled cash flow)`
+   - `Can create and update invoice with custom tanggal (CRUD tanggal fleksibel)`
+   - `Admin can view, update, and delete invoice with atomic stock balance without cash interference`
+10. **Tests\Feature\PreOrderTest & LocationTest**:
    - `Pre-order lifecycle and completion to main stock`
    - `Location golden angle color generation`
    - `Stock calculations and zero-stock prevention`

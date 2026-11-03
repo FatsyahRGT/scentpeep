@@ -98,4 +98,4 @@ docker compose exec app php artisan db:seed
 php artisan test
 ```
 
-Status pengujian: **69 tests passed, 416 assertions (100% Green)**.
+Status pengujian: **73 tests passed, 430 assertions (100% Green)**.

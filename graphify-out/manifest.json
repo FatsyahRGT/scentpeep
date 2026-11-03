@@ -12,9 +12,9 @@
     "semantic_hash": "25a307335c0719bc9a91b3f7babd186d"
   },
   "app/Http/Controllers/DashboardController.php": {
-    "mtime": 1793535549.526051,
-    "seen": 1793535618.511452,
-    "ast_hash": "1d4fa4acc1071c3837d4acb0705a73fa",
+    "mtime": 1793719700.7911954,
+    "seen": 1793720233.2812328,
+    "ast_hash": "1e5bb7d2854c8ed7edd1b2ef01d3432a",
     "semantic_hash": ""
   },
   "app/Http/Controllers/LocationController.php": {
@@ -30,9 +30,9 @@
     "semantic_hash": "f24a5a18af93e5af038a957a3f3e809e"
   },
   "app/Http/Controllers/StockController.php": {
-    "mtime": 1793543370.9383442,
-    "seen": 1793543637.1038108,
-    "ast_hash": "0c2b8ae931f97b1e20014c09c1dfe669",
+    "mtime": 1793719802.7542524,
+    "seen": 1793720233.2832294,
+    "ast_hash": "d3afe09029beac3208c246339a5f4f20",
     "semantic_hash": ""
   },
   "app/Http/Requests/StoreLocationRequest.php": {
@@ -288,9 +288,9 @@
     "semantic_hash": ""
   },
   "resources/views/layouts/app.blade.php": {
-    "mtime": 1793543460.1449294,
-    "seen": 1793543637.1048129,
-    "ast_hash": "994733277aa2ba2edca9c2ab4294b11a",
+    "mtime": 1793719032.5092735,
+    "seen": 1793719219.747823,
+    "ast_hash": "6b839a9191ce8563efe410ebb711fbbd",
     "semantic_hash": ""
   },
   "resources/views/locations/create.blade.php": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "resources/views/stocks/index.blade.php": {
-    "mtime": 1793543231.9795785,
-    "seen": 1793543637.1048129,
-    "ast_hash": "35640ef0a80e1d83dcec2f47ce669a64",
+    "mtime": 1793543731.1194265,
+    "seen": 1793544104.438682,
+    "ast_hash": "e75a756e9e7ed9e83040137c628af8d0",
     "semantic_hash": ""
   },
   "routes/console.php": {
@@ -342,9 +342,9 @@
     "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
   },
   "routes/web.php": {
-    "mtime": 1793543356.1010244,
-    "seen": 1793543637.1048129,
-    "ast_hash": "35e083e8a1a92c430134c5727de3748e",
+    "mtime": 1793718982.7228575,
+    "seen": 1793719219.747823,
+    "ast_hash": "0a7e86d59bfbcf2219a69ed5d97b7f4f",
     "semantic_hash": ""
   },
   "tests/Feature/ExampleTest.php": {
@@ -576,9 +576,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/WebRoutesRenderingTest.php": {
-    "mtime": 1793530196.645524,
-    "seen": 1793530221.5689962,
-    "ast_hash": "0a77a356303cf6d46c9bc2ab55e746a2",
+    "mtime": 1793719142.8801966,
+    "seen": 1793719219.747823,
+    "ast_hash": "28c5896ff29396871e3527a2bfe3060d",
     "semantic_hash": ""
   },
   "app/Http/Middleware/SecurityHeadersMiddleware.php": {
@@ -600,9 +600,9 @@
     "semantic_hash": "59e361a5d8c1edb14a8047365b46c8b4"
   },
   "app/Http/Controllers/InvoiceController.php": {
-    "mtime": 1793529366.6531794,
-    "seen": 1793529443.5012968,
-    "ast_hash": "0efdabb53774140b42a20fdcc690a40a",
+    "mtime": 1793718568.277294,
+    "seen": 1793718599.7372878,
+    "ast_hash": "e87cda8390f612722779e38eda7df440",
     "semantic_hash": ""
   },
   "app/Http/Controllers/PreOrderController.php": {
@@ -618,9 +618,9 @@
     "semantic_hash": ""
   },
   "app/Models/Invoice.php": {
-    "mtime": 1793351759.2117472,
-    "seen": 1793361746.6687133,
-    "ast_hash": "915cb342567b4eba1ed6390967101a27",
+    "mtime": 1793716975.1048658,
+    "seen": 1793717734.6782916,
+    "ast_hash": "32258f100e80042c04f3120beff82189",
     "semantic_hash": ""
   },
   "app/Models/PreOrder.php": {
@@ -678,21 +678,21 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/create.blade.php": {
-    "mtime": 1793533579.6487231,
-    "seen": 1793533768.1642659,
-    "ast_hash": "73c432e6a256f3bbff882b5e8229bdb9",
+    "mtime": 1793717214.7650852,
+    "seen": 1793717734.6782916,
+    "ast_hash": "1a2a691f3a16abf85b6d08f970e18256",
     "semantic_hash": ""
   },
   "resources/views/invoices/edit.blade.php": {
-    "mtime": 1793533592.906828,
-    "seen": 1793533768.1642659,
-    "ast_hash": "18d903050544e4901b41b0c29cd515d1",
+    "mtime": 1793717245.1389117,
+    "seen": 1793717734.6782916,
+    "ast_hash": "6a60a7097af83da7507014b9bc6974bf",
     "semantic_hash": ""
   },
   "resources/views/invoices/index.blade.php": {
-    "mtime": 1793537053.3887756,
-    "seen": 1793537096.6584675,
-    "ast_hash": "323cac51b8c24ba71c6b5dab399dbe84",
+    "mtime": 1793718550.2181585,
+    "seen": 1793718599.7372878,
+    "ast_hash": "118936a01b85428c09c2764dfe9c5662",
     "semantic_hash": ""
   },
   "resources/views/pre_orders/create.blade.php": {
@@ -786,9 +786,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/InvoiceAndProcurementTest.php": {
-    "mtime": 1793529239.8970785,
-    "seen": 1793529443.5012968,
-    "ast_hash": "b2b7091592394f8d79524daea242de7d",
+    "mtime": 1793717319.7749667,
+    "seen": 1793717734.67929,
+    "ast_hash": "85fde2c3100c20a82438d11827a004b1",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -804,9 +804,9 @@
     "semantic_hash": ""
   },
   "KESIMPULAN_PROJEK.md": {
-    "mtime": 1793541535.766047,
-    "seen": 1793541548.9821181,
-    "ast_hash": "bc77084a93650d27cb9f170a79dbbb63",
+    "mtime": 1793719196.6546838,
+    "seen": 1793719219.747823,
+    "ast_hash": "ff1254314e1de234370126c39cacb0de",
     "semantic_hash": ""
   },
   "PANDUAN_SESI_BARU_GRAPHIFY.md": {
@@ -816,9 +816,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793541503.0666256,
-    "seen": 1793541548.9821181,
-    "ast_hash": "d2a637a4124d89cadee423db9878dd70",
+    "mtime": 1793544083.6415174,
+    "seen": 1793544104.4396815,
+    "ast_hash": "7568dffb7db8dfb167b9eef1d5eab6fe",
     "semantic_hash": ""
   },
   "docker-compose.yml": {
@@ -828,27 +828,27 @@
     "semantic_hash": ""
   },
   "docs/ACTIVITY_DIAGRAM.md": {
-    "mtime": 1793541391.3027737,
-    "seen": 1793541548.9821181,
-    "ast_hash": "62e435a83c4c5acdd4d34d0cf2b250af",
+    "mtime": 1793717535.5385692,
+    "seen": 1793717734.67929,
+    "ast_hash": "35e807b6648476720626db25b760d8ff",
     "semantic_hash": ""
   },
   "docs/ERD.md": {
-    "mtime": 1793541330.840412,
-    "seen": 1793541548.9821181,
-    "ast_hash": "1c982e119b44d9626d414643f4fe4d42",
+    "mtime": 1793717438.6964042,
+    "seen": 1793717734.67929,
+    "ast_hash": "4c270e6666beff000451f7538e1266a9",
     "semantic_hash": ""
   },
   "docs/KRITERIA_LULUS.md": {
-    "mtime": 1793543621.67972,
-    "seen": 1793543637.1048129,
-    "ast_hash": "0f6af4965096f0f59049ed8582223078",
+    "mtime": 1793717626.1012132,
+    "seen": 1793717734.67929,
+    "ast_hash": "6fa86b5563e6f3a89311fb3e4ebd4fd4",
     "semantic_hash": ""
   },
   "docs/PRD.md": {
-    "mtime": 1793541300.5226195,
-    "seen": 1793541548.9821181,
-    "ast_hash": "da3637d3a950bd113f45f58d1b9583cc",
+    "mtime": 1793719178.7762604,
+    "seen": 1793719219.747823,
+    "ast_hash": "be976d2a121660b2fbb714faaacecf1a",
     "semantic_hash": ""
   },
   "graphify-out/converted/02 - PERIODE FEBRUARI PENJUALAN_c5efdcb3.md": {
@@ -924,33 +924,51 @@
     "semantic_hash": ""
   },
   "docs/DFD.md": {
-    "mtime": 1793541360.9978821,
-    "seen": 1793541548.9821181,
-    "ast_hash": "28d00647b5158281b42fac9f50b32312",
+    "mtime": 1793717498.6665242,
+    "seen": 1793717734.67929,
+    "ast_hash": "e6160b5e5c9a5daf3778978fbb626557",
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1793541484.35543,
-    "seen": 1793541548.9821181,
-    "ast_hash": "b5f5105fff0925afed51f7cad56db610",
+    "mtime": 1793544065.1944666,
+    "seen": 1793544104.4396815,
+    "ast_hash": "a3868b05a75671e62c8ff9f0ca9564cc",
     "semantic_hash": ""
   },
   "docs/USE_CASE.md": {
-    "mtime": 1793541424.2617185,
-    "seen": 1793541548.9821181,
-    "ast_hash": "b8c8004b59e9183800758c506c768ca3",
+    "mtime": 1793717549.3236518,
+    "seen": 1793717734.67929,
+    "ast_hash": "22cb1ad9dacfec63d28206d227470fe0",
     "semantic_hash": ""
   },
   "resources/views/stocks/restock.blade.php": {
-    "mtime": 1793543395.5812917,
-    "seen": 1793543637.1048129,
-    "ast_hash": "e8886b1dfe747914c4bd85cd6f22946a",
+    "mtime": 1793543682.4844904,
+    "seen": 1793544104.438682,
+    "ast_hash": "cdda79f6612bbbc4fccfa076cdc2bbdf",
     "semantic_hash": ""
   },
   "tests/Feature/StockRestockTest.php": {
     "mtime": 1793543560.4839861,
     "seen": 1793543637.1048129,
     "ast_hash": "689ad176abc11c2fb32c60ef1e2e01dd",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_11_03_000001_add_tanggal_to_invoices_table.php": {
+    "mtime": 1793716387.055405,
+    "seen": 1793717734.6782916,
+    "ast_hash": "891ae093171d9ece54690058c0c0a31e",
+    "semantic_hash": ""
+  },
+  "app/Http/Controllers/TutorialController.php": {
+    "mtime": 1793718966.0542376,
+    "seen": 1793719219.7468228,
+    "ast_hash": "fcebf10c4b640679c69dceb6728be61c",
+    "semantic_hash": ""
+  },
+  "resources/views/tutorial.blade.php": {
+    "mtime": 1793719099.7461195,
+    "seen": 1793719219.747823,
+    "ast_hash": "559a0cbfc17da226949e9e3ef9184616",
     "semantic_hash": ""
   }
 }

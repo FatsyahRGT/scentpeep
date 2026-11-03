@@ -87,7 +87,7 @@ sequenceDiagram
 flowchart TD
     subgraph Lane_User ["Pengguna (Admin / Staff)"]
         U_Start([Mulai]) --> U_Form[Buka Form Buat Invoice /invoices/create]
-        U_Form --> U_Fill[Pilih Sales: RIZKY/IWAN/VANNY, Pelanggan, Varian Parfum, Lokasi Asal, Qty, Total Harga, Status Pembayaran]
+        U_Form --> U_Fill[Pilih Tanggal Transaksi, Sales: RIZKY/IWAN/VANNY, Pelanggan, Varian Parfum, Lokasi Asal, Qty, Total Harga, Status Pembayaran]
         U_Fill --> U_Submit[Klik Simpan & Terbitkan Invoice]
         U_Submit -.-> U_Wait[Menunggu Proses Transaksional]
         U_Success([Invoice Terbit & Stok Berkurang])
@@ -100,12 +100,8 @@ flowchart TD
         S_Lock --> S_Check{Stok Tersedia >= Qty?}
         
         S_Check -->|Ya| S_Dec[Kurangi Stok: stocks.decrement 'qty']
-        S_Dec --> S_SaveInv[Simpan Baris Invoice di tabel invoices]
-        S_SaveInv --> S_CheckPaid{Status == LUNAS?}
-        S_CheckPaid -->|Ya| S_SyncCash[Catat Transaksi Kas Masuk di transactions]
-        S_CheckPaid -->|Tidak| S_SkipCash[Lewati Kas Masuk (Piutang Usaha)]
-        S_SyncCash --> S_Commit[DB::commit]
-        S_SkipCash --> S_Commit
+        S_Dec --> S_SaveInv[Simpan Baris Invoice & Tanggal di tabel invoices]
+        S_SaveInv --> S_Commit[DB::commit (Stok terpotong, status piutang tercatat tanpa campur kas)]
         S_Commit --> S_SuccNotif[Redirect ke Daftar Invoice & Notifikasi Sukses]
         S_SuccNotif --> U_Success
 
@@ -122,11 +118,11 @@ sequenceDiagram
     autonumber
     actor U as Staff / Administrator
     participant S as Sistem (InvoiceController)
-    participant DB as Database (stocks, invoices, transactions)
+    participant DB as Database (stocks, invoices)
     actor C as Pelanggan
 
     U->>S: Akses Form Buat Invoice (/invoices/create)
-    S-->>U: Tampilkan formulir (Sales, Customer, Produk, Lokasi, Qty, Harga, Status)
+    S-->>U: Tampilkan formulir (Tanggal Kustom, Sales, Customer, Produk, Lokasi, Qty, Harga, Status)
     U->>S: Submit Form Invoice
     
     S->>DB: Mulai DB::transaction
@@ -136,10 +132,8 @@ sequenceDiagram
         S-->>U: Validasi Gagal "Stok varian pada lokasi tersebut tidak mencukupi"
     else Stok Tersedia
         S->>DB: stocks.decrement('qty', request_qty)
-        S->>DB: Simpan data ke tabel invoices
-        alt Status Pembayaran == LUNAS
-            S->>DB: Simpan transaksi pemasukan di tabel transactions (stock_effect = NONE)
-        end
+        S->>DB: Simpan data ke tabel invoices (invoice_no, tanggal, sales_name, qty, total_price, payment_status)
+        Note over S,DB: Status LUNAS / BELUM LUNAS tersimpan sebagai penanda piutang, kas dicatat manual saat uang diterima
         S->>DB: DB::commit()
         S-->>U: Redirect ke /invoices dengan Flash Notifikasi Sukses
         U-->>C: Kirimkan Bukti Faktur Invoice
@@ -281,4 +275,71 @@ flowchart TD
         S_Calc --> S_Redirect[Redirect ke Riwayat Transaksi Kas]
         S_Redirect --> C_Done
     end
+```
+
+---
+
+## 7. Alur Tambah Stock Produksi (Manual Restock) & Integrasi Deep-Link
+
+### 7.1 Activity Diagram (Swimlane per Aktor)
+
+```mermaid
+flowchart TD
+    subgraph Lane_Staff ["Staff Operasional / Admin"]
+        ST_Start([Mulai]) --> ST_Entry{Pintu Masuk}
+        ST_Entry -->|Via Sidebar| ST_OpenDirect[Klik Menu 'Tambah Stock' di Sidebar]
+        ST_Entry -->|Via Dashboard Stok| ST_ClickDeep[Klik Badge 'Lihat →' / '+ X varian lainnya →' pada Varian Habis]
+        
+        ST_ClickDeep --> ST_FilterEmpty[Membuka /stocks/restock?filter_status=empty]
+        ST_OpenDirect --> ST_ViewAll[Membuka /stocks/restock Katalog 15 Item/Hal]
+        
+        ST_FilterEmpty --> ST_PickProduct[Pilih Varian Parfum & Klik '+ Restock']
+        ST_ViewAll --> ST_PickProduct
+        
+        ST_PickProduct --> ST_FillModal[Isi Lokasi Masuk: IWAN/RIZKY, Qty Hasil Produksi, Catatan Batch]
+        ST_FillModal --> ST_SubmitRestock[Klik 'Tambahkan ke Stok']
+        ST_SubmitRestock -.-> ST_Wait[Menunggu Eksekusi Database]
+        ST_Done([Stok Fisik Bertambah & Sukses])
+    end
+
+    subgraph Lane_Sistem ["Sistem (StockController & Database)"]
+        ST_SubmitRestock --> S_RestockBegin[Mulai DB::transaction]
+        S_RestockBegin --> S_RestockFind[Query stocks: firstOrCreate product_id + location_id]
+        S_RestockFind --> S_RestockInc[Tambah Unit: stocks.increment 'qty']
+        S_RestockInc --> S_RestockCommit[DB::commit]
+        S_RestockCommit --> S_RestockBack[Redirect Back dengan Flash Message Sukses]
+        S_RestockBack --> ST_Done
+    end
+```
+
+### 7.2 Sequence Diagram Interaksi
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Staff / Administrator
+    participant V as View (Sidebar / Dashboard Stok)
+    participant C as StockController
+    participant DB as Database (stocks & products)
+
+    alt Akses via Tombol Deep-Link di Dashboard Stok
+        U->>V: Klik tombol "Lihat →" pada card Varian Stok Habis
+        V->>C: GET /stocks/restock?filter_status=empty
+    else Akses Langsung via Sidebar
+        U->>V: Klik menu "Tambah Stock" di atas Ringkasan Stok
+        V->>C: GET /stocks/restock
+    end
+
+    C->>DB: Query products dengan status filter & paginate(15)
+    DB-->>C: Data 15 varian produk + relasi stok lokasi
+    C-->>U: Tampilkan halaman Tambah Stock (Katalog, Filter, Pagination)
+    
+    U->>U: Klik tombol "+ Restock" pada baris varian parfum
+    U->>U: Modal Restock terbuka (Pilih Lokasi, Qty, Catatan)
+    U->>C: POST /stocks/manual-restock (product_id, location_id, qty, notes)
+    
+    C->>DB: DB::transaction
+    C->>DB: Stock::firstOrCreate(product_id, location_id) -> increment(qty)
+    C->>DB: DB::commit
+    C-->>U: Redirect Back + Notifikasi "Stok {Product} di {Location} berhasil ditambah {qty} pcs"
 ```

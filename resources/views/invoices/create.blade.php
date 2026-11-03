@@ -26,6 +26,16 @@
                             @enderror
                         </div>
 
+                        <!-- Tanggal Invoice -->
+                        <div class="col-md-6">
+                            <label for="tanggal" class="form-label small fw-semibold text-muted">Tanggal Invoice <span class="text-danger">*</span></label>
+                            <input type="date" name="tanggal" id="tanggal" class="form-control @error('tanggal') is-invalid @enderror" value="{{ old('tanggal', date('Y-m-d')) }}" required>
+                            <small class="form-text text-muted">Bisa disesuaikan jika transaksi terjadi di tanggal berbeda.</small>
+                            @error('tanggal')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <!-- Nama Sales -->
                         <div class="col-md-6">
                             <label for="sales_name" class="form-label small fw-semibold text-muted">Nama Sales <span class="text-danger">*</span></label>
@@ -41,7 +51,7 @@
                         </div>
 
                         <!-- Nama Customer -->
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <label for="customer_name" class="form-label small fw-semibold text-muted">Nama Customer <span class="text-danger">*</span></label>
                             <input type="text" name="customer_name" id="customer_name" class="form-control @error('customer_name') is-invalid @enderror" placeholder="Masukkan nama pembeli..." value="{{ old('customer_name') }}" required>
                             @error('customer_name')
@@ -120,10 +130,11 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="payment_status" id="statusPaid" value="LUNAS" {{ old('payment_status') === 'LUNAS' ? 'checked' : '' }}>
                                     <label class="form-check-label fw-semibold text-success" for="statusPaid">
-                                        LUNAS (Masuk Kas)
+                                        LUNAS (Sudah Dibayar)
                                     </label>
                                 </div>
                             </div>
+                            <small class="form-text text-muted">Penanda status pembayaran (uang kas dicatat manual saat uang diterima).</small>
                             @error('payment_status')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror

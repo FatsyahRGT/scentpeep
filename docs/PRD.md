@@ -42,21 +42,33 @@ Sistem mengadopsi kontrol akses berbasis peran (Role-Based Access Control / RBAC
 ## 3. Spesifikasi Fungsional & Logika Bisnis
 
 ### 3.1 Modul Penjualan & Penerbitan Invoice (`/invoices`)
-- **Penerbitan Invoice Per Varian**: Input penjualan mencakup nomor invoice unik (otomatis/kustom), nama sales (`RIZKY`, `IWAN`, `VANNY`), nama pelanggan, varian parfum, kuantitas, lokasi asal pemotongan stok (`IWAN` atau `RIZKY`), nominal total, dan status pembayaran (`BELUM LUNAS` atau `LUNAS`).
+- **Penerbitan Invoice Per Varian & Kustom Tanggal**: Input penjualan mencakup nomor invoice unik (otomatis/kustom), tanggal invoice kustom (mendukung *backdating* transaksi historis), nama sales (`RIZKY`, `IWAN`, `VANNY`, dsb.), nama pelanggan, varian parfum, kuantitas, lokasi asal pemotongan stok (`IWAN` atau `RIZKY`), nominal total (bisa custom/diskon), status pembayaran (`BELUM LUNAS` atau `LUNAS`), dan catatan pesanan.
 - **Pemotongan Stok Atomik**: Pembuatan invoice otomatis mengecek ketersediaan unit fisik menggunakan database pessimistic lock (`lockForUpdate()`) dan langsung memotong stok di `stocks.qty` dalam satu `DB::transaction`.
-- **Integrasi Buku Kas Otomatis**:
-  - Saat invoice berstatus `LUNAS`, sistem secara otomatis mencatat penerimaan uang kas di tabel `transactions` (`type = INCOME`, `category = Penjualan`, `stock_effect = NONE`).
-  - Saat invoice berstatus `BELUM LUNAS` dilunasi via tombol "Tandai Lunas", baris transaksi kas baru otomatis diterbitkan.
+- **Pemisahan Kas & Invoice (Decoupled Cash Management)**:
+  - Status `LUNAS` dan `BELUM LUNAS` pada invoice berfungsi murni sebagai penanda operasional penerimaan pesanan dan piutang pelanggan, serta TIDAK otomatis mencatat baris di buku kas (`transactions`).
+  - Uang penerimaan kas riil diinput secara manual oleh kasir/admin di modul Buku Kas (`/transactions`) saat dana benar-benar telah diterima di rekening/kas utama.
+  - Metrik total penjualan, volume botol terjual, atribusi sales, dan grafik evaluasi omset tetap tersimpan utuh dan dihitung langsung dari tabel `invoices`.
 - **Full Atomicity Edit & Delete Invoice**:
-  - *Edit Invoice*: Sistem mengembalikan kuantitas lama ke lokasi asal terlebih dahulu, memverifikasi ketersediaan stok baru di lokasi tujuan yang dipilih, lalu memotong stok baru dan menyelaraskan nilai di buku kas.
-  - *Hapus Invoice*: Mengembalikan unit stok ke lokasi asal dan menghapus transaksi kas terkait secara otomatis.
-- **Compact Table Luxury Layout**: Menampilkan tabel data ringkas responsif anti-overflow dengan tombol aksi terpadu.
+  - *Edit Invoice*: Sistem mengembalikan kuantitas lama ke lokasi asal terlebih dahulu, memverifikasi ketersediaan stok baru di lokasi tujuan yang dipilih, lalu memotong stok baru dan memperbarui rincian invoice (termasuk tanggal kustom).
+  - *Hapus Invoice*: Mengembalikan unit stok ke lokasi asal secara aman tanpa mengganggu buku kas manual.
+- **Fitur Kustom Tanggal & Evaluasi Fleksibel**:
+  - Field `tanggal` pada tabel `invoices` dapat ditentukan bebas saat input atau edit invoice.
+  - Modul Evaluasi Penjualan (YoY), breakdown 12 bulan, dan widget invoice di dashboard disinkronkan secara konsisten berdasarkan `COALESCE(tanggal, DATE(created_at))`.
+- **Compact Table Luxury Layout**: Menampilkan tabel data ringkas responsif anti-overflow dengan kolom tanggal transaksi dan tombol aksi terpadu.
 
 ### 3.2 Modul Pre-Order & Stok Pending (`/pre-orders`)
 - **Isolasi Antrean PO**: Pesanan pre-order dicatat terpisah dengan nomor PO unik (`PO/YYYYMMDD/XXXX`), pelanggan, varian produk, lokasi peruntukan, dan status (`PENDING` atau `SELESAI`).
 - **Konversi ke Stok Utama**: Saat batch produksi parfum selesai, admin/staff menandai PO menjadi `SELESAI`. Sistem secara otomatis menambahkan kuantitas PO ke `stocks.qty` di lokasi terkait secara atomik.
 
-### 3.3 Modul Manajemen Stok & Transfer Antar Lokasi (`/stocks`, `/stocks/transfers`)
+### 3.3 Modul Manajemen Stok, Tambah Stock (Restock), & Transfer Multi-Lokasi (`/stocks`, `/stocks/restock`, `/stocks/transfers`)
+- **Halaman Khusus Tambah Stock (`/stocks/restock`)**:
+  - Ditempatkan di navigasi sidebar tepat di atas *Ringkasan Stok* guna memfasilitasi tim operasional dalam memantau dan mencatat penambahan stok hasil produksi parfum.
+  - Memuat **Katalog Ketersediaan & Sebaran Stok Parfum** dengan fitur:
+    1. *Quick Status Filter*: Filter instan berdasarkan ketersediaan unit (*Semua*, *Ready*, *Menipis*, *Habis*).
+    2. *Pencarian Cepat*: Input pencarian varian parfum berdasarkan nama atau kode SKU.
+    3. *Tabel Sebaran Skalabel*: Kolom SKU, Varian, Chips Lokasi (IWAN, RIZKY, Reseller dengan palet warna HSL Golden Angle), Total Ready, Status, Harga Jual, dan Aksi `+ Restock`.
+    4. *Pagination Responsif*: Menampilkan 15 item per halaman (`LengthAwarePaginator`) dengan pagination Bootstrap 5 demi kecepatan *render* tabel.
+    5. *Modal Restock Produksi*: Dialog cepat untuk mencatat penambahan unit fisik ke lokasi terpilih secara atomik (`stocks.increment 'qty'`).
 - **Representasi Fisik Riil**: `stocks.qty` mewakili unit nyata di setiap lokasi fisik. Nilai stok dilindungi dari angka minus (`qty >= 0`).
 - **Kalkulator Stok Real-Time**: Formulir transfer memuat live query ketersediaan unit aktual di lokasi asal terpilih, serta mencegah pemilihan lokasi asal dan tujuan yang sama.
 - **CRUD Transfer Stok Atomik**:
@@ -77,8 +89,9 @@ Sistem mengadopsi kontrol akses berbasis peran (Role-Based Access Control / RBAC
 - **Kategori Beban Fleksibel**: Operasional, Iklan Shopee/Digital, Entertain, Bahan Baku, Gaji, Sewa, dan Pembelian Aset.
 - **Saldo Kas Dinamis**: Saldo kas tidak disimpan sebagai kolom statis, melainkan dihitung secara real-time via `SUM(amount WHERE type = INCOME) - SUM(amount WHERE type = OUTCOME)` untuk menjamin integritas data 100%.
 
-### 3.6 Modul Monitoring Reseller & Katalog Publik (`/stocks/reseller`, `/stok-reseller`)
-- **Monitoring Internal**: Menyajikan perbandingan stok fisik antar gudang/reseller dengan palet warna dinamis, visualisasi varian kosong, dan shortcut tombol *Quick Restock*.
+### 3.6 Modul Monitoring Reseller & Dashboard Stok (`/stocks/reseller`, `/stok-reseller`)
+- **Dashboard Khusus Stok Bersih & Terfokus**: Halaman `/stocks/reseller` difokuskan sebagai dashboard analitik visual (4 KPI saldo lokasi reseller, kartu Varian Ready vs Varian Habis, grafik sebaran stok fisik, dan leaderboard Best Seller) setelah tabel katalog dipindahkan ke halaman dedicated *Tambah Stock*.
+- **Deep-Linking Integratif**: Badge tombol **`Lihat →`** dan tautan **`+ X varian lainnya →`** pada kartu *VARIAN STOK HABIS* secara cerdas mengarahkan ke `/stocks/restock?filter_status=empty` sehingga admin/staff dapat langsung mengeksekusi penambahan stok (*quick restock*) untuk varian-varian yang kosong.
 - **Katalog Publik Bebas Autentikasi**: Portal khusus reseller dan dropshipper untuk memantau:
   1. Peringatan Varian Menipis (< 3 pcs).
   2. Peta Distribusi Stok (Ada di siapa saja & dimana saja).
@@ -95,6 +108,17 @@ Sistem mengadopsi kontrol akses berbasis peran (Role-Based Access Control / RBAC
 - **Ekspor Dokumen Excel (.csv)**: Dilengkapi penanda UTF-8 BOM (`\xEF\xBB\xBF`) agar langsung terbaca rapi pada Microsoft Excel tanpa kendala encoding karakter.
 - **Ekspor Dokumen PDF**: Template pratinjau cetak bersih standar A4 untuk invoice dan rekapitulasi buku kas/stok.
 - **Artisan CLI Data Importer**: Perintah konsol `php artisan scentpeep:import-cash` dengan opsi `--dry-run` untuk migrasi data historis tanpa duplikasi transaksi.
+
+### 3.9 Modul Panduan & Tutorial Alur Operasional (`/tutorial`)
+- **Akses Cepat Tanda Tanya (?)**: Disematkan tombol tanda tanya pada sidebar navigasi (`bi bi-question-circle-fill`) dan topbar header desktop untuk akses instan ke buku panduan sistem.
+- **Tutorial Interaktif Berbasis Tab**: Panduan komprehensif 7 modul operasional yang memuat:
+  1. *Peta Alur Bisnis (End-to-End Workflow)*: Siklus pengadaan bahan baku, produksi/restock, invoice penjualan, hingga pencatatan kas riil.
+  2. *Penjualan & Invoice*: Panduan input invoice, kustom tanggal (backdating), pemotongan stok otomatis, dan alasan pemisahan kas fisik dari invoice.
+  3. *Stok Parfum, Tambah Stock & Pre-Order*: Cara restock varian sehabis produksi, eksekusi transfer stok antar gudang, dan konversi PO inden ke stok ready.
+  4. *Keuangan & Buku Kas*: Aturan pencatatan kas murni, pos beban usaha, saldo kas dinamis, dan ekspor laporan keuangan.
+  5. *Bahan Mentah & Packaging*: Pengadaan kardus box & botol kaca, serta pencatatan mutasi pemakaian perakitan botol.
+  6. *Pusat Dashboard*: Panduan membaca dashboard eksekutif, sebaran stok reseller, evaluasi YoY, dan performa tim sales.
+  7. *Master Data & Reseller*: Alur persetujuan (approval) reseller baru dan manajemen varian/lokasi.
 
 ---
 

@@ -87,7 +87,7 @@ class StockController extends Controller
         $fromLocationId = $request->query('from_location_id');
         $selectedProductId = $request->query('product_id');
 
-        $stocks = Stock::all();
+        $stocks = Stock::select(['location_id', 'product_id', 'qty'])->get();
         $stocksMap = [];
         foreach ($stocks as $stk) {
             $stocksMap[$stk->location_id][$stk->product_id] = (int) $stk->qty;
@@ -116,7 +116,7 @@ class StockController extends Controller
         $locations = Location::orderBy('name')->get();
         $products = Product::where('is_active', true)->orderBy('name')->get();
 
-        $stocks = Stock::all();
+        $stocks = Stock::select(['location_id', 'product_id', 'qty'])->get();
         $stocksMap = [];
         foreach ($stocks as $stk) {
             $stocksMap[$stk->location_id][$stk->product_id] = (int) $stk->qty;
@@ -502,7 +502,7 @@ class StockController extends Controller
             'out_of_stock_count' => $outOfStockProducts->count(),
         ];
 
-        $products = Product::where('is_active', true)->orderBy('name')->get();
+        $products = $allProducts;
 
         return view('stocks.reseller_dashboard', compact(
             'productStockData',

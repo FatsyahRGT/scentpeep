@@ -4,45 +4,6 @@
 @section('page-header', 'Penjualan Parfum (Invoice)')
 
 @section('content')
-<!-- KPI Cards -->
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-lg-3">
-        <div class="card p-3 border-0 shadow-sm" style="background:#ffffff; border:1px solid var(--color-border) !important;">
-            <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Total Invoice</div>
-            <div class="font-serif fs-3 fw-bold text-dark mt-1">{{ number_format($metrics['total_invoices']) }}</div>
-            <div class="small text-muted mt-1"><i class="bi bi-receipt me-1"></i> Transaksi terbit</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-        <div class="card p-3 border-0 shadow-sm" style="background:#ffffff; border:1px solid var(--color-border) !important;">
-            <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Total Unit Terjual</div>
-            <div class="font-serif fs-3 fw-bold text-dark mt-1">{{ number_format($metrics['total_qty_sold']) }} <span class="fs-6 fw-normal font-sans text-muted">pcs</span></div>
-            <div class="small text-muted mt-1"><i class="bi bi-box-seam me-1"></i> Botol parfum keluar</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-2">
-        <div class="card p-3 border-0 shadow-sm" style="background:#ffffff; border:1px solid var(--color-border) !important;">
-            <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Total Penjualan</div>
-            <div class="font-serif fs-4 fw-bold text-dark mt-1 text-truncate" title="Rp {{ number_format($metrics['total_sales_amount'], 0, ',', '.') }}">Rp {{ number_format($metrics['total_sales_amount'], 0, ',', '.') }}</div>
-            <div class="small text-muted mt-1 text-truncate"><i class="bi bi-graph-up me-1"></i> Nilai omset</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-2">
-        <div class="card p-3 border-0 shadow-sm" style="background:#ffffff; border:1px solid var(--color-border) !important;">
-            <div class="text-muted small fw-semibold text-uppercase text-danger" style="letter-spacing: 0.05em;">Belum Lunas</div>
-            <div class="font-serif fs-4 fw-bold text-danger mt-1 text-truncate" title="Rp {{ number_format($metrics['total_unpaid_amount'], 0, ',', '.') }}">Rp {{ number_format($metrics['total_unpaid_amount'], 0, ',', '.') }}</div>
-            <div class="small text-danger mt-1 text-truncate"><i class="bi bi-exclamation-circle me-1"></i> Piutang</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-2">
-        <div class="card p-3 border-0 shadow-sm" style="background:#ffffff; border:1px solid var(--color-border) !important;">
-            <div class="text-muted small fw-semibold text-uppercase text-success" style="letter-spacing: 0.05em;">Sudah Lunas</div>
-            <div class="font-serif fs-4 fw-bold text-success mt-1 text-truncate" title="Rp {{ number_format($metrics['total_paid_amount'], 0, ',', '.') }}">Rp {{ number_format($metrics['total_paid_amount'], 0, ',', '.') }}</div>
-            <div class="small text-success mt-1 text-truncate"><i class="bi bi-check2-circle me-1"></i> Masuk kas</div>
-        </div>
-    </div>
-</div>
-
 <div class="card mb-4 border-0 shadow-sm" style="border: 1px solid var(--color-border) !important; border-radius: 12px;">
     <div class="card-header py-3 bg-white border-bottom d-block">
         <!-- Baris Pertama: Header & Action Buttons -->
@@ -164,7 +125,7 @@
                             <span class="badge bg-light text-dark border font-mono-num">{{ $inv->invoice_no }}</span>
                         </td>
                         <td class="py-2 px-2 text-muted text-nowrap" style="font-size: 0.72rem;">
-                            {{ $inv->created_at->format('d/m/y H:i') }}
+                            {{ ($inv->tanggal ?? $inv->created_at)->format('d/m/Y') }}
                         </td>
                         <td class="py-2 px-2">
                             <div class="fw-semibold text-dark text-truncate" style="max-width: 110px;" title="{{ $inv->customer_name }}">{{ $inv->customer_name }}</div>
@@ -216,7 +177,7 @@
                                     <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
                                 </a>
                                 @if($inv->payment_status !== 'LUNAS')
-                                <form action="{{ route('invoices.markPaid', $inv) }}" method="POST" class="d-inline" onsubmit="return confirm('Tandai invoice {{ $inv->invoice_no }} LUNAS dan catat penerimaan uang ke Buku Kas?');">
+                                <form action="{{ route('invoices.markPaid', $inv) }}" method="POST" class="d-inline" onsubmit="return confirm('Tandai invoice {{ $inv->invoice_no }} sudah LUNAS?');">
                                     @csrf
                                     <button type="submit" class="btn btn-sm btn-outline-success rounded-circle" data-bs-toggle="tooltip" title="Tandai Lunas" aria-label="Tandai Lunas" style="width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
                                         <i class="bi bi-check2" style="font-size: 0.85rem;"></i>

@@ -30,6 +30,7 @@ flowchart LR
         UC12["UC-12: Akses Katalog Stok Publik (Tanpa Login)"]
         UC13["UC-13: Ekspor Laporan (Excel & PDF)"]
         UC14["UC-14: Pantau Dashboard Analitik & Tren Seller"]
+        UC15["UC-15: Katalog & Tambah Stock Produksi (Restock)"]
     end
 
     %% Relasi Admin
@@ -46,6 +47,7 @@ flowchart LR
     Admin --> UC11
     Admin --> UC13
     Admin --> UC14
+    Admin --> UC15
 
     %% Relasi Staff
     Staff --> UC4
@@ -56,6 +58,7 @@ flowchart LR
     Staff --> UC10
     Staff --> UC13
     Staff --> UC14
+    Staff --> UC15
 
     %% Relasi Reseller
     Reseller --> UC2
@@ -97,6 +100,7 @@ flowchart LR
 | **UC-12** | Akses Katalog Publik | Publik / Guest | Melihat stok parfum ready dan antrean PO tanpa ekspos margin keuangan. |
 | **UC-13** | Ekspor Laporan | Admin, Staff | Mengunduh berkas laporan dalam format Excel (.csv UTF-8 BOM) dan cetak PDF. |
 | **UC-14** | Pantau Dashboard Analitik | Admin, Staff | Memantau grafik tren penjualan multi-seller 6 bulan dan donut chart stok. |
+| **UC-15** | Tambah Stock Produksi (Restock) | Admin, Staff | Memantau katalog ketersediaan (pagination 15 item) dan menambah unit fisik manual hasil produksi. |
 
 ---
 
@@ -108,12 +112,12 @@ flowchart LR
 - **Alur Utama**:
   1. Pengguna membuka menu *Penjualan (Invoice)* dan menekan tombol `+ Buat Invoice`.
   2. Sistem menampilkan formulir pembuatan invoice.
-  3. Pengguna memilih sales (`RIZKY`, `IWAN`, atau `VANNY`), mengisi nama pelanggan, memilih varian parfum, lokasi asal stok, kuantitas, total harga, dan status pembayaran.
+  3. Pengguna memilih tanggal transaksi (bisa kustom/backdate), memilih sales (`RIZKY`, `IWAN`, atau `VANNY`), mengisi nama pelanggan, memilih varian parfum, lokasi asal stok, kuantitas, total harga (bisa kustom/diskon), dan status pembayaran.
   4. Pengguna menekan tombol `Simpan & Terbitkan Invoice`.
   5. Sistem memulai transaksi basis data (`DB::transaction`).
   6. Sistem mengunci baris stok terkait dengan `lockForUpdate()` dan memeriksa sisa unit.
-  7. Jika stok mencukupi, sistem memotong `stocks.qty` dan menyimpan data invoice.
-  8. Jika status pembayaran dipilih `LUNAS`, sistem otomatis mencatat pemasukan kas di tabel `transactions`.
+  7. Jika stok mencukupi, sistem memotong `stocks.qty` dan menyimpan data invoice beserta tanggal kustom transaksi.
+  8. Status pembayaran (`LUNAS` atau `BELUM LUNAS`) disimpan sebagai penanda operasional piutang tanpa otomatis mencatat ke kas utama (`transactions`), sehingga nominal kas fisik dicatat manual saat uang benar-benar diterima.
   9. Sistem melakukan commit basis data dan mengarahkan pengguna kembali ke daftar invoice dengan notifikasi sukses.
 - **Alur Alternatif**:
   - *Stok Fisik Tidak Mencukupi*: Sistem membatalkan transaksi (`DB::rollBack()`), mempertahankan data formulir, dan menampilkan pesan peringatan error bahwa unit di lokasi tersebut tidak cukup.
@@ -139,3 +143,21 @@ flowchart LR
   3. Pengguna mencentang opsi "Sinkronisasi ke Pengeluaran Kas" (jika dibiayai kas perusahaan).
   4. Sistem menambah saldo `raw_materials.stock_qty`, mencatat log mutasi `IN`, dan membuat baris pengeluaran pada `transactions`.
   5. Pengguna menerima konfirmasi keberhasilan mutasi persediaan material.
+
+### 4.4 Skenario UC-15: Katalog & Tambah Stock Produksi (Restock)
+- **Aktor**: Administrator, Staff Operasional.
+- **Prekondisi**: Pengguna telah terautentikasi dan memiliki hak akses manajemen internal.
+- **Alur Utama**:
+  1. Pengguna mengklik menu **"Tambah Stock"** di sidebar (terletak tepat di atas "Ringkasan Stok").
+  2. Sistem menampilkan halaman katalog ketersediaan parfum dengan pagination 15 item per halaman, tombol filter status (*Semua, Ready, Menipis, Habis*), serta kolom pencarian.
+  3. Pengguna dapat memfilter varian yang berstatus *Habis* atau mencari nama varian parfum tertentu.
+  4. Pengguna mengklik tombol `+ Restock` pada baris varian parfum yang ingin ditambah stoknya.
+  5. Sistem membuka modal dialog *Tambah Stok Manual (Sehabis Produksi)* dengan varian parfum terpilih otomatis terisi.
+  6. Pengguna memilih lokasi masuk stok (`IWAN` atau `RIZKY`), mengisi jumlah kuantitas unit hasil produksi, serta catatan batch produksi opsional.
+  7. Pengguna mengklik `Tambahkan ke Stok`.
+  8. Sistem mengeksekusi penambahan saldo unit fisik secara atomik di tabel `stocks` via `DB::transaction`.
+  9. Sistem me-refresh halaman dan menampilkan notifikasi sukses bahwa stok produk di lokasi tersebut berhasil ditambahkan.
+- **Alur Alternatif (Akses dari Dashboard Stok)**:
+  - Pada halaman *Dashboard Stok*, pengguna melihat kartu *VARIAN STOK HABIS*.
+  - Pengguna mengklik badge link `Lihat →` atau tautan `+ X varian lainnya →`.
+  - Sistem mengarahkan pengguna langsung ke halaman `/stocks/restock?filter_status=empty` dengan filter varian habis telah aktif, siap untuk dieksekusi restock.

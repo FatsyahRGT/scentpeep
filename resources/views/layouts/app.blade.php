@@ -764,6 +764,14 @@
                         </div>
                     </div>
                     @endif
+
+                    <!-- Panduan & Tutorial Aplikasi (?) -->
+                    <div class="mt-2 pt-2 border-top border-hairline">
+                        <a class="nav-side-link {{ request()->routeIs('tutorial') ? 'active' : '' }}" href="{{ route('tutorial') }}" onclick="closeMobileSidebarIfOpen()" title="Tutorial & Panduan Lengkap">
+                            <i class="bi bi-question-circle-fill fs-5"></i>
+                            <span class="nav-link-title fw-semibold">Panduan Sistem</span>
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Sidebar Footer: User Profile & Logout -->
@@ -798,7 +806,10 @@
                 <div class="d-flex align-items-center gap-2">
                     <h4 class="mb-0 fw-bold font-serif" style="color: var(--scent-dark);">@yield('page-header', 'Scentpeep Management System')</h4>
                 </div>
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('tutorial') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1 text-nowrap" style="font-size:0.78rem;" title="Panduan & Tutorial Sistem">
+                        <i class="bi bi-question-circle"></i> Panduan Sistem
+                    </a>
                     <span class="badge bg-light text-muted border border-hairline px-3 py-2 d-none d-xl-inline-flex" style="font-size:0.78rem;">
                         <i class="bi bi-calendar3 me-1"></i> {{ date('d M Y') }}
                     </span>

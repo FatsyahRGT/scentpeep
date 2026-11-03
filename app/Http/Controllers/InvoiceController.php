@@ -22,7 +22,9 @@ class InvoiceController extends Controller
         $user = Auth::user();
         $isReseller = $user->isReseller();
 
-        $query = Invoice::with(['product', 'location', 'creator'])->latest();
+        $query = Invoice::with(['product', 'location', 'creator'])
+            ->orderByDesc(DB::raw('COALESCE(tanggal, DATE(created_at))'))
+            ->orderByDesc('id');
 
         // Isolasi Data: Reseller HANYA bisa mengakses invoice miliknya sendiri
         if ($isReseller) {
@@ -46,12 +48,13 @@ class InvoiceController extends Controller
             $query->where('location_id', $request->location_id);
         }
 
+        $dateCol = DB::raw('COALESCE(tanggal, DATE(created_at))');
         if ($request->filled('year')) {
-            $query->whereYear('created_at', $request->year);
+            $query->whereYear($dateCol, $request->year);
         }
 
         if ($request->filled('month')) {
-            $query->whereMonth('created_at', $request->month);
+            $query->whereMonth($dateCol, $request->month);
         }
 
         if ($request->filled('search')) {
@@ -62,19 +65,9 @@ class InvoiceController extends Controller
             });
         }
 
-        // Filtered Metrics (menyesuaikan filter yang sedang aktif & role reseller)
-        $filteredMetricQuery = clone $query;
-        $metrics = [
-            'total_invoices' => (clone $filteredMetricQuery)->count(),
-            'total_qty_sold' => (int) (clone $filteredMetricQuery)->sum('qty'),
-            'total_sales_amount' => (float) (clone $filteredMetricQuery)->sum('total_price'),
-            'total_unpaid_amount' => (float) (clone $filteredMetricQuery)->where('payment_status', Invoice::STATUS_UNPAID)->sum('total_price'),
-            'total_paid_amount' => (float) (clone $filteredMetricQuery)->where('payment_status', Invoice::STATUS_PAID)->sum('total_price'),
-        ];
-
         $yearExtractSql = DB::connection()->getDriverName() === 'sqlite' 
-            ? "strftime('%Y', created_at) as y" 
-            : "YEAR(created_at) as y";
+            ? "strftime('%Y', COALESCE(tanggal, created_at)) as y" 
+            : "YEAR(COALESCE(tanggal, created_at)) as y";
 
         $availableYears = Invoice::selectRaw($yearExtractSql)
             ->distinct()
@@ -105,7 +98,6 @@ class InvoiceController extends Controller
 
         return view('invoices.index', compact(
             'invoices',
-            'metrics',
             'locations',
             'salesOptions',
             'availableYears',
@@ -129,8 +121,8 @@ class InvoiceController extends Controller
 
         // Distinct available years for filter
         $yearExtractSql = DB::connection()->getDriverName() === 'sqlite' 
-            ? "strftime('%Y', created_at) as y" 
-            : "YEAR(created_at) as y";
+            ? "strftime('%Y', COALESCE(tanggal, created_at)) as y" 
+            : "YEAR(COALESCE(tanggal, created_at)) as y";
 
         $availableYears = Invoice::selectRaw($yearExtractSql)
             ->distinct()
@@ -166,12 +158,13 @@ class InvoiceController extends Controller
         };
 
         // Query Utama untuk KPI Ringkasan
-        $targetQuery = Invoice::whereYear('created_at', $targetYear);
-        $compareQuery = Invoice::whereYear('created_at', $compareYear);
+        $dateCol = DB::raw('COALESCE(tanggal, DATE(created_at))');
+        $targetQuery = Invoice::whereYear($dateCol, $targetYear);
+        $compareQuery = Invoice::whereYear($dateCol, $compareYear);
 
         if ($selectedMonth) {
-            $targetQuery->whereMonth('created_at', $selectedMonth);
-            $compareQuery->whereMonth('created_at', $selectedMonth);
+            $targetQuery->whereMonth($dateCol, $selectedMonth);
+            $compareQuery->whereMonth($dateCol, $selectedMonth);
         }
 
         $applySalesScope($targetQuery);
@@ -214,16 +207,16 @@ class InvoiceController extends Controller
 
         // Rincian Bulanan 12 Bulan
         $monthExtractSql = DB::connection()->getDriverName() === 'sqlite'
-            ? "CAST(strftime('%m', created_at) AS INTEGER) as m"
-            : "MONTH(created_at) as m";
+            ? "CAST(strftime('%m', COALESCE(tanggal, created_at)) AS INTEGER) as m"
+            : "MONTH(COALESCE(tanggal, created_at)) as m";
 
-        $targetMonthlyDataQuery = Invoice::whereYear('created_at', $targetYear)
+        $targetMonthlyDataQuery = Invoice::whereYear($dateCol, $targetYear)
             ->selectRaw("{$monthExtractSql}, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as inv_count")
             ->groupBy('m');
         $applySalesScope($targetMonthlyDataQuery);
         $targetMonthly = $targetMonthlyDataQuery->get()->keyBy('m');
 
-        $compareMonthlyDataQuery = Invoice::whereYear('created_at', $compareYear)
+        $compareMonthlyDataQuery = Invoice::whereYear($dateCol, $compareYear)
             ->selectRaw("{$monthExtractSql}, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as inv_count")
             ->groupBy('m');
         $applySalesScope($compareMonthlyDataQuery);
@@ -265,14 +258,14 @@ class InvoiceController extends Controller
         }
 
         // Top Varian Terlaris di Periode Terpilih
-        $topProductsQuery = Invoice::whereYear('created_at', $targetYear)
+        $topProductsQuery = Invoice::whereYear($dateCol, $targetYear)
             ->select('product_id', DB::raw('SUM(qty) as total_sold'), DB::raw('SUM(total_price) as total_omset'))
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
             ->with('product');
 
         if ($selectedMonth) {
-            $topProductsQuery->whereMonth('created_at', $selectedMonth);
+            $topProductsQuery->whereMonth($dateCol, $selectedMonth);
         }
         $applySalesScope($topProductsQuery);
         $topProducts = $topProductsQuery->take(8)->get();
@@ -314,6 +307,7 @@ class InvoiceController extends Controller
     {
         $validated = $request->validate([
             'invoice_no' => 'nullable|string|max:100',
+            'tanggal' => 'nullable|date',
             'sales_name' => 'required|string|max:100',
             'customer_name' => 'required|string|max:255',
             'product_id' => 'required|exists:products,id',
@@ -348,8 +342,9 @@ class InvoiceController extends Controller
 
             $stock->decrement('qty', $validated['qty']);
 
-            $invoice = Invoice::create([
+            Invoice::create([
                 'invoice_no' => $validated['invoice_no'] ?: 'INV-' . strtoupper(uniqid()),
+                'tanggal' => $validated['tanggal'] ?? now()->toDateString(),
                 'sales_name' => $validated['sales_name'],
                 'customer_name' => $validated['customer_name'],
                 'product_id' => $validated['product_id'],
@@ -360,21 +355,6 @@ class InvoiceController extends Controller
                 'notes' => $validated['notes'] ?? null,
                 'created_by' => Auth::id(),
             ]);
-
-            // Jika dibuat langsung LUNAS, catat uang kas masuk secara otomatis
-            if ($invoice->payment_status === Invoice::STATUS_PAID) {
-                Transaction::create([
-                    'tanggal' => now()->toDateString(),
-                    'type' => Transaction::TYPE_INCOME,
-                    'category' => 'Penjualan',
-                    'customer_name' => $invoice->customer_name,
-                    'amount' => $invoice->total_price,
-                    'invoice_no' => $invoice->invoice_no,
-                    'description' => "Penjualan Invoice {$invoice->invoice_no} ({$invoice->product->name} x {$invoice->qty}) via {$invoice->sales_name}",
-                    'stock_effect' => Transaction::EFFECT_NONE,
-                    'created_by' => Auth::id(),
-                ]);
-            }
         });
 
         return redirect()->route('invoices.index')->with('success', 'Invoice berhasil diterbitkan dan stok telah terpotong otomatis.');
@@ -410,6 +390,7 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'invoice_no' => 'nullable|string|max:100',
+            'tanggal' => 'nullable|date',
             'sales_name' => 'required|string|max:100',
             'customer_name' => 'required|string|max:255',
             'product_id' => 'required|exists:products,id',
@@ -431,7 +412,6 @@ class InvoiceController extends Controller
             $oldProductId = $invoice->product_id;
             $oldLocationId = $invoice->location_id;
             $oldQty = $invoice->qty;
-            $oldPaymentStatus = $invoice->payment_status;
 
             // 1. Kembalikan stok lama sebelum memeriksa stok baru
             $oldStock = Stock::where('product_id', $oldProductId)
@@ -456,40 +436,11 @@ class InvoiceController extends Controller
 
             $newStock->decrement('qty', $validated['qty']);
 
-            $newInvoiceNo = $validated['invoice_no'] ?: $invoice->invoice_no;
-
-            // 3. Sinkronisasi pencatatan kas jika status pembayaran atau nominal berubah
-            if ($oldPaymentStatus === Invoice::STATUS_PAID && $validated['payment_status'] === Invoice::STATUS_PAID) {
-                $incomeTx = Transaction::where('invoice_no', $invoice->invoice_no)
-                    ->where('type', Transaction::TYPE_INCOME)
-                    ->first();
-                if ($incomeTx) {
-                    $incomeTx->update([
-                        'invoice_no' => $newInvoiceNo,
-                        'amount' => $validated['total_price'],
-                        'customer_name' => $validated['customer_name'],
-                        'description' => "Penjualan Invoice {$newInvoiceNo} ({$newStock->product?->name} x {$validated['qty']}) via {$validated['sales_name']}",
-                    ]);
-                }
-            } elseif ($oldPaymentStatus === Invoice::STATUS_UNPAID && $validated['payment_status'] === Invoice::STATUS_PAID) {
-                Transaction::create([
-                    'tanggal' => now()->toDateString(),
-                    'type' => Transaction::TYPE_INCOME,
-                    'category' => 'Penjualan',
-                    'customer_name' => $validated['customer_name'],
-                    'amount' => $validated['total_price'],
-                    'invoice_no' => $newInvoiceNo,
-                    'description' => "Penjualan Invoice {$newInvoiceNo} ({$newStock->product?->name} x {$validated['qty']}) via {$validated['sales_name']}",
-                    'stock_effect' => Transaction::EFFECT_NONE,
-                    'created_by' => Auth::id(),
-                ]);
-            } elseif ($oldPaymentStatus === Invoice::STATUS_PAID && $validated['payment_status'] === Invoice::STATUS_UNPAID) {
-                Transaction::where('invoice_no', $invoice->invoice_no)
-                    ->where('type', Transaction::TYPE_INCOME)
-                    ->delete();
+            if (empty($validated['tanggal'])) {
+                $validated['tanggal'] = $invoice->tanggal ? $invoice->tanggal->toDateString() : now()->toDateString();
             }
 
-            // 4. Update data invoice
+            // 3. Update data invoice
             $invoice->update($validated);
         });
 
@@ -509,23 +460,9 @@ class InvoiceController extends Controller
             return redirect()->back()->with('info', 'Invoice ini sudah berstatus LUNAS.');
         }
 
-        DB::transaction(function () use ($invoice) {
-            $invoice->update(['payment_status' => Invoice::STATUS_PAID]);
+        $invoice->update(['payment_status' => Invoice::STATUS_PAID]);
 
-            Transaction::create([
-                'tanggal' => now()->toDateString(),
-                'type' => Transaction::TYPE_INCOME,
-                'category' => 'Penjualan',
-                'customer_name' => $invoice->customer_name,
-                'amount' => $invoice->total_price,
-                'invoice_no' => $invoice->invoice_no,
-                'description' => "Pelunasan Invoice {$invoice->invoice_no} ({$invoice->product->name} x {$invoice->qty})",
-                'stock_effect' => Transaction::EFFECT_NONE,
-                'created_by' => Auth::id(),
-            ]);
-        });
-
-        return redirect()->back()->with('success', "Invoice {$invoice->invoice_no} berhasil ditandai LUNAS dan dicatat ke Buku Kas.");
+        return redirect()->back()->with('success', "Invoice {$invoice->invoice_no} berhasil ditandai LUNAS.");
     }
 
     public function destroy(Invoice $invoice): RedirectResponse
@@ -545,11 +482,6 @@ class InvoiceController extends Controller
             if ($stock) {
                 $stock->increment('qty', $invoice->qty);
             }
-
-            // Hapus pencatatan kas terkait jika invoice dihapus
-            Transaction::where('invoice_no', $invoice->invoice_no)
-                ->where('type', Transaction::TYPE_INCOME)
-                ->delete();
 
             $invoice->delete();
         });

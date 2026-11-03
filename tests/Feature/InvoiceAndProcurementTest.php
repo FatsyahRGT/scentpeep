@@ -128,7 +128,7 @@ class InvoiceAndProcurementTest extends TestCase
         $this->assertEquals(5, Stock::where('product_id', $this->product->id)->where('location_id', $this->rizky->id)->first()->qty);
     }
 
-    public function test_marking_invoice_paid_records_income_in_cash_transactions(): void
+    public function test_marking_invoice_paid_updates_status_without_inserting_cash_transaction(): void
     {
         $invoice = Invoice::create([
             'invoice_no' => 'INV-TEST-PAID',
@@ -147,11 +147,8 @@ class InvoiceAndProcurementTest extends TestCase
         $response->assertRedirect();
         $this->assertEquals('LUNAS', $invoice->fresh()->payment_status);
 
-        $this->assertDatabaseHas('transactions', [
-            'type' => Transaction::TYPE_INCOME,
-            'category' => 'Penjualan',
-            'customer_name' => 'Dewi',
-            'amount' => 180000,
+        // Kas dipisahkan secara manual, tidak otomatis masuk ke transactions
+        $this->assertDatabaseMissing('transactions', [
             'invoice_no' => 'INV-TEST-PAID',
         ]);
     }
@@ -302,15 +299,13 @@ class InvoiceAndProcurementTest extends TestCase
             'payment_status' => 'LUNAS',
         ]);
 
-        // Transaction for cash income should be created since it was changed to LUNAS
-        $this->assertDatabaseHas('transactions', [
+        // Kas dipisahkan secara manual, tidak otomatis masuk ke transactions
+        $this->assertDatabaseMissing('transactions', [
             'invoice_no' => 'INV-UPDATE-01-REV',
-            'type' => Transaction::TYPE_INCOME,
-            'amount' => 700000,
         ]);
     }
 
-    public function test_admin_can_delete_invoice_and_restores_stock_and_removes_cash_record(): void
+    public function test_admin_can_delete_invoice_and_restores_stock(): void
     {
         $invoice = Invoice::create([
             'invoice_no' => 'INV-DEL-01',
@@ -324,18 +319,6 @@ class InvoiceAndProcurementTest extends TestCase
             'created_by' => $this->admin->id,
         ]);
 
-        Transaction::create([
-            'tanggal' => now()->toDateString(),
-            'type' => Transaction::TYPE_INCOME,
-            'category' => 'Penjualan',
-            'customer_name' => 'Customer Hapus',
-            'amount' => 540000,
-            'invoice_no' => 'INV-DEL-01',
-            'description' => 'Penjualan Invoice INV-DEL-01',
-            'stock_effect' => Transaction::EFFECT_NONE,
-            'created_by' => $this->admin->id,
-        ]);
-
         // Stock was 10, simulate that 3 was deducted
         Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->decrement('qty', 3);
         $this->assertEquals(7, Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first()->qty);
@@ -344,10 +327,48 @@ class InvoiceAndProcurementTest extends TestCase
 
         $response->assertRedirect(route('invoices.index'));
         $this->assertDatabaseMissing('invoices', ['id' => $invoice->id]);
-        $this->assertDatabaseMissing('transactions', ['invoice_no' => 'INV-DEL-01']);
 
         // Stock should be restored to 10
         $this->assertEquals(10, Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first()->qty);
+    }
+
+    public function test_can_create_and_update_invoice_with_custom_tanggal(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('invoices.store'), [
+            'invoice_no' => 'INV-CUSTOM-DATE',
+            'tanggal' => '2026-10-15',
+            'sales_name' => 'IWAN',
+            'customer_name' => 'Pak Joko',
+            'product_id' => $this->product->id,
+            'qty' => 1,
+            'location_id' => $this->iwan->id,
+            'total_price' => 180000,
+            'payment_status' => 'LUNAS',
+        ]);
+
+        $response->assertRedirect(route('invoices.index'));
+
+        $invoice = Invoice::where('invoice_no', 'INV-CUSTOM-DATE')->first();
+        $this->assertNotNull($invoice);
+        $this->assertEquals('2026-10-15', $invoice->tanggal->format('Y-m-d'));
+        // Duit tidak otomatis masuk ke kas
+        $this->assertDatabaseMissing('transactions', ['invoice_no' => 'INV-CUSTOM-DATE']);
+
+        // Update tanggal ke tanggal lain
+        $updateResponse = $this->actingAs($this->admin)->put(route('invoices.update', $invoice), [
+            'invoice_no' => 'INV-CUSTOM-DATE',
+            'tanggal' => '2026-10-25',
+            'sales_name' => 'IWAN',
+            'customer_name' => 'Pak Joko',
+            'product_id' => $this->product->id,
+            'qty' => 1,
+            'location_id' => $this->iwan->id,
+            'total_price' => 180000,
+            'payment_status' => 'LUNAS',
+        ]);
+
+        $updateResponse->assertRedirect(route('invoices.index'));
+        $this->assertEquals('2026-10-25', $invoice->fresh()->tanggal->format('Y-m-d'));
     }
 
     public function test_invoices_index_can_filter_by_year_and_month_and_displays_yoy_metrics(): void

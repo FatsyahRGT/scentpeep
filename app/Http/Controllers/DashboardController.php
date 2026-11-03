@@ -171,53 +171,14 @@ class DashboardController extends Controller
         $rawMaterialsList = RawMaterial::orderBy('category')->orderBy('name')->get();
 
         // 8. Distribusi Penjualan Sales (Dinamis dari User aktif, Lokasi, & Invoice)
-        $salesStats = Invoice::selectRaw('sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as invoice_count')
-            ->groupBy('sales_name')
-            ->get()
-            ->keyBy('sales_name');
-
-        // Prioritas nama sales: tim lapangan / reseller / staff non-admin + nama invoice aktif (lokasi/gudang fisik tidak digabung ke sales)
-        $staffUserNames = User::where('is_active', true)
-            ->where('role', '!=', User::ROLE_ADMIN)
-            ->whereNotIn('email', ['staff@scentpeep.com', 'admin@scentpeep.com'])
-            ->whereNotIn('name', ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff'])
-            ->pluck('name');
-
-        $allUsersByName = User::all()->keyBy(fn($u) => strtolower(trim($u->name)));
-
-        $allSalesNames = $staffUserNames
-            ->merge($salesStats->keys())
-            ->reject(fn($n) => in_array($n, ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff']))
-            ->unique()
-            ->values();
-
-        $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats, $allUsersByName) {
-            $stat = $salesStats->get($name);
-            $user = $allUsersByName->get(strtolower(trim($name)));
-            $role = $user ? $user->role : 'staff';
-            $roleLabel = match(strtolower($role)) {
-                'reseller' => 'Reseller',
-                'admin' => 'Admin',
-                default => 'Sales',
-            };
-
-            return [
-                'name' => $name,
-                'role' => $role,
-                'role_label' => $roleLabel,
-                'total_qty' => (int) ($stat->total_qty ?? 0),
-                'total_omset' => (float) ($stat->total_omset ?? 0),
-                'invoice_count' => (int) ($stat->invoice_count ?? 0),
-                'palette' => Location::paletteForName($name),
-            ];
-        })->sortByDesc('total_qty')->values();
+        $salesDistribution = $this->getSalesDistribution();
 
         // 9. Tren Penjualan per Seller (6 Bulan Terakhir untuk Komparasi Performa Multi-Seller)
         $invoiceDateFormat = DB::connection()->getDriverName() === 'sqlite'
-            ? "strftime('%Y-%m', created_at)"
-            : "DATE_FORMAT(created_at, '%Y-%m')";
+            ? "strftime('%Y-%m', COALESCE(tanggal, created_at))"
+            : "DATE_FORMAT(COALESCE(tanggal, created_at), '%Y-%m')";
 
-        $monthlyInvoices = Invoice::where('created_at', '>=', $sixMonthsAgo->toDateTimeString())
+        $monthlyInvoices = Invoice::whereRaw("COALESCE(tanggal, DATE(created_at)) >= ?", [$sixMonthsAgo->toDateString()])
             ->selectRaw("{$invoiceDateFormat} as ym, sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset")
             ->groupBy('ym', 'sales_name')
             ->orderBy('ym')
@@ -279,7 +240,8 @@ class DashboardController extends Controller
 
         // 10. Riwayat Invoice Terbaru
         $recentInvoices = Invoice::with(['product', 'location'])
-            ->latest()
+            ->orderByDesc(DB::raw('COALESCE(tanggal, DATE(created_at))'))
+            ->orderByDesc('id')
             ->take(6)
             ->get();
 
@@ -320,52 +282,14 @@ class DashboardController extends Controller
         $sixMonthsAgo = Carbon::now()->startOfMonth()->subMonths(5);
 
         // 1. Distribusi Penjualan Sales
-        $salesStats = Invoice::selectRaw('sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as invoice_count')
-            ->groupBy('sales_name')
-            ->get()
-            ->keyBy('sales_name');
-
-        $staffUserNames = User::where('is_active', true)
-            ->where('role', '!=', User::ROLE_ADMIN)
-            ->whereNotIn('email', ['staff@scentpeep.com', 'admin@scentpeep.com'])
-            ->whereNotIn('name', ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff'])
-            ->pluck('name');
-
-        $allUsersByName = User::all()->keyBy(fn($u) => strtolower(trim($u->name)));
-
-        $allSalesNames = $staffUserNames
-            ->merge($salesStats->keys())
-            ->reject(fn($n) => in_array($n, ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff']))
-            ->unique()
-            ->values();
-
-        $salesDistribution = $allSalesNames->map(function ($name) use ($salesStats, $allUsersByName) {
-            $stat = $salesStats->get($name);
-            $user = $allUsersByName->get(strtolower(trim($name)));
-            $role = $user ? $user->role : 'staff';
-            $roleLabel = match(strtolower($role)) {
-                'reseller' => 'Reseller',
-                'admin' => 'Admin',
-                default => 'Sales',
-            };
-
-            return [
-                'name' => $name,
-                'role' => $role,
-                'role_label' => $roleLabel,
-                'total_qty' => (int) ($stat->total_qty ?? 0),
-                'total_omset' => (float) ($stat->total_omset ?? 0),
-                'invoice_count' => (int) ($stat->invoice_count ?? 0),
-                'palette' => Location::paletteForName($name),
-            ];
-        })->sortByDesc('total_qty')->values();
+        $salesDistribution = $this->getSalesDistribution();
 
         // 2. Tren Penjualan per Seller (6 Bulan Terakhir)
         $invoiceDateFormat = DB::connection()->getDriverName() === 'sqlite'
-            ? "strftime('%Y-%m', created_at)"
-            : "DATE_FORMAT(created_at, '%Y-%m')";
+            ? "strftime('%Y-%m', COALESCE(tanggal, created_at))"
+            : "DATE_FORMAT(COALESCE(tanggal, created_at), '%Y-%m')";
 
-        $monthlyInvoices = Invoice::where('created_at', '>=', $sixMonthsAgo->toDateTimeString())
+        $monthlyInvoices = Invoice::whereRaw("COALESCE(tanggal, DATE(created_at)) >= ?", [$sixMonthsAgo->toDateString()])
             ->selectRaw("{$invoiceDateFormat} as ym, sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset")
             ->groupBy('ym', 'sales_name')
             ->orderBy('ym')
@@ -438,7 +362,8 @@ class DashboardController extends Controller
 
         // 4. Riwayat Invoice Terbaru per Sales
         $recentInvoices = Invoice::with(['product', 'location'])
-            ->latest()
+            ->orderByDesc(DB::raw('COALESCE(tanggal, DATE(created_at))'))
+            ->orderByDesc('id')
             ->take(10)
             ->get();
 
@@ -459,5 +384,51 @@ class DashboardController extends Controller
             'recentInvoices',
             'summary'
         ));
+    }
+
+    /**
+     * Dapatkan data distribusi penjualan per sales/seller (diurutkan berdasarkan total unit).
+     */
+    private function getSalesDistribution(): \Illuminate\Support\Collection
+    {
+        $salesStats = Invoice::selectRaw('sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as invoice_count')
+            ->groupBy('sales_name')
+            ->get()
+            ->keyBy('sales_name');
+
+        $staffUserNames = User::where('is_active', true)
+            ->where('role', '!=', User::ROLE_ADMIN)
+            ->whereNotIn('email', ['staff@scentpeep.com', 'admin@scentpeep.com'])
+            ->whereNotIn('name', ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff'])
+            ->pluck('name');
+
+        $allUsersByName = User::select(['id', 'name', 'role'])->get()->keyBy(fn ($u) => strtolower(trim($u->name)));
+
+        $allSalesNames = $staffUserNames
+            ->merge($salesStats->keys())
+            ->reject(fn ($n) => in_array($n, ['Admin Scentpeep', 'Staff Scentpeep', 'admin', 'staff']))
+            ->unique()
+            ->values();
+
+        return $allSalesNames->map(function ($name) use ($salesStats, $allUsersByName) {
+            $stat = $salesStats->get($name);
+            $user = $allUsersByName->get(strtolower(trim($name)));
+            $role = $user ? $user->role : 'staff';
+            $roleLabel = match (strtolower($role)) {
+                'reseller' => 'Reseller',
+                'admin' => 'Admin',
+                default => 'Sales',
+            };
+
+            return [
+                'name' => $name,
+                'role' => $role,
+                'role_label' => $roleLabel,
+                'total_qty' => (int) ($stat->total_qty ?? 0),
+                'total_omset' => (float) ($stat->total_omset ?? 0),
+                'invoice_count' => (int) ($stat->invoice_count ?? 0),
+                'palette' => Location::paletteForName($name),
+            ];
+        })->sortByDesc('total_qty')->values();
     }
 }

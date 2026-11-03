@@ -26,13 +26,12 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 ---
 
 ## 3. Logika Bisnis & Fitur Sistem
-1. **Pemisahan Transaksi Kas & Invoice**:
-   - Penjualan parfum diterbitkan via **Invoice** per varian parfum.
+1. **Pemisahan Transaksi Kas & Invoice (Decoupled Cash Flow & Custom Tanggal)**:
+   - Penjualan parfum diterbitkan via **Invoice** per varian parfum dengan tanggal transaksi yang fleksibel (dapat di-custom dan mendukung *backdating*).
    - Pembuatan invoice otomatis memotong stok fisik dari lokasi terpilih (`IWAN` atau `RIZKY`) secara atomik dalam `DB::transaction`.
-   - Status invoice bisa `BELUM LUNAS` (piutang) atau `LUNAS`. Saat invoice berstatus `LUNAS` (atau ditandai lunas), penerimaan uang otomatis dicatat di Buku Kas (Income Penjualan).
-   - **Fitur Edit Invoice**: Invoice dapat diedit langsung dari daftar invoice (`/invoices/{invoice}/edit`). Perubahan varian parfum, kuantitas, atau lokasi asal stok diproses secara atomik di dalam `DB::transaction` (mengembalikan kuantitas lama ke stok lokasi asal terlebih dahulu, memverifikasi ketersediaan stok di lokasi baru, lalu memotong stok baru). Perubahan status pembayaran atau nominal secara otomatis menyinkronkan pencatatan di Buku Kas (`transactions`).
-   - Menghapus invoice secara otomatis mengembalikan stok ke lokasi asal dan membersihkan transaksi kas terkait jika berstatus LUNAS.
-   - **Desain Tabel Invoice Ringkas (Compact Table)**: Tabel invoice didesain ramping (`table-sm` dengan proporsi kolom terukur dan teks terpangkas `text-truncate`) sehingga seluruh kolom (mulai dari No. Invoice hingga tombol Aksi Edit/Lunas/Hapus) muat sempurna di layar tanpa terpotong horizontal.
+   - **Pemisahan Kas Murni (Decoupled Cash)**: Status invoice (`BELUM LUNAS` / `LUNAS`) murni berfungsi sebagai penanda operasional piutang dan penerimaan pesanan. Uang yang lunas TIDAK otomatis digabung ke kas utama (`transactions`), melainkan dicatat secara manual di modul Buku Kas saat dana benar-benar masuk ke kasir/rekening. Metrik total penjualan, volume botol, dan evaluasi omset tetap tersimpan utuh dan dihitung dari tabel `invoices`.
+   - **Fitur Edit & Hapus Invoice Atomik**: Invoice dapat diedit langsung (`/invoices/{invoice}/edit`) termasuk perubahan tanggal transaksi. Perubahan varian parfum, kuantitas, atau lokasi asal stok diproses secara atomik di dalam `DB::transaction` (mengembalikan kuantitas lama ke stok lokasi asal terlebih dahulu, memverifikasi ketersediaan stok di lokasi baru, lalu memotong stok baru). Menghapus invoice secara otomatis mengembalikan stok ke lokasi asal tanpa mengganggu catatan kas manual.
+   - **Desain Tabel Invoice Ringkas (Compact Table)**: Tabel invoice didesain ramping (`table-sm` dengan proporsi kolom terukur dan teks terpangkas `text-truncate`) menampilkan No. Invoice, Tanggal (`d/m/Y`), Customer, Sales, Varian, Qty, Stok Asal, Total Harga, Status Piutang, dan tombol Aksi terpadu.
 2. **Pre-Order (PO) & Stok Pending**:
    - Pre-Order dicatat dalam segmen tersendiri sebagai **Stok Pending (PO)** di luar stok utama.
    - Ketika pesanan PO siap dan status diubah menjadi `SELESAI`, stok secara otomatis ditambahkan ke Stok Utama lokasi tujuan.
@@ -75,9 +74,16 @@ Aplikasi ini mencakup kebutuhan operasional harian:
      - Riwayat Transaksi Buku Kas (`/transactions`)
      - Master User & Akun Reseller (`/users`)
      - Pre-Order (`/pre-orders`)
-6. **Sidebar Navigation Dropdown Segment**:
+7. **Halaman Khusus Tambah Stock (`/stocks/restock`) & Integrasi Deep-Link:**
+   - Pemisahan tabel katalog ketersediaan stok fisik lengkap dengan pagination (15 item/halaman) dari dashboard stok ke halaman tersendiri di menu sidebar **Tambah Stock** (diletakkan tepat di atas *Ringkasan Stok*).
+   - Dilengkapi *Quick Filter Status* (*Semua, Ready, Menipis, Habis*), pencarian varian parfum, dan modal penambahan manual stok sehabis produksi (`stocks.increment 'qty'`).
+   - Dashboard Stok (`/stocks/reseller`) kini bersih dan terfokus pada KPI ringkasan, sementara tombol badge `Lihat →` dan tautan `+ X varian lainnya →` pada kartu Varian Stok Habis langsung mengarahkan ke `/stocks/restock?filter_status=empty` untuk mempercepat alur kerja restock varian kosong.
+8. **Sidebar Navigation Dropdown Segment**:
    - Pengelompokan menu sidebar menggunakan Bootstrap 5 collapse accordion dengan chevron berputar antara Master Fitur dan Sub-Fitur (Penjualan/Invoice, Stok & PO, Barang Mentah, Keuangan/Buku Kas, Master Data).
-7. **Dashboard Utama**:
+9. **Halaman Panduan & Tutorial Alur Operasional (`/tutorial`) dengan Lambang Tanda Tanya (?)**:
+   - Disediakan menu navigasi khusus di sidebar dengan lambang tanda tanya (`bi bi-question-circle-fill`) serta tombol cepat di topbar header desktop untuk memfasilitasi pengguna (Admin, Staff, Reseller) dalam memahami cara kerja sistem secara mandiri.
+   - Menyajikan 7 tab panduan interaktif komprehensif: Peta Alur Bisnis (End-to-End), Penjualan & Invoice (alasan pemisahan kas riil & kustom tanggal), Stok Parfum, Tambah Stock & PO, Keuangan & Buku Kas, Pengadaan Bahan Mentah, Pusat Dashboard, serta Master Data & Alur Persetujuan Reseller.
+10. **Dashboard Utama**:
    - Ringkasan Saldo Uang Kas (Pemasukan, Pengeluaran, Saldo Real).
    - Widget Monitoring Barang Mentah (Stok Box & Botol).
    - **Distribusi Penjualan per Sales** dengan tata letak CSS Grid anti-overflow (`repeat(auto-fit, minmax(130px, 1fr))`), kartu rapi, dan badge yang tidak saling bertumpuk.

@@ -77,6 +77,7 @@ erDiagram
     invoices {
         bigint id PK
         string invoice_no "nomor invoice unik / custom"
+        date tanggal "tanggal transaksi invoice (custom / backdate)"
         string sales_name "RIZKY | IWAN | VANNY"
         string customer_name
         bigint product_id FK
@@ -214,16 +215,19 @@ Menyimpan saldo inventori aktual per varian di setiap lokasi fisik.
 ### 2.5 Entitas Penjualan Parfum (`invoices`)
 Menyimpan transaksi resmi penjualan parfum per varian ke pelanggan.
 - `id` (BigInt, PK, Auto Increment)
-- `invoice_no` (VarChar 100, Indexed): Nomor faktur invoice penjualan.
-- `sales_name` (VarChar 100, Indexed): Nama sales yang memproses (`RIZKY`, `IWAN`, `VANNY`).
+- `invoice_no` (VarChar 100, Indexed): Nomor faktur invoice penjualan (custom/otomatis).
+- `tanggal` (Date, Indexed): Tanggal transaksi penjualan (dapat di-custom/backdate oleh staf/admin).
+- `sales_name` (VarChar 100, Indexed): Nama sales yang memproses (`RIZKY`, `IWAN`, `VANNY`, dsb.).
 - `customer_name` (VarChar 255, Indexed): Nama pembeli/pelanggan.
 - `product_id` (BigInt, FK ke `products.id`): Varian parfum yang dibeli.
-- `qty` (Integer): Jumlah unit botol.
+- `qty` (Integer): Jumlah unit botol yang dipotong langsung dari stok lokasi.
 - `location_id` (BigInt, FK ke `locations.id`): Lokasi asal pemotongan stok.
 - `total_price` (Decimal 15,2): Nilai total transaksi setelah penyesuaian harga/diskon.
 - `payment_status` (VarChar 20, Indexed): Status piutang (`BELUM LUNAS` / `LUNAS`).
 - `notes` (Text, Nullable): Catatan pesanan.
 - `created_by` (BigInt, FK ke `users.id`, Nullable): Pengguna pencatat transaksi.
+
+> **Catatan Pemisahan Kas & Invoice**: Penerbitan atau pelunasan invoice memotong persediaan stok fisik secara atomik, namun status `LUNAS` dan `BELUM LUNAS` murni berfungsi sebagai penanda operasional piutang penjualan. Nominal kas fisik tidak otomatis dimasukkan ke buku kas (`transactions`), melainkan diinput secara manual oleh kasir/admin saat uang benar-benar diterima di rekening/kas utama.
 
 ### 2.6 Entitas Pre-Order & Stok Pending (`pre_orders`)
 Menyimpan antrean pesanan inden yang belum tersedia secara fisik.

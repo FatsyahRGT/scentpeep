@@ -59,6 +59,7 @@ class WebRoutesRenderingTest extends TestCase
         $routes = [
             '/dashboard',
             '/dashboard/sales',
+            '/tutorial',
             '/invoices',
             '/invoices/create',
             '/invoices/evaluation',
@@ -94,6 +95,7 @@ class WebRoutesRenderingTest extends TestCase
         $resellerRoutes = [
             '/stocks/reseller',
             '/stocks',
+            '/tutorial',
             '/invoices',
             '/invoices/create',
             '/invoices/evaluation',

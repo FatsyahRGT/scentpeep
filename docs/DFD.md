@@ -84,19 +84,18 @@ flowchart TD
 
     %% Proses 3.0: Penjualan & Invoice
     P3["3.0<br>Penerbitan Penjualan & Invoice"]
-    Staff -->|"Data Pembelian & Pelanggan"| P3
+    Staff -->|"Data Pembelian, Tanggal & Pelanggan"| P3
     Admin -->|"Kelola & Edit Invoice"| P3
     Customer -->|"Order & Pembayaran"| P3
     P3 -->|"Verifikasi Ketersediaan Unit"| D4
     P3 -->|"Potong Stok Aktual"| D4
-    P3 <-->|"Simpan Data Invoice"| D5
-    P3 -->|"Sinkronisasi Kas Saat Lunas"| D9
+    P3 <-->|"Simpan Data Invoice & Tanggal"| D5
     P3 -->|"Faktur Invoice"| Customer
 
-    %% Proses 4.0: Manajemen Stok & Pre-Order
-    P4["4.0<br>Manajemen Stok & Pre-Order"]
-    Admin -->|"Eksekusi Transfer Stok"| P4
-    Staff -->|"Catat Pre-Order (PO)"| P4
+    %% Proses 4.0: Manajemen Stok, Restock & Pre-Order
+    P4["4.0<br>Manajemen Stok, Restock & PO"]
+    Admin -->|"Eksekusi Transfer & Restock"| P4
+    Staff -->|"Tambah Stock Produksi & PO"| P4
     P4 <-->|"Update Saldo Unit Fisik"| D4
     P4 <-->|"Simpan Audit Transfer"| D10
     P4 <-->|"Antrean & Penyelesaian PO"| D6
@@ -143,12 +142,12 @@ flowchart TD
     D_Inv[("D5: Invoices")]
     D_Cash[("D9: Transactions")]
 
-    P31["3.1<br>Penerimaan & Validasi Pesanan"]
+    P31["3.1<br>Penerimaan & Validasi Pesanan (Termasuk Tanggal Kustom)"]
     P32["3.2<br>Pengecekan & Penguncian Stok (lockForUpdate)"]
     P33["3.3<br>Penerbitan Invoice & Pemotongan Unit"]
-    P34["3.4<br>Verifikasi Pembayaran & Pencatatan Kas"]
+    P34["3.4<br>Penetapan Status Pembayaran (LUNAS / BELUM LUNAS Penanda Piutang)"]
 
-    Staff -->|"Pilih Sales, Varian, Lokasi, Qty, Harga"| P31
+    Staff -->|"Pilih Tanggal, Sales, Varian, Lokasi, Qty, Harga"| P31
     P31 -->|"Ambil Harga Standar"| D_Prod
     P31 -->|"Cek Ketersediaan Unit"| P32
     P32 <-->|"Kunci Baris & Validasi Stok >= Qty"| D_Stock
@@ -157,8 +156,8 @@ flowchart TD
     P33 -->|"Simpan Baris Invoice Baru"| D_Inv
     P33 -->|"Kirim Dokumen Invoice"| Cust
 
-    P33 -->|"Status = LUNAS?"| P34
-    P34 -->|"Catat Pemasukan Kas (INCOME)"| D_Cash
+    P33 -->|"Update Status Piutang"| P34
+    P34 -->|"Simpan Status LUNAS / BELUM LUNAS"| D_Inv
 ```
 
 ### 3.2 Dekomposisi Proses 4.0: Transfer Stok Antar Lokasi
@@ -187,7 +186,28 @@ flowchart TD
     P44 -->|"Simpan Riwayat Transfer"| D_Trf
 ```
 
-### 3.3 Dekomposisi Proses 5.0: Pengadaan & Logistik Bahan Mentah
+### 3.3 Dekomposisi Proses 4.5: Tambah Stock Produksi (Manual Restock)
+
+```mermaid
+flowchart TD
+    Staff["Staff / Admin"]
+
+    D_Prod[("D3: Products")]
+    D_Stock[("D4: Stocks")]
+
+    P45["4.5<br>Filter Status & Pencarian Katalog (Pagination 15/Hal)"]
+    P46["4.6<br>Pemilihan Varian, Lokasi Masuk & Qty Produksi"]
+    P47["4.7<br>Penambahan Unit Atomik (firstOrCreate + increment)"]
+
+    Staff -->|"Akses /stocks/restock atau Deep-Link"| P45
+    P45 <-->|"Ambil Data Varian & Stok"| D_Prod
+    P45 <-->|"Ambil Data Stok Lokasi"| D_Stock
+    Staff -->|"Submit Form Modal Restock"| P46
+    P46 -->|"Validasi Input"| P47
+    P47 -->|"Tambah Saldo stocks.qty"| D_Stock
+```
+
+### 3.4 Dekomposisi Proses 5.0: Pengadaan & Logistik Bahan Mentah
 
 ```mermaid
 flowchart TD
