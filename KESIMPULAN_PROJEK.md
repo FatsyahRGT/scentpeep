@@ -18,6 +18,7 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 - **`locations`**: `id` (PK), `name` (`IWAN`, `RIZKY`), `type`, `timestamps`. (Toko GPI telah dibersihkan).
 - **`stocks`**: `id` (PK), `location_id` (FK -> locations.id), `product_id` (FK -> products.id), `qty` (integer), `UNIQUE(location_id, product_id)`.
 - **`invoices`**: `id` (PK), `invoice_no` (custom string), `sales_name` (string dinamis terintegrasi Master User), `customer_name`, `product_id` (FK), `qty`, `location_id` (FK: Iwan/Rizky), `total_price` (custom/diskon), `payment_status` (`BELUM LUNAS`, `LUNAS`), `notes`, `created_by` (FK), `timestamps`.
+- **`customers`**: `id` (PK), `name` (unique/indexed string), `timestamps`.
 - **`pre_orders`**: `id` (PK), `po_number`, `product_id` (FK), `location_id` (FK), `qty`, `status` (`PENDING`, `SELESAI`), `customer_name`, `notes`, `created_by`, `completed_at`, `timestamps`.
 - **`raw_materials`**: `id` (PK), `name` (e.g. Box Packaging, Botol Kaca), `category` (`BOX`, `BOTOL`, `LAINNYA`), `stock_qty`, `min_stock`, `timestamps`.
 - **`raw_material_mutations`**: `id` (PK), `raw_material_id` (FK), `type` (`IN`, `OUT`), `qty`, `amount` (biaya), `supplier`, `note`, `created_by`, `timestamps`.
@@ -32,6 +33,11 @@ Aplikasi ini mencakup kebutuhan operasional harian:
    - **Pemisahan Kas Murni (Decoupled Cash)**: Status invoice (`BELUM LUNAS` / `LUNAS`) murni berfungsi sebagai penanda operasional piutang dan penerimaan pesanan. Uang yang lunas TIDAK otomatis digabung ke kas utama (`transactions`), melainkan dicatat secara manual di modul Buku Kas saat dana benar-benar masuk ke kasir/rekening. Metrik total penjualan, volume botol, dan evaluasi omset tetap tersimpan utuh dan dihitung dari tabel `invoices`.
    - **Fitur Edit & Hapus Invoice Atomik**: Invoice dapat diedit langsung (`/invoices/{invoice}/edit`) termasuk perubahan tanggal transaksi. Perubahan varian parfum, kuantitas, atau lokasi asal stok diproses secara atomik di dalam `DB::transaction` (mengembalikan kuantitas lama ke stok lokasi asal terlebih dahulu, memverifikasi ketersediaan stok di lokasi baru, lalu memotong stok baru). Menghapus invoice secara otomatis mengembalikan stok ke lokasi asal tanpa mengganggu catatan kas manual.
    - **Desain Tabel Invoice Ringkas (Compact Table)**: Tabel invoice didesain ramping (`table-sm` dengan proporsi kolom terukur dan teks terpangkas `text-truncate`) menampilkan No. Invoice, Tanggal (`d/m/Y`), Customer, Sales, Varian, Qty, Stok Asal, Total Harga, Status Piutang, dan tombol Aksi terpadu.
+   - **Custom Combobox Pemilihan Nama Customer (Inline CRUD + Custom Input + Auto-Sort A-Z)**:
+     - Form pembuatan dan pengeditan invoice (`invoices/create` & `invoices/edit`) serta PO dilengkapi komponen combobox interaktif yang mendukung dua mode: **Pelanggan Tetap** (tercatat di tabel `customers` dan mengirim `customer_id`) atau **Customer Custom** (pembeli sekali jalan tanpa pendaftaran, `customer_id` bernilai `null` namun nama tetap tersimpan utuh di `customer_name`).
+     - **Auto-Sort A-Z & Prioritas Awalan (*startsWith*)**: Algoritma pencarian otomatis memprioritaskan nama yang diawali huruf yang diketik terlebih dahulu lalu diurutkan alfabetis (`localeCompare`).
+     - **Quick Suggestion Pills**: Menampilkan deretan maksimal 6 tombol kapsul rekomendasi instan berurutan A-Z tepat di bawah input teks untuk pemilihan satu klik.
+     - **Inline CRUD Dropdown via Fetch AJAX**: Pengguna dapat menambahkan nama baru sebagai pelanggan tetap via tombol `+ Jadikan Tetap`, mengubah nama pelanggan lama (inline edit), atau menghapus pelanggan tetap langsung di dalam dropdown menu tanpa reload halaman (`POST`, `PUT`, `DELETE /customers`).
 2. **Pre-Order (PO) & Stok Pending**:
    - Pre-Order dicatat dalam segmen tersendiri sebagai **Stok Pending (PO)** di luar stok utama.
    - Ketika pesanan PO siap dan status diubah menjadi `SELESAI`, stok secara otomatis ditambahkan ke Stok Utama lokasi tujuan.

@@ -25,11 +25,12 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="customer_name" class="form-label small fw-semibold text-muted">Nama Pemesan / Pelanggan PO</label>
-                            <input type="text" name="customer_name" id="customer_name" class="form-control @error('customer_name') is-invalid @enderror" placeholder="Nama pemesan..." value="{{ old('customer_name') }}">
-                            @error('customer_name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @include('components.customer-combobox', [
+                                'value' => old('customer_name'),
+                                'label' => 'Nama Pemesan / Pelanggan PO',
+                                'required' => false,
+                                'placeholder' => 'Ketik nama pemesan atau pilih pelanggan tetap...'
+                            ])
                         </div>
 
                         <div class="col-md-8">

@@ -55,13 +55,12 @@
                             @enderror
                         </div>
 
-                        <!-- Nama Customer -->
+                        <!-- Nama Customer (Custom Combobox: Inline CRUD + Auto-Sort A-Z) -->
                         <div class="col-md-6">
-                            <label for="customer_name" class="form-label small fw-semibold text-muted">Nama Customer <span class="text-danger">*</span></label>
-                            <input type="text" name="customer_name" id="customer_name" class="form-control @error('customer_name') is-invalid @enderror" value="{{ old('customer_name', $invoice->customer_name) }}" required>
-                            @error('customer_name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @include('components.customer-combobox', [
+                                'value' => old('customer_name', $invoice->customer_name),
+                                'customerId' => old('customer_id')
+                            ])
                         </div>
 
                         <!-- Varian Parfum -->

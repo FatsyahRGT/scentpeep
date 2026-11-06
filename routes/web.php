@@ -43,6 +43,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.markPaid');
     Route::resource('invoices', InvoiceController::class);
 
+    // Customer Master (Pelanggan Tetap - AJAX Endpoints)
+    Route::get('/customers/json', [\App\Http\Controllers\CustomerController::class, 'indexJson'])->name('customers.json');
+    Route::post('/customers', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customers.store');
+    Route::put('/customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'update'])->name('customers.update');
+    Route::delete('/customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'destroy'])->name('customers.destroy');
+
     // 2. Stocks - Katalog & Ringkasan Stok
     Route::prefix('stocks')->name('stocks.')->group(function () {
         Route::get('/', [StockController::class, 'index'])->name('index');

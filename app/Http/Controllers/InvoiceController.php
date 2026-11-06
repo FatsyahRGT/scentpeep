@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Location;
 use App\Models\Product;
@@ -291,6 +292,7 @@ class InvoiceController extends Controller
     {
         $user = Auth::user();
         $products = Product::where('is_active', true)->orderBy('name')->get();
+        $customers = Customer::orderBy('name', 'asc')->get(['id', 'name']);
 
         if ($user->isReseller()) {
             $locations = $user->location ? Location::where('id', $user->location->id)->get() : collect([]);
@@ -300,7 +302,7 @@ class InvoiceController extends Controller
             $salesOptions = Invoice::getSalesOptions();
         }
 
-        return view('invoices.create', compact('products', 'locations', 'salesOptions'));
+        return view('invoices.create', compact('products', 'locations', 'salesOptions', 'customers'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -310,6 +312,7 @@ class InvoiceController extends Controller
             'tanggal' => 'nullable|date',
             'sales_name' => 'required|string|max:100',
             'customer_name' => 'required|string|max:255',
+            'customer_id' => 'nullable|integer',
             'product_id' => 'required|exists:products,id',
             'qty' => 'required|integer|min:1',
             'location_id' => 'required|exists:locations,id',
@@ -375,8 +378,9 @@ class InvoiceController extends Controller
         }
 
         $products = Product::where('is_active', true)->orWhere('id', $invoice->product_id)->orderBy('name')->get();
+        $customers = Customer::orderBy('name', 'asc')->get(['id', 'name']);
 
-        return view('invoices.edit', compact('invoice', 'products', 'locations', 'salesOptions'));
+        return view('invoices.edit', compact('invoice', 'products', 'locations', 'salesOptions', 'customers'));
     }
 
     public function update(Request $request, Invoice $invoice): RedirectResponse
@@ -393,6 +397,7 @@ class InvoiceController extends Controller
             'tanggal' => 'nullable|date',
             'sales_name' => 'required|string|max:100',
             'customer_name' => 'required|string|max:255',
+            'customer_id' => 'nullable|integer',
             'product_id' => 'required|exists:products,id',
             'qty' => 'required|integer|min:1',
             'location_id' => 'required|exists:locations,id',
