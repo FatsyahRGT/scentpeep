@@ -1031,12 +1031,6 @@
     "ast_hash": "000258b910387d93cf35563dd1a96442",
     "semantic_hash": ""
   },
-  "resources/views/reports/invoices_excel.blade.php": {
-    "mtime": 1794066182.538132,
-    "seen": 1794066342.3408918,
-    "ast_hash": "5a8d5089ee72c49249a06420e31da4b8",
-    "semantic_hash": ""
-  },
   "resources/views/reports/invoices_pdf.blade.php": {
     "mtime": 1794066022.2577908,
     "seen": 1794066342.3408918,
@@ -1047,12 +1041,6 @@
     "mtime": 1794066142.4928966,
     "seen": 1794066342.3408918,
     "ast_hash": "7213f7da140ff72ac3311c7c89f4cc5d",
-    "semantic_hash": ""
-  },
-  "resources/views/reports/transactions_excel.blade.php": {
-    "mtime": 1794066245.1055117,
-    "seen": 1794066342.3408918,
-    "ast_hash": "476be53407241794373c6af6a51da559",
     "semantic_hash": ""
   },
   "resources/views/reports/transactions_word.blade.php": {

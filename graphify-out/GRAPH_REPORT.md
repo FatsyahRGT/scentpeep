@@ -1,17 +1,17 @@
 # Graph Report - scentpeep-management-system  (2026-11-07)
 
 ## Corpus Check
-- 172 files · ~496,053 words
+- 170 files · ~495,418 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: (none) 18, .example 2, .conf 2)
 
 ## Summary
-- 984 nodes · 1627 edges · 116 communities (30 shown, 86 thin omitted)
+- 982 nodes · 1627 edges · 114 communities (30 shown, 84 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 16 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3dbd850c`
+- Built from commit: `266caffe`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -126,7 +126,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (116 total, 86 thin omitted)
+## Communities (114 total, 84 thin omitted)
 
 ### Community 0 - "Illuminate\Database\Schema\Blueprint"
 Cohesion: 0.23
@@ -250,8 +250,8 @@ Nodes (3): {closure#1}(), {closure#2}(), {closure#3}()
 
 ## Knowledge Gaps
 - **35 isolated node(s):** `concurrently`, `tailwindcss`, `@laravel/multiplex`, `layouts.app`, `layouts.app` (+30 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 540 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **86 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 538 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **84 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -263,7 +263,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `TransactionAndStockTest` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
 - **Why does `User` connect `User` to `TransactionAndStockTest`, `CustomerComboboxTest`, `Transaction`, `Illuminate\Database\Seeder`, `Product`, `Illuminate\Foundation\Testing\RefreshDatabase`, `TransactionAndStockTest.php`, `InvoiceAndProcurementTest`, `Illuminate\Http\Request`, `Illuminate\Http\RedirectResponse`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `ExportReportsTest`, `Location`, `TestCase`, `Location`, `ResellerLifecycleTest`, `DashboardController.php`?**
-  _High betweenness centrality (0.076) - this node is a cross-community bridge._
+  _High betweenness centrality (0.077) - this node is a cross-community bridge._
 - **Should `Eloquent Models` be split into smaller, more focused modules?**
   _Cohesion score 0.04081632653061224 - nodes in this community are weakly interconnected._
 - **Why does `Product` connect `Product` to `TransactionAndStockTest`, `Transaction`, `Illuminate\Database\Seeder`, `Stock Management Logic`, `TransactionAndStockTest.php`, `Illuminate\Http\Request`, `Illuminate\Http\RedirectResponse`, `TestCase`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `Panduan Pemanggilan Graphify pada Sesi Baru / Ganti Model AI`, `Location`, `Location`, `ResellerLifecycleTest`, `DashboardController.php`, `Illuminate\Foundation\Testing\RefreshDatabase`, `CustomerComboboxTest`, `InvoiceAndProcurementTest`, `ReportController.php`, `ExportReportsTest`?**
