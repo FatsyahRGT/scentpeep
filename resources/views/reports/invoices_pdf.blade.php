@@ -218,38 +218,9 @@
         </tfoot>
     </table>
 
-    <!-- Official Accounting 3-Column Sign-Off Block -->
-    <div class="avoid-break mt-4 pt-3 border-top">
-        <div class="text-end text-muted fst-italic mb-3" style="font-size: 9.5px;">
-            Pusat Distribusi Scentpeep, {{ date('d F Y') }}
-        </div>
-        <div class="row text-center" style="font-size: 10px;">
-            <div class="col-4">
-                <div class="fw-bold text-uppercase text-secondary mb-1" style="font-size: 9.5px;">Dibuat Oleh:</div>
-                <div class="text-muted mb-5" style="font-size: 8.5px;">Staff Administrasi Penjualan</div>
-                <div class="mx-auto border-bottom border-dark" style="width: 140px;"></div>
-                <div class="fw-bold mt-1">( {{ Auth::user()->name }} )</div>
-                <div class="text-muted" style="font-size: 8.5px;">Order Entry &amp; Kasir</div>
-            </div>
-            <div class="col-4">
-                <div class="fw-bold text-uppercase text-secondary mb-1" style="font-size: 9.5px;">Diperiksa Oleh:</div>
-                <div class="text-muted mb-5" style="font-size: 8.5px;">Supervisor Keuangan &amp; Akuntansi</div>
-                <div class="mx-auto border-bottom border-dark" style="width: 140px;"></div>
-                <div class="fw-bold mt-1">( Accounting Team )</div>
-                <div class="text-muted" style="font-size: 8.5px;">Verifikasi Pembukuan</div>
-            </div>
-            <div class="col-4">
-                <div class="fw-bold text-uppercase text-secondary mb-1" style="font-size: 9.5px;">Disetujui Oleh:</div>
-                <div class="text-muted mb-5" style="font-size: 8.5px;">Pimpinan Operasional / Direktur</div>
-                <div class="mx-auto border-bottom border-dark" style="width: 140px;"></div>
-                <div class="fw-bold mt-1">( Branch Manager )</div>
-                <div class="text-muted" style="font-size: 8.5px;">Head of Distribution</div>
-            </div>
-        </div>
-        <div class="mt-4 pt-2 border-top d-flex justify-content-between align-items-center text-muted" style="font-size: 8.5px;">
-            <div>Dokumen ini dihasilkan secara otomatis oleh <strong>Scentpeep Management System</strong> dan telah diverifikasi dalam buku kas.</div>
-            <div class="font-mono-num">DOC-HASH: {{ strtoupper(substr(md5($totalAmount . $invoices->count() . date('Ymd')), 0, 16)) }}-VERIFIED</div>
-        </div>
+    <div class="mt-4 pt-2 border-top d-flex justify-content-between align-items-center text-muted" style="font-size: 8.5px;">
+        <div>Scentpeep Management System &bull; Dokumen rekapitulasi data penjualan resmi.</div>
+        <div>Dicetak otomatis pada {{ date('d F Y, H:i') }} WIB</div>
     </div>
 </body>
 </html>
