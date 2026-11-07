@@ -804,9 +804,9 @@
     "semantic_hash": ""
   },
   "KESIMPULAN_PROJEK.md": {
-    "mtime": 1793958682.8733735,
-    "seen": 1793958891.8967872,
-    "ast_hash": "9cf7f698be247a8d604ada3bc99f5be9",
+    "mtime": 1794066606.919626,
+    "seen": 1794066683.7583208,
+    "ast_hash": "bfe83ee9de4ac955e0fda75fdc5fe258",
     "semantic_hash": ""
   },
   "PANDUAN_SESI_BARU_GRAPHIFY.md": {
@@ -966,9 +966,9 @@
     "semantic_hash": ""
   },
   "resources/views/tutorial.blade.php": {
-    "mtime": 1794038611.7417161,
-    "seen": 1794038690.0238984,
-    "ast_hash": "01636a2a233cb8755abfd3ba9665a781",
+    "mtime": 1794066499.094745,
+    "seen": 1794066683.7583208,
+    "ast_hash": "3fbc828767a090a5d4d1efef21433576",
     "semantic_hash": ""
   },
   "app/Http/Controllers/CustomerController.php": {

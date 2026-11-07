@@ -21,7 +21,7 @@
                     </div>
                     <button type="button" class="btn btn-sm btn-light border px-3 py-2 font-mono shadow-xs d-inline-flex align-items-center gap-2 text-nowrap rounded-3 text-dark text-decoration-none" data-bs-toggle="modal" data-bs-target="#changelogModal" style="font-size: 0.82rem; cursor: pointer; transition: all 0.2s;" title="Klik untuk melihat Histori Versi &amp; Catatan Rilis">
                         <i class="bi bi-shield-check text-success fs-6"></i>
-                        <span class="fw-semibold">Scentpeep v3.0 Ready</span>
+                        <span class="fw-semibold">Scentpeep v3.1 Ready</span>
                         <span class="badge bg-dark text-white rounded-pill px-2 py-1" style="font-size: 0.65rem;">Histori Versi</span>
                     </button>
                 </div>
@@ -971,16 +971,33 @@
                 <!-- Timeline Container -->
                 <div class="timeline-changelog d-flex flex-column gap-4">
 
-                    <!-- v3.0 (Active Version) -->
+                    <!-- v3.1 (Active Version) -->
                     <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid var(--scent-green, #2b7b5b) !important;">
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge text-white px-2 py-1 font-mono fw-bold" style="background-color: var(--scent-green, #2b7b5b); font-size: 0.8rem;">v3.0</span>
-                                <h6 class="fw-bold text-dark m-0">Standardisasi Tema Tombol Hijau-Putih-Hitam, Filter Customer Tetap, &amp; Tab Slider</h6>
+                                <span class="badge text-white px-2 py-1 font-mono fw-bold" style="background-color: var(--scent-green, #2b7b5b); font-size: 0.8rem;">v3.1</span>
+                                <h6 class="fw-bold text-dark m-0">Standardisasi Ekspor Multi-Format Resmi (Word, PDF, Excel), Kop Surat Formal, &amp; Filter Skala Subjudul</h6>
                             </div>
                             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill font-mono" style="font-size: 0.72rem;">
                                 <i class="bi bi-check-circle me-1"></i> Versi Aktif
                             </span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Kop Surat Formal Terpadu &amp; Logo High-Definition Base64</strong>: Penyelarasan kop surat formal di seluruh format dokumen (Word, PDF, Excel) dengan logo login asli ter-embed Base64 (anti broken-image), penamaan spesifik modul (<code class="font-mono">LAPORAN KAS SCENTPEEP</code>, <code class="font-mono">INVOICE SCENTPEEP</code>, <code class="font-mono">LAPORAN STOK SCENTPEEP</code>), serta tagline tunggal resmi <code class="font-mono">Authentic Inspired Fragrance - Retail Supply Chain</code>.</li>
+                            <li><strong class="text-dark">Keterangan Filter Dinamis Skala Formal</strong>: Penghapusan total badge kapsul dan ikon corong, digantikan teks formal berskala sejajar subjudul (<code class="font-mono">LAPORAN BERDASARKAN : [FILTER AKTIF]</code>) yang mendukung filter bulan (<code class="font-mono">month</code>), tahun (<code class="font-mono">year</code>), tipe mutasi kas, kategori, lokasi, maupun customer.</li>
+                            <li><strong class="text-dark">Tata Letak Word Portrait &amp; Excel Centered</strong>: Dokumen ekspor Word (.doc) diformat portrait proporsional 523pt bebas garis dotted kotor (<code class="font-mono">border: none; mso-border-alt: none;</code>), serta kop surat Excel (.xls) berorientasi sentral (centered) di tengah bentang data tabel.</li>
+                            <li><strong class="text-dark">Pratinjau &amp; Cetak Faktur Satuan (Single Invoice Print A4)</strong>: Penambahan halaman pratinjau cetak A4 faktur satuan resmi siap cetak &amp; simpan PDF langsung dari baris riwayat invoice penjualan dengan nomor dokumen otomatis.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v3.0 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #111827 !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-dark text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v3.0</span>
+                                <h6 class="fw-bold text-dark m-0">Standardisasi Tema Tombol Hijau-Putih-Hitam, Filter Customer Tetap, &amp; Tab Slider</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
                         </div>
                         <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
                             <li><strong class="text-dark">Standardisasi Tema Tombol Mewah (Hijau - Putih - Hitam)</strong>: Seluruh tombol aksi interaktif diseragamkan dengan palet Hijau Scentpeep (<code class="font-mono">#2b7b5b</code>), Putih murni, dan Hitam elegan, dengan sidebar navigasi dipertahankan kontras tinggi hitam-putih murni tanpa merusak tata letak tombol.</li>
