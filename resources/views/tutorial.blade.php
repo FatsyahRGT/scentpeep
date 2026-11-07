@@ -21,51 +21,61 @@
                     </div>
                     <button type="button" class="btn btn-sm btn-light border px-3 py-2 font-mono shadow-xs d-inline-flex align-items-center gap-2 text-nowrap rounded-3 text-dark text-decoration-none" data-bs-toggle="modal" data-bs-target="#changelogModal" style="font-size: 0.82rem; cursor: pointer; transition: all 0.2s;" title="Klik untuk melihat Histori Versi &amp; Catatan Rilis">
                         <i class="bi bi-shield-check text-success fs-6"></i>
-                        <span class="fw-semibold">Scentpeep v2.7 Ready</span>
+                        <span class="fw-semibold">Scentpeep v3.0 Ready</span>
                         <span class="badge bg-dark text-white rounded-pill px-2 py-1" style="font-size: 0.65rem;">Histori Versi</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Navigation Pills -->
-        <ul class="nav nav-pills d-flex flex-wrap pb-3 mb-4 gap-2 border-bottom" id="guideTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="flow-tab" data-bs-toggle="pill" data-bs-target="#tab-flow" type="button" role="tab">
-                    <i class="bi bi-diagram-3-fill"></i> Peta Alur Bisnis
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="invoice-tab" data-bs-toggle="pill" data-bs-target="#tab-invoice" type="button" role="tab">
-                    <i class="bi bi-receipt-cutoff"></i> Penjualan &amp; Invoice
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="stock-tab" data-bs-toggle="pill" data-bs-target="#tab-stock" type="button" role="tab">
-                    <i class="bi bi-box-seam-fill"></i> Stok, Restock &amp; PO
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="cash-tab" data-bs-toggle="pill" data-bs-target="#tab-cash" type="button" role="tab">
-                    <i class="bi bi-wallet2"></i> Buku Kas &amp; Keuangan
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="raw-tab" data-bs-toggle="pill" data-bs-target="#tab-raw" type="button" role="tab">
-                    <i class="bi bi-boxes"></i> Bahan Mentah &amp; Packaging
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="dash-tab" data-bs-toggle="pill" data-bs-target="#tab-dash" type="button" role="tab">
-                    <i class="bi bi-grid-1x2-fill"></i> Pusat Dashboard
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="admin-tab" data-bs-toggle="pill" data-bs-target="#tab-admin" type="button" role="tab">
-                    <i class="bi bi-gear-wide-connected"></i> Master Data &amp; Reseller
-                </button>
-            </li>
-        </ul>
+        <!-- Navigation Pills Slider Container (Bisa Slide Horizontal Rapi) -->
+        <div class="position-relative d-flex align-items-center pb-3 mb-4 border-bottom">
+            <button type="button" id="btnSlideTabsLeft" class="btn btn-sm btn-light border rounded-circle shadow-xs me-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; z-index: 5;" title="Geser ke kiri" aria-label="Geser tab ke kiri">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <div class="overflow-hidden flex-grow-1 position-relative" id="tabsScrollContainer">
+                <ul class="nav nav-pills d-flex flex-nowrap gap-2 m-0 overflow-x-auto user-select-none py-1" id="guideTabs" role="tablist" style="scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth;">
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link active rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="flow-tab" data-bs-toggle="pill" data-bs-target="#tab-flow" type="button" role="tab">
+                            <i class="bi bi-diagram-3-fill"></i> Peta Alur Bisnis
+                        </button>
+                    </li>
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="invoice-tab" data-bs-toggle="pill" data-bs-target="#tab-invoice" type="button" role="tab">
+                            <i class="bi bi-receipt-cutoff"></i> Penjualan &amp; Invoice
+                        </button>
+                    </li>
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="stock-tab" data-bs-toggle="pill" data-bs-target="#tab-stock" type="button" role="tab">
+                            <i class="bi bi-box-seam-fill"></i> Stok, Restock &amp; PO
+                        </button>
+                    </li>
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="cash-tab" data-bs-toggle="pill" data-bs-target="#tab-cash" type="button" role="tab">
+                            <i class="bi bi-wallet2"></i> Buku Kas &amp; Keuangan
+                        </button>
+                    </li>
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="raw-tab" data-bs-toggle="pill" data-bs-target="#tab-raw" type="button" role="tab">
+                            <i class="bi bi-boxes"></i> Bahan Mentah &amp; Packaging
+                        </button>
+                    </li>
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="dash-tab" data-bs-toggle="pill" data-bs-target="#tab-dash" type="button" role="tab">
+                            <i class="bi bi-grid-1x2-fill"></i> Pusat Dashboard
+                        </button>
+                    </li>
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link rounded-pill px-3 py-2 fw-semibold text-nowrap d-inline-flex align-items-center gap-2" id="admin-tab" data-bs-toggle="pill" data-bs-target="#tab-admin" type="button" role="tab">
+                            <i class="bi bi-gear-wide-connected"></i> Master Data &amp; Reseller
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <button type="button" id="btnSlideTabsRight" class="btn btn-sm btn-light border rounded-circle shadow-xs ms-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; z-index: 5;" title="Geser ke kanan" aria-label="Geser tab ke kanan">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
 
         <!-- Tab Contents -->
         <div class="tab-content" id="guideTabsContent">
@@ -669,12 +679,12 @@
                                     <li>Buka menu sidebar <strong>Penjualan (Invoice) &rarr; Buat Invoice Baru</strong>.</li>
                                     <li><strong>Nomor Invoice</strong>: Isi manual jika ada nomor nota/faktur toko fisik (opsional, jika dikosongkan sistem membuat otomatis contoh <code>INV-XXXX</code>).</li>
                                     <li><strong>Tanggal Invoice</strong>: Tentukan tanggal transaksi penjualan (bisa tanggal hari ini atau tanggal lampau/<em>backdate</em> jika merekap nota kemarin).</li>
-                                    <li><strong>Nama Sales &amp; Customer</strong>: Pilih sales penanggung jawab (IWAN, RIZKY, VANNY, dll.) dan ketik nama pembeli.</li>
+                                    <li><strong>Nama Sales &amp; Customer (Combobox Cerdas)</strong>: Pilih sales penanggung jawab (IWAN, RIZKY, VANNY, dll.). Pada kolom Customer, Anda dapat memilih dari daftar <strong>Customer Tetap</strong> atau langsung mengetik nama pembeli baru (sekali beli). Jika ingin menjadikannya pelanggan tetap, cukup klik tombol <strong>+ Jadikan Tetap</strong> secara instan tanpa berpindah halaman.</li>
                                     <li><strong>Varian Parfum &amp; Qty</strong>: Pilih parfum yang dijual dan tentukan jumlah botolnya. Harga standar akan otomatis terhitung.</li>
                                     <li><strong>Potong dari Stok Lokasi</strong>: Tentukan dari gudang mana stok akan dikurangi (misal: Lokasi IWAN atau RIZKY).</li>
-                                    <li><strong>Total Harga</strong>: Bisa Anda ubah/kustom jika memberikan diskon khusus kepada pelanggan.</li>
+                                    <li><strong>Total Harga (Format Bersih)</strong>: Tampil dalam format Rupiah bersih tanpa angka desimal nol di belakang koma (contoh: <code>Rp 85.000</code>). Nominal dapat diubah/kustom jika memberi diskon khusus.</li>
                                     <li><strong>Status Pembayaran</strong>: Pilih <code>BELUM LUNAS (Piutang)</code> jika pembayaran tertunda, atau <code>LUNAS (Sudah Dibayar)</code> jika pelanggan sudah melunasi.</li>
-                                    <li>Klik tombol <strong>Terbitkan Invoice</strong>. Sistem memverifikasi stok dan memotong unit botol seketika.</li>
+                                    <li>Klik tombol <strong>Terbitkan Invoice</strong>. Sistem memverifikasi stok dan memotong unit botol seketika secara atomik.</li>
                                 </ol>
                             </div>
                         </div>
@@ -685,11 +695,12 @@
                                     <span class="badge bg-dark rounded-circle">2</span> Fitur &amp; Aksi di Daftar Invoice
                                 </h6>
                                 <ul class="small text-muted ps-3 mb-3" style="line-height: 1.8;">
-                                    <li><strong>Pencarian Cepat</strong>: Cari invoice berdasarkan nomor faktur atau nama pembeli di kolom pencarian.</li>
-                                    <li><strong>Filter Fleksibel</strong>: Filter data berdasarkan Nama Sales, Status Pembayaran, Lokasi Stok Asal, serta Tahun &amp; Bulan transaksi.</li>
-                                    <li><strong>Aksi Edit (Ikon Pensil)</strong>: Mengubah varian, lokasi, kuantitas, atau tanggal. Sistem secara cerdas mengembalikan stok lama terlebih dahulu, memverifikasi ketersediaan stok baru, lalu memotong stok lokasi baru.</li>
+                                    <li><strong>Pencarian Cepat &amp; Kompak</strong>: Kolom pencarian ringkas anti-squish untuk mencari invoice berdasarkan nomor faktur atau nama pembeli tanpa menggeser tombol filter lainnya.</li>
+                                    <li><strong>Filter Toolbar Lengkap</strong>: Filter data secara terpadu berdasarkan <em>Semua Tahun, Semua Bulan, Semua Sales, Status Bayar, Lokasi Stok,</em> dan <em>Semua Customer (Customer Tetap)</em> dengan teks yang terbaca utuh dan rapi.</li>
+                                    <li><strong>Aksi Edit (Ikon Pensil)</strong>: Mengubah varian, lokasi, kuantitas, tanggal, atau customer. Sistem secara cerdas mengembalikan stok lama terlebih dahulu, memverifikasi ketersediaan stok baru, lalu memotong stok lokasi baru. Nilai harga tampil dalam format bulat rapi tanpa <code>,00</code>.</li>
                                     <li><strong>Aksi Tandai Lunas (Ikon Centang)</strong>: Menandai invoice piutang menjadi lunas hanya dengan 1 klik.</li>
                                     <li><strong>Aksi Hapus (Ikon Sampah)</strong>: Menghapus invoice. <strong>Stok unit parfum otomatis dikembalikan utuh ke lokasi asal</strong>.</li>
+                                    <li><strong>Evaluasi Penjualan (YoY)</strong>: Tombol pintas cepat di pojok kanan atas toolbar untuk membuka sub-dashboard evaluasi performa omset dan volume tahunan.</li>
                                 </ul>
 
                                 <div class="p-2 bg-light border rounded small">
@@ -850,25 +861,48 @@
                         <div class="col-md-6">
                             <div class="border rounded-3 p-3 h-100">
                                 <h6 class="fw-bold text-dark"><i class="bi bi-wallet2 me-1 text-primary"></i> 1. Dashboard Utama (/dashboard)</h6>
-                                <p class="small text-muted">Ringkasan eksekutif bisnis harian. Menampilkan saldo kas bersih, pemasukan &amp; pengeluaran bulan ini, total unit stok di seluruh sistem, peringatan stok kritis (&lt; 3 pcs), ketersediaan kardus box &amp; botol, serta grafik tren cashflow 6 bulan.</p>
+                                <p class="small text-muted mb-2">Ringkasan eksekutif bisnis harian. Dilengkapi <strong>Slider Web Banner Otomatis KPI Keuangan (rotasi 25 detik)</strong> yang menyajikan metriks Kolektibilitas Piutang, Modal Bersih, dan Estimasi Margin Laba.</p>
+                                <ul class="small text-muted ps-3 mb-0" style="line-height: 1.6;">
+                                    <li>Saldo kas riil operasional, penerimaan &amp; pengeluaran bulan ini.</li>
+                                    <li>Total unit stok parfum fisik, material kardus box &amp; botol kaca.</li>
+                                    <li>Peringatan otomatis stok kritis (&lt; 3 pcs) dan grafik tren arus kas bulanan.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="border rounded-3 p-3 h-100">
                                 <h6 class="fw-bold text-dark"><i class="bi bi-boxes me-1 text-success"></i> 2. Dashboard Stok (/stocks/reseller)</h6>
-                                <p class="small text-muted">Monitoring sebaran fisik parfum. Menampilkan kartu persediaan di tangan reseller, kartu <em>Varian Stok Habis</em> (dengan tombol pintas langsung ke restock), grafik sebaran persentase stok, dan leaderboard varian terlaris.</p>
+                                <p class="small text-muted mb-2">Monitoring sebaran fisik inventori parfum secara real-time dengan <strong>indikator denyut live 1:1</strong> dan <strong>Slider Web Banner Sebaran Stok (rotasi 20 detik)</strong>.</p>
+                                <ul class="small text-muted ps-3 mb-0" style="line-height: 1.6;">
+                                    <li>Slide 1: Sebaran stok aktual di lokasi pemegang (Gudang IWAN, Gudang RIZKY, dll).</li>
+                                    <li>Slide 2: Katalog varian ready stock siap kirim.</li>
+                                    <li>Slide 3: Peringatan varian stok habis lengkap dengan <strong>tombol deep-link langsung ke Tambah Stock</strong>.</li>
+                                    <li>Grafik lingkaran sebaran stok dan leaderboard 5 parfum paling diminati.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="border rounded-3 p-3 h-100">
                                 <h6 class="fw-bold text-dark"><i class="bi bi-graph-up-arrow me-1 text-warning"></i> 3. Dashboard Penjualan YoY (/invoices/evaluation)</h6>
-                                <p class="small text-muted">Analisis evaluasi pertumbuhan Year-on-Year. Membandingkan volume botol dan omset penjualan tahun target vs tahun pembanding, persentase pertumbuhan, breakdown 12 bulan, dan daftar varian paling laku.</p>
+                                <p class="small text-muted mb-2">Analisis evaluasi pertumbuhan performa bisnis Year-on-Year (YoY) multi-tahun.</p>
+                                <ul class="small text-muted ps-3 mb-0" style="line-height: 1.6;">
+                                    <li>Komparasi volume botol terjual dan omset pendapatan tahun target vs tahun pembanding.</li>
+                                    <li>Persentase pertumbuhan bisnis (positif/negatif).</li>
+                                    <li>Tabel matriks breakdown performa per bulan (Januari s.d. Desember).</li>
+                                    <li>Daftar varian parfum terlaris sepanjang tahun.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="border rounded-3 p-3 h-100">
                                 <h6 class="fw-bold text-dark"><i class="bi bi-people-fill me-1 text-info"></i> 4. Dashboard Kontrol Sales (/dashboard/sales)</h6>
-                                <p class="small text-muted">Monitoring tim lapangan dan reseller. Menampilkan distribusi kontribusi penjualan tiap sales, grafik komparasi performa 6 bulan, dan toggle metrik Volume (Pcs) vs Omset (Rp).</p>
+                                <p class="small text-muted mb-2">Monitoring tim lapangan dan reseller secara transparan dan terukur.</p>
+                                <ul class="small text-muted ps-3 mb-0" style="line-height: 1.6;">
+                                    <li><strong>Grafik Tren 1 Tahun Penuh (12 Bulan)</strong>: Visualisasi tren penjualan jangka panjang multi-seller.</li>
+                                    <li><strong>Filter AJAX Dinamis</strong>: Kustom pemilihan tahun dan bulan secara instan tanpa reload halaman.</li>
+                                    <li><strong>Toggle Metrik Interaktif</strong>: Beralih cepat antara tampilan Volume Botol (Pcs) dan Omzet Penjualan (Rp).</li>
+                                    <li>Badge persentase kontribusi penjualan per anggota tim sales.</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -904,6 +938,7 @@
                                 <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
                                     <li><strong>Produk Parfum (/products)</strong>: Menambah varian baru, mengatur kode SKU, harga modal (HPP), dan harga jual resmi. Varian dapat di-nonaktifkan sementara tanpa menghapus riwayat transaksi.</li>
                                     <li><strong>Lokasi Stok (/locations)</strong>: Mengelola titik penyimpanan fisik parfum (Gudang IWAN, Gudang RIZKY, maupun toko reseller). Setiap lokasi memiliki palet warna matematis HSL Golden Angle yang konsisten.</li>
+                                    <li><strong>Customer Tetap (/customers)</strong>: Database pelanggan loyal toko parfum. Terintegrasi penuh dengan combobox pembuatan invoice (auto-suggest &amp; shortcut + Jadikan Tetap) serta filter khusus di daftar transaksi.</li>
                                     <li><strong>Portal Publik Bebas Login (/stok-reseller)</strong>: Link katalog publik yang bisa dibagikan ke dropshipper/reseller untuk melihat stok ready tanpa mengekspos margin keuntungan internal.</li>
                                 </ul>
                             </div>
@@ -936,16 +971,66 @@
                 <!-- Timeline Container -->
                 <div class="timeline-changelog d-flex flex-column gap-4">
 
-                    <!-- v2.7 (Current) -->
-                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid var(--color-dark, #111827) !important;">
+                    <!-- v3.0 (Active Version) -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid var(--scent-green, #2b7b5b) !important;">
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-dark text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.7</span>
-                                <h6 class="fw-bold text-dark m-0">Peta Alur Interaktif (Visual Map), Drag &amp; Pan Kanvas, &amp; Inspektur Modul</h6>
+                                <span class="badge text-white px-2 py-1 font-mono fw-bold" style="background-color: var(--scent-green, #2b7b5b); font-size: 0.8rem;">v3.0</span>
+                                <h6 class="fw-bold text-dark m-0">Standardisasi Tema Tombol Hijau-Putih-Hitam, Filter Customer Tetap, &amp; Tab Slider</h6>
                             </div>
                             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill font-mono" style="font-size: 0.72rem;">
                                 <i class="bi bi-check-circle me-1"></i> Versi Aktif
                             </span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Standardisasi Tema Tombol Mewah (Hijau - Putih - Hitam)</strong>: Seluruh tombol aksi interaktif diseragamkan dengan palet Hijau Scentpeep (<code class="font-mono">#2b7b5b</code>), Putih murni, dan Hitam elegan, dengan sidebar navigasi dipertahankan kontras tinggi hitam-putih murni tanpa merusak tata letak tombol.</li>
+                            <li><strong class="text-dark">Filter Customer Tetap &amp; Perampingan Toolbar Invoice (Anti-Squish)</strong>: Penambahan dropdown filter customer tetap di sebelah lokasi stok dan kiri search box invoice, serta perampingan ukuran kotak pencarian agar label semua dropdown filter (Tahun, Bulan, Sales, Status Bayar, Lokasi Stok, Customer) terbaca penuh tanpa terpotong.</li>
+                            <li><strong class="text-dark">Perapihan Format Nominal Desimal Nota</strong>: Pembersihan format dua angka nol di belakang koma (<code class="font-mono">,00</code>) pada total nota invoice dan formulir edit menjadi format nominal bulat rapi (misal: <code class="font-mono">Rp 85.000</code>).</li>
+                            <li><strong class="text-dark">Navigasi Tab Panduan Slideable Horizontal</strong>: Tab navigasi 7 modul panduan sistem dapat digeser (*slide*) ke kiri-kanan dengan tombol panah navigasi, roda mouse, atau swipe sentuh tanpa terlipat dua baris.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.9 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #111827 !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-dark text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.9</span>
+                                <h6 class="fw-bold text-dark m-0">Banner Web Slider KPI &amp; Stok Otomatis, Grafik Tren 1 Tahun Penuh AJAX, &amp; Rebranding</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Web Slider Otomatis KPI Keuangan (25 Detik)</strong>: Integrasi banner slider interaktif di Dashboard Utama berotasi halus tiap 25 detik untuk menampilkan KPI Kolektibilitas Piutang, Modal Bersih, dan Estimasi Margin Laba.</li>
+                            <li><strong class="text-dark">Web Slider Sebaran Stok Reseller (20 Detik) &amp; Deep-Link</strong>: Banner slider stok otomatis tiap 20 detik untuk stok per lokasi, varian ready, dan varian habis dilengkapi tombol langsung (deep-link) ke halaman Tambah Stock.</li>
+                            <li><strong class="text-dark">Grafik Tren Penjualan 1 Tahun Penuh &amp; Filter Kustom AJAX</strong>: Visualisasi tren multi-seller diperluas 12 bulan penuh dengan filter kustom tahun/bulan instan tanpa reload halaman serta switch cepat Volume (Pcs) vs Omzet (Rp).</li>
+                            <li><strong class="text-dark">Rebranding Login &amp; Registrasi Berlatar Air (Water Texture)</strong>: Latar belakang air bergerak lembut, pemrosesan logo canvas transparan otomatis (*chromakey* pojok piksel), dan sinyal live monitoring 1:1 bulat sempurna.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.8 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #374151 !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.8</span>
+                                <h6 class="fw-bold text-dark m-0">Master Customer Tetap, Inline Combobox Pelanggan, &amp; Evaluasi Penjualan YoY</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Master Customer Tetap &amp; Inline Combobox CRUD</strong>: Modul pelanggan loyal (<code class="font-mono">/customers</code>) dengan combobox cerdas di formulir invoice: bisa pilih pelanggan tetap, ketik pembeli baru (sekali beli), atau simpan instan via tombol <code class="font-mono">+ Jadikan Tetap</code>.</li>
+                            <li><strong class="text-dark">Sub-Dashboard Evaluasi Penjualan Tahunan (YoY)</strong>: Analisis komparasi omset pendapatan dan volume botol tahun target vs tahun pembanding dengan breakdown 12 bulan dan daftar varian terlaris.</li>
+                            <li><strong class="text-dark">Pintasan Deep-Link Tambah Stock di Sebaran Reseller</strong>: Integrasi tombol aksi cepat restock langsung dari kartu sebaran lokasi reseller saat persediaan menipis.</li>
+                        </ul>
+                    </div>
+
+                    <!-- v2.7 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #4b5563 !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v2.7</span>
+                                <h6 class="fw-bold text-dark m-0">Peta Alur Interaktif (Visual Map), Drag &amp; Pan Kanvas, &amp; Inspektur Modul</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
                         </div>
                         <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
                             <li><strong class="text-dark">Visual Map Vektor Interaktif (Pure SVG &amp; Vanilla JS)</strong>: Diagram interkoneksi alur operasional end-to-end tanpa dependensi eksternal, dilengkapi fitur geser kanvas interaktif (alat tangan / drag &amp; pan) berbasis pointer capture.</li>
@@ -1151,14 +1236,113 @@
     align-items: center;
     flex-shrink: 0;
 }
+
+/* Sliding Guide Tabs */
+#guideTabs::-webkit-scrollbar {
+    display: none;
+}
+#guideTabs {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    cursor: grab;
+}
+#guideTabs:active {
+    cursor: grabbing;
+}
+#guideTabs .nav-link {
+    color: var(--color-text-main, #171717);
+    border: 1px solid var(--color-border, #e8e6e1);
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    font-size: 0.84rem;
+}
+#guideTabs .nav-link:hover {
+    background-color: #f4f3f0;
+    color: #000000;
+    border-color: #c4c1b9;
+}
+#guideTabs .nav-link.active {
+    background-color: var(--scent-green, #2b7b5b) !important;
+    border-color: var(--scent-green, #2b7b5b) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(43, 123, 91, 0.25) !important;
+}
+#btnSlideTabsLeft, #btnSlideTabsRight {
+    transition: all 0.2s ease;
+}
+#btnSlideTabsLeft:hover, #btnSlideTabsRight:hover {
+    background-color: var(--scent-green, #2b7b5b) !important;
+    color: #ffffff !important;
+    border-color: var(--scent-green, #2b7b5b) !important;
+}
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Auto-scroll halus saat navigasi pill berganti
+    // 0. Horizontal Sliding Navigation for Guide Tabs
+    const guideTabsTrack = document.getElementById('guideTabs');
+    const btnSlideLeft = document.getElementById('btnSlideTabsLeft');
+    const btnSlideRight = document.getElementById('btnSlideTabsRight');
+
+    function updateTabArrowStates() {
+        if (!guideTabsTrack || !btnSlideLeft || !btnSlideRight) return;
+        const maxScroll = guideTabsTrack.scrollWidth - guideTabsTrack.clientWidth;
+        if (maxScroll <= 5) {
+            btnSlideLeft.style.opacity = "0.3";
+            btnSlideLeft.disabled = true;
+            btnSlideRight.style.opacity = "0.3";
+            btnSlideRight.disabled = true;
+            return;
+        }
+        btnSlideLeft.disabled = guideTabsTrack.scrollLeft <= 5;
+        btnSlideLeft.style.opacity = guideTabsTrack.scrollLeft <= 5 ? "0.3" : "1";
+        btnSlideRight.disabled = guideTabsTrack.scrollLeft >= maxScroll - 5;
+        btnSlideRight.style.opacity = guideTabsTrack.scrollLeft >= maxScroll - 5 ? "0.3" : "1";
+    }
+
+    if (guideTabsTrack && btnSlideLeft && btnSlideRight) {
+        btnSlideLeft.addEventListener('click', function() {
+            guideTabsTrack.scrollBy({ left: -220, behavior: 'smooth' });
+        });
+
+        btnSlideRight.addEventListener('click', function() {
+            guideTabsTrack.scrollBy({ left: 220, behavior: 'smooth' });
+        });
+
+        guideTabsTrack.addEventListener('scroll', updateTabArrowStates, { passive: true });
+        window.addEventListener('resize', updateTabArrowStates);
+        setTimeout(updateTabArrowStates, 100);
+
+        // Mouse Drag to Scroll
+        let isDraggingTabs = false;
+        let startXTabs, scrollLeftTabs;
+
+        guideTabsTrack.addEventListener('mousedown', function(e) {
+            isDraggingTabs = true;
+            startXTabs = e.pageX - guideTabsTrack.offsetLeft;
+            scrollLeftTabs = guideTabsTrack.scrollLeft;
+        });
+
+        window.addEventListener('mouseup', function() {
+            isDraggingTabs = false;
+        });
+
+        guideTabsTrack.addEventListener('mousemove', function(e) {
+            if (!isDraggingTabs) return;
+            e.preventDefault();
+            const x = e.pageX - guideTabsTrack.offsetLeft;
+            const walk = (x - startXTabs) * 1.5;
+            guideTabsTrack.scrollLeft = scrollLeftTabs - walk;
+        });
+    }
+
+    // 1. Auto-scroll halus saat navigasi pill berganti & Center Active Tab
     const guideTabs = document.querySelectorAll('#guideTabs button[data-bs-toggle="pill"]');
     guideTabs.forEach(function(tab) {
         tab.addEventListener('shown.bs.tab', function() {
+            tab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            updateTabArrowStates();
+
             const content = document.getElementById('guideTabsContent');
             if (content) {
                 const headerOffset = 85;

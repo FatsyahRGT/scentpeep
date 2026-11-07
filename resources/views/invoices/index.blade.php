@@ -25,12 +25,12 @@
         <!-- Pemisah Visual -->
         <hr class="my-3 opacity-25">
 
-        <!-- Baris Kedua: Horizontal Filter & Search Toolbar -->
+        <!-- Baris Kedua: Horizontal Filter & Search Toolbar (Anti-Squish & Rapi) -->
         <form method="GET" action="{{ route('invoices.index') }}" class="m-0" id="filterInvoicesForm">
-            <div class="row g-2 align-items-center">
+            <div class="d-flex flex-wrap align-items-center gap-2">
                 <!-- Filter Tahun -->
-                <div class="col-6 col-sm-4 col-md-3 col-xl">
-                    <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
+                <div style="min-width: 108px; flex: 1 1 auto; max-width: 125px;">
+                    <select name="year" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Tahun</option>
                         @foreach($availableYears as $yr)
                         <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>Tahun {{ $yr }}</option>
@@ -39,8 +39,8 @@
                 </div>
 
                 <!-- Filter Bulan -->
-                <div class="col-6 col-sm-4 col-md-3 col-xl">
-                    <select name="month" class="form-select form-select-sm" onchange="this.form.submit()">
+                <div style="min-width: 108px; flex: 1 1 auto; max-width: 125px;">
+                    <select name="month" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Bulan</option>
                         @foreach($months as $num => $name)
                         <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>{{ $name }}</option>
@@ -50,8 +50,8 @@
 
                 <!-- Filter Sales -->
                 @if(!Auth::user()->isReseller())
-                <div class="col-6 col-sm-4 col-md-3 col-xl">
-                    <select name="sales_name" class="form-select form-select-sm" onchange="this.form.submit()">
+                <div style="min-width: 115px; flex: 1 1 auto; max-width: 135px;">
+                    <select name="sales_name" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Sales</option>
                         @foreach($salesOptions as $s)
                         <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
@@ -61,8 +61,8 @@
                 @endif
 
                 <!-- Filter Status Bayar -->
-                <div class="col-6 col-sm-4 col-md-3 col-xl">
-                    <select name="payment_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                <div style="min-width: 112px; flex: 1 1 auto; max-width: 130px;">
+                    <select name="payment_status" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Status Bayar</option>
                         <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
                         <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
@@ -70,8 +70,8 @@
                 </div>
 
                 <!-- Filter Lokasi Stok -->
-                <div class="col-6 col-sm-4 col-md-3 col-xl">
-                    <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                <div style="min-width: 112px; flex: 1 1 auto; max-width: 130px;">
+                    <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Lokasi Stok</option>
                         @foreach($locations as $loc)
                         <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
@@ -80,8 +80,8 @@
                 </div>
 
                 <!-- Filter Customer Tetap (Di Samping Lokasi Stok & Kiri Search Invoice) -->
-                <div class="col-6 col-sm-4 col-md-3 col-xl">
-                    <select name="customer_name" class="form-select form-select-sm" onchange="this.form.submit()">
+                <div style="min-width: 130px; flex: 1 1 auto; max-width: 155px;">
+                    <select name="customer_name" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Customer</option>
                         @foreach($customers as $c)
                         <option value="{{ $c->name }}" {{ request('customer_name') === $c->name ? 'selected' : '' }}>{{ $c->name }}</option>
@@ -89,11 +89,11 @@
                     </select>
                 </div>
 
-                <!-- Fitur Search Invoice -->
-                <div class="col-12 col-md-6 col-xl-auto flex-grow-1" style="min-width: 170px;">
+                <!-- Fitur Search Invoice (Ukuran Kompak Anti-Squish) -->
+                <div style="width: 155px; max-width: 170px; flex-shrink: 0;">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-white border-end-0 text-muted ps-2"><i class="bi bi-search"></i></span>
-                        <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari invoice/customer&hellip;" value="{{ request('search') }}">
+                        <span class="input-group-text bg-white border-end-0 text-muted ps-2 pe-1"><i class="bi bi-search"></i></span>
+                        <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari invoice..." value="{{ request('search') }}" style="font-size: 0.8rem;">
                         <button type="submit" class="btn btn-sm btn-scent px-2" title="Cari">
                             <i class="bi bi-arrow-right"></i>
                         </button>
