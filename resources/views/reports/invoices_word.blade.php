@@ -5,7 +5,7 @@
 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Laporan Invoice Penjualan - SCENTPEEP PARFUM</title>
+    <title>Laporan Invoice Penjualan - INVOICE SCENTPEEP</title>
     <!--[if gte mso 9]>
     <xml>
         <w:WordDocument>
@@ -190,9 +190,9 @@
                 <img src="{{ $logoEmblem }}" width="42" height="42" style="width: 42pt; height: 42pt; object-fit: contain;">
             </td>
             <td style="vertical-align: middle;">
-                <div class="brand-title">INVOICES</div>
-                <div class="brand-subtitle">Laporan Rekapitulasi Invoice Penjualan</div>
-                <div class="brand-filter">Laporan Berdasarkan  {{ $filterDescription ?? 'Semua Data' }}</div>
+                <div class="brand-title">INVOICE SCENTPEEP</div>
+                <div class="brand-subtitle">Rekapitulasi Invoice Penjualan</div>
+                <div class="brand-filter">Laporan Berdasarkan : {{ $filterDescription ?? 'Semua Data' }}</div>
                 <div class="brand-tagline">Authentic Inspired Fragrance - Retail Supply Chain</div>
             </td>
             <td style="width: 140pt; vertical-align: middle;" class="kop-meta">

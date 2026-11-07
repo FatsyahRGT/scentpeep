@@ -26,14 +26,14 @@
     <table>
         <!-- Kop Surat Resmi Berada di Tengah (Centered) -->
         <tr>
-            <td colspan="11" class="brand-title">INVOICES</td>
+            <td colspan="11" class="brand-title">INVOICE SCENTPEEP</td>
         </tr>
         <tr>
-            <td colspan="11" class="brand-subtitle">LAPORAN REKAPITULASI INVOICE PENJUALAN</td>
+            <td colspan="11" class="brand-subtitle">REKAPITULASI INVOICE PENJUALAN</td>
         </tr>
         <tr>
             <td colspan="11" class="brand-filter">
-                LAPORAN BERDASARKAN  {{ $filterDescription ?? 'Semua Data' }}
+                LAPORAN BERDASARKAN : {{ $filterDescription ?? 'Semua Data' }}
             </td>
         </tr>
         <tr>

@@ -89,7 +89,7 @@ class ExportReportsTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('reports.transactions.pdf'));
         $response->assertOk();
-        $response->assertSee('LAPORAN KAS');
+        $response->assertSee('LAPORAN KAS SCENTPEEP');
         $response->assertSee('Laporan Transaksi Kas');
         $response->assertSee('Authentic Inspired Fragrance - Retail Supply Chain');
         $response->assertSee('Sauvage Test');
@@ -125,7 +125,7 @@ class ExportReportsTest extends TestCase
             'customer_name' => 'Budi Pelanggan',
         ]));
         $response->assertOk();
-        $response->assertSee('INVOICES');
+        $response->assertSee('INVOICE SCENTPEEP');
         $response->assertSee('Laporan Berdasarkan : Bulan Januari');
         $response->assertSee('Tahun 2026');
         $response->assertSee('Pelanggan: Budi Pelanggan');
@@ -147,7 +147,7 @@ class ExportReportsTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('reports.invoices.pdf'));
         $response->assertOk();
-        $response->assertSee('Laporan Rekapitulasi Invoice Penjualan');
+        $response->assertSee('Rekapitulasi Invoice Penjualan');
     }
 
     public function test_kriteria_9_export_stocks_excel(): void
@@ -161,7 +161,7 @@ class ExportReportsTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('reports.stocks.pdf'));
         $response->assertOk();
-        $response->assertSee('LAPORAN STOK');
+        $response->assertSee('LAPORAN STOK SCENTPEEP');
         $response->assertSee('Laporan Matriks Inventori Stok Fisik');
         $response->assertSee('Authentic Inspired Fragrance - Retail Supply Chain');
         $response->assertSee('Sauvage Test');

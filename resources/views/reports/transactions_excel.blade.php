@@ -26,14 +26,14 @@
     <table>
         <!-- Kop Surat Resmi Berada di Tengah (Centered) -->
         <tr>
-            <td colspan="10" class="brand-title">LAPORAN KAS</td>
+            <td colspan="10" class="brand-title">LAPORAN KAS SCENTPEEP</td>
         </tr>
         <tr>
             <td colspan="10" class="brand-subtitle">LAPORAN TRANSAKSI KAS &amp; ARUS KEUANGAN RESMI</td>
         </tr>
         <tr>
             <td colspan="10" class="brand-filter">
-                LAPORAN BERDASARKAN  {{ $filterDescription ?? 'Semua Data' }}
+                LAPORAN BERDASARKAN : {{ $filterDescription ?? 'Semua Data' }}
             </td>
         </tr>
         <tr>

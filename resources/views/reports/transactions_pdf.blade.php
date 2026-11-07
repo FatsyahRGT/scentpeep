@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Transaksi Kas - SCENTPEEP PARFUM</title>
+    <title>Laporan Transaksi Kas - LAPORAN KAS SCENTPEEP</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -118,13 +118,13 @@
                 </td>
                 <td style="vertical-align: middle;">
                     <div class="font-brand-serif fw-bold" style="font-size: 21px; color: #165b3d; letter-spacing: 0.04em; line-height: 1.15;">
-                        LAPORAN KAS
+                        LAPORAN KAS SCENTPEEP
                     </div>
                     <div class="fw-bold text-uppercase text-secondary" style="font-size: 11px; letter-spacing: 0.08em; margin-top: 2px;">
                         Laporan Transaksi Kas &amp; Rekapitulasi Arus Kas
                     </div>
                     <div class="fw-bold text-uppercase text-dark" style="font-size: 11px; letter-spacing: 0.08em; margin-top: 2px;">
-                        Laporan Berdasarkan  {{ $filterDescription ?? 'Semua Data' }}
+                        Laporan Berdasarkan : {{ $filterDescription ?? 'Semua Data' }}
                     </div>
                     <div class="text-muted" style="font-size: 9.5px; margin-top: 2px;">
                         Authentic Inspired Fragrance - Retail Supply Chain
