@@ -49,6 +49,10 @@ class InvoiceController extends Controller
             $query->where('location_id', $request->location_id);
         }
 
+        if ($request->filled('customer_name')) {
+            $query->where('customer_name', $request->customer_name);
+        }
+
         $dateCol = DB::raw('COALESCE(tanggal, DATE(created_at))');
         if ($request->filled('year')) {
             $query->whereYear($dateCol, $request->year);
@@ -97,12 +101,15 @@ class InvoiceController extends Controller
             $salesOptions = Invoice::getSalesOptions();
         }
 
+        $customers = Customer::orderBy('name')->get();
+
         return view('invoices.index', compact(
             'invoices',
             'locations',
             'salesOptions',
             'availableYears',
-            'months'
+            'months',
+            'customers'
         ));
     }
 

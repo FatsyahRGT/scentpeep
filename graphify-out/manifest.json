@@ -600,9 +600,9 @@
     "semantic_hash": "59e361a5d8c1edb14a8047365b46c8b4"
   },
   "app/Http/Controllers/InvoiceController.php": {
-    "mtime": 1793957198.8019552,
-    "seen": 1793958891.8937833,
-    "ast_hash": "5a7c7208b09f1926ebc658d5a58f2e1f",
+    "mtime": 1794037731.4192517,
+    "seen": 1794037896.0780087,
+    "ast_hash": "a79167cd4e904e7492459762a460d5a6",
     "semantic_hash": ""
   },
   "app/Http/Controllers/PreOrderController.php": {
@@ -690,9 +690,9 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/index.blade.php": {
-    "mtime": 1793718550.2181585,
-    "seen": 1793718599.7372878,
-    "ast_hash": "118936a01b85428c09c2764dfe9c5662",
+    "mtime": 1794037771.2267294,
+    "seen": 1794037896.0780087,
+    "ast_hash": "7e585825b9a0fe22a30cad19e991cdd9",
     "semantic_hash": ""
   },
   "resources/views/pre_orders/create.blade.php": {
@@ -786,9 +786,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/InvoiceAndProcurementTest.php": {
-    "mtime": 1794036661.4501479,
-    "seen": 1794036697.3899763,
-    "ast_hash": "93af2fbd2615e40545e78ed1899a09b3",
+    "mtime": 1794037825.7093153,
+    "seen": 1794037896.0790088,
+    "ast_hash": "f0328ba614c6ceb29a5bc9be93808709",
     "semantic_hash": ""
   },
   "AGENTS.md": {

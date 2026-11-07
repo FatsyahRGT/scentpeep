@@ -254,6 +254,49 @@ class InvoiceAndProcurementTest extends TestCase
         $response->assertDontSee('value="360000.00"', false);
     }
 
+    public function test_invoices_index_renders_customer_filter_and_filters_by_customer_name(): void
+    {
+        \App\Models\Customer::create(['name' => 'IDA PG']);
+        \App\Models\Customer::create(['name' => 'Budi Santoso']);
+
+        Invoice::create([
+            'invoice_no' => 'INV-CUST-01',
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'IDA PG',
+            'product_id' => $this->product->id,
+            'qty' => 1,
+            'location_id' => $this->iwan->id,
+            'total_price' => 180000,
+            'payment_status' => 'LUNAS',
+        ]);
+
+        Invoice::create([
+            'invoice_no' => 'INV-CUST-02',
+            'sales_name' => 'IWAN',
+            'customer_name' => 'Budi Santoso',
+            'product_id' => $this->product->id,
+            'qty' => 2,
+            'location_id' => $this->iwan->id,
+            'total_price' => 360000,
+            'payment_status' => 'LUNAS',
+        ]);
+
+        // 1. Check dropdown presence
+        $indexRes = $this->actingAs($this->admin)->get(route('invoices.index'));
+        $indexRes->assertOk();
+        $indexRes->assertSee('name="customer_name"', false);
+        $indexRes->assertSee('Semua Customer');
+        $indexRes->assertSee('IDA PG');
+        $indexRes->assertSee('Budi Santoso');
+
+        // 2. Filter by customer_name = 'IDA PG'
+        $filterRes = $this->actingAs($this->admin)->get(route('invoices.index', ['customer_name' => 'IDA PG']));
+        $filterRes->assertOk();
+        $filterRes->assertSee('INV-CUST-01');
+        $filterRes->assertDontSee('INV-CUST-02');
+        $filterRes->assertSee('Reset Semua Filter');
+    }
+
     public function test_admin_can_update_invoice_and_adjusts_stock_atomically(): void
     {
         // Initial stock at IWAN is 10

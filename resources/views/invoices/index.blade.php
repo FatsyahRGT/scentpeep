@@ -29,7 +29,7 @@
         <form method="GET" action="{{ route('invoices.index') }}" class="m-0" id="filterInvoicesForm">
             <div class="row g-2 align-items-center">
                 <!-- Filter Tahun -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-sm-4 col-md-3 col-xl">
                     <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Semua Tahun</option>
                         @foreach($availableYears as $yr)
@@ -39,7 +39,7 @@
                 </div>
 
                 <!-- Filter Bulan -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-sm-4 col-md-3 col-xl">
                     <select name="month" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Semua Bulan</option>
                         @foreach($months as $num => $name)
@@ -50,7 +50,7 @@
 
                 <!-- Filter Sales -->
                 @if(!Auth::user()->isReseller())
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-sm-4 col-md-3 col-xl">
                     <select name="sales_name" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Semua Sales</option>
                         @foreach($salesOptions as $s)
@@ -61,7 +61,7 @@
                 @endif
 
                 <!-- Filter Status Bayar -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-sm-4 col-md-3 col-xl">
                     <select name="payment_status" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Status Bayar</option>
                         <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
@@ -69,8 +69,8 @@
                     </select>
                 </div>
 
-                <!-- Filter Lokasi -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <!-- Filter Lokasi Stok -->
+                <div class="col-6 col-sm-4 col-md-3 col-xl">
                     <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Lokasi Stok</option>
                         @foreach($locations as $loc)
@@ -79,8 +79,18 @@
                     </select>
                 </div>
 
-                <!-- Fitur Search -->
-                <div class="col-12 col-md-4 {{ Auth::user()->isReseller() ? 'col-lg-4' : 'col-lg-2' }}">
+                <!-- Filter Customer Tetap (Di Samping Lokasi Stok & Kiri Search Invoice) -->
+                <div class="col-6 col-sm-4 col-md-3 col-xl">
+                    <select name="customer_name" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Semua Customer</option>
+                        @foreach($customers as $c)
+                        <option value="{{ $c->name }}" {{ request('customer_name') === $c->name ? 'selected' : '' }}>{{ $c->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Fitur Search Invoice -->
+                <div class="col-12 col-md-6 col-xl-auto flex-grow-1" style="min-width: 170px;">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text bg-white border-end-0 text-muted ps-2"><i class="bi bi-search"></i></span>
                         <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari invoice/customer&hellip;" value="{{ request('search') }}">
@@ -91,7 +101,7 @@
                 </div>
             </div>
 
-            @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'year', 'month', 'search']))
+            @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'customer_name', 'year', 'month', 'search']))
             <div class="d-flex justify-content-end mt-2">
                 <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary py-1 px-3" style="font-size: 0.78rem;" title="Reset Semua Filter">
                     <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
