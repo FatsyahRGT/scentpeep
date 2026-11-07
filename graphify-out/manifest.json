@@ -516,9 +516,9 @@
     "semantic_hash": ""
   },
   "resources/views/transactions/index.blade.php": {
-    "mtime": 1794039786.3453956,
-    "seen": 1794039952.6343937,
-    "ast_hash": "5c0d77f4d11ba210b900e43de42c6123",
+    "mtime": 1794040109.8658862,
+    "seen": 1794040158.9699092,
+    "ast_hash": "b86801bcfd54dc60c4f4e7e8494490da",
     "semantic_hash": ""
   },
   "resources/views/users/create.blade.php": {
@@ -690,9 +690,9 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/index.blade.php": {
-    "mtime": 1794039760.4486835,
-    "seen": 1794039952.6343937,
-    "ast_hash": "f4d3884f1310ff1e3899092fed1eb69d",
+    "mtime": 1794040123.4905066,
+    "seen": 1794040158.9694433,
+    "ast_hash": "60ae3af07a84201ee32efc0503a83636",
     "semantic_hash": ""
   },
   "resources/views/pre_orders/create.blade.php": {

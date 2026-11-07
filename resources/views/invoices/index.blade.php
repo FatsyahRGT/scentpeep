@@ -133,8 +133,8 @@
                     </select>
                 </div>
 
-                <!-- Fitur Search Invoice (Ukuran Kompak Anti-Squish) -->
-                <div style="width: 155px; max-width: 170px; flex-shrink: 0;">
+                <!-- Fitur Search Invoice (Digeser ke Paling Kanan dengan ms-auto) -->
+                <div class="ms-auto" style="width: 170px; max-width: 190px; flex-shrink: 0;">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text bg-white border-end-0 text-muted ps-2 pe-1"><i class="bi bi-search"></i></span>
                         <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari invoice..." value="{{ request('search') }}" style="font-size: 0.8rem;">

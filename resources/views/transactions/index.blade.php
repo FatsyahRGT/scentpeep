@@ -122,7 +122,7 @@
         <form action="{{ route('transactions.index') }}" method="GET" class="m-0" id="filterTransactionsForm">
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <!-- Tipe Arus Kas -->
-                <div style="min-width: 120px; flex: 1 1 auto; max-width: 135px;">
+                <div style="min-width: 115px; max-width: 130px; flex-shrink: 0;">
                     <select name="type" class="form-select form-select-sm rounded-3" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Tipe</option>
                         <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
@@ -131,7 +131,7 @@
                 </div>
 
                 <!-- Kategori -->
-                <div style="min-width: 130px; flex: 1 1 auto; max-width: 155px;">
+                <div style="min-width: 125px; max-width: 145px; flex-shrink: 0;">
                     <select name="category" class="form-select form-select-sm rounded-3" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Kategori</option>
                         @foreach($categories as $cat)
@@ -142,7 +142,7 @@
 
                 <!-- Lokasi (Admin Only) -->
                 @if(!Auth::user()->isReseller() && isset($locations))
-                <div style="min-width: 125px; flex: 1 1 auto; max-width: 145px;">
+                <div style="min-width: 120px; max-width: 140px; flex-shrink: 0;">
                     <select name="location_id" class="form-select form-select-sm rounded-3" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Lokasi</option>
                         @foreach($locations as $loc)
@@ -152,15 +152,15 @@
                 </div>
                 @endif
 
-                <!-- Rentang Tanggal (Kompak & Anti-Nabrak) -->
-                <div class="d-flex align-items-center gap-1 flex-shrink-0" style="min-width: 275px; max-width: 295px;">
-                    <input type="date" name="start_date" class="form-control form-control-sm rounded-3" value="{{ request('start_date') }}" title="Dari Tanggal" onchange="this.form.submit()" style="font-size: 0.78rem; padding: 0.25rem 0.45rem;">
+                <!-- Rentang Tanggal (Kompak & Lega Tanpa Overlap) -->
+                <div class="d-flex align-items-center gap-1 flex-shrink-0" style="min-width: 285px;">
+                    <input type="date" name="start_date" class="form-control form-control-sm rounded-3" value="{{ request('start_date') }}" title="Dari Tanggal" onchange="this.form.submit()" style="width: 135px; font-size: 0.78rem; padding: 0.25rem 0.45rem;">
                     <span class="text-muted small px-1">&ndash;</span>
-                    <input type="date" name="end_date" class="form-control form-control-sm rounded-3" value="{{ request('end_date') }}" title="Sampai Tanggal" onchange="this.form.submit()" style="font-size: 0.78rem; padding: 0.25rem 0.45rem;">
+                    <input type="date" name="end_date" class="form-control form-control-sm rounded-3" value="{{ request('end_date') }}" title="Sampai Tanggal" onchange="this.form.submit()" style="width: 135px; font-size: 0.78rem; padding: 0.25rem 0.45rem;">
                 </div>
 
-                <!-- Cari Keterangan / Ref (Kompak Anti-Squish) -->
-                <div style="min-width: 175px; max-width: 230px; flex: 1 1 auto;">
+                <!-- Cari Keterangan / Ref (Digeser ke Paling Kanan dengan ms-auto) -->
+                <div class="ms-auto" style="width: 220px; max-width: 260px; flex-shrink: 0;">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text bg-white border-end-0 text-muted ps-2 pe-1 rounded-start-3"><i class="bi bi-search"></i></span>
                         <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari keterangan/ref..." value="{{ request('search') }}" style="font-size: 0.8rem;">
