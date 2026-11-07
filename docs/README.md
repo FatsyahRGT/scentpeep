@@ -18,7 +18,7 @@ Folder ini berisi dokumentasi lengkap perancangan dan spesifikasi sistem untuk t
 ---
 
 ## Ringkasan Arsitektur & Teknologi
-- **Framework**: Laravel 12 (PHP 8.2+)
+- **Framework**: Laravel 13 (13.35.0, PHP 8.3+)
 - **Database Engine**: MariaDB / MySQL / SQLite (ACID Transactions dengan pessimistic row locking `lockForUpdate()`)
 - **Frontend Architecture**: Blade Views + Bootstrap 5.3.3 + Bootstrap Icons + Chart.js (Luxury Monochrome Styling, Zero Node/Vite Bundler Overhead)
 - **Knowledge Graph Tracking**: Terintegrasi dan tersinkronisasi via Graphify (`graphify-out/`)

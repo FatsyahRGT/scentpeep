@@ -1,6 +1,6 @@
 # Entity-Relationship Diagram (ERD) — Scentpeep Management System
 
-Dokumentasi rancangan basis data relasional Scentpeep Management System yang diturunkan langsung dari skema migrasi database aktual (Laravel 12 / MariaDB / MySQL).
+Dokumentasi rancangan basis data relasional Scentpeep Management System yang diturunkan langsung dari skema migrasi database aktual (Laravel 13 / MariaDB / MySQL).
 
 ---
 

@@ -1,6 +1,6 @@
 # Scentpeep Management System
 
-Sistem manajemen inventori parfum multi-lokasi, penjualan (invoice), pre-order, pengadaan bahan mentah packaging, dan pembukuan arus kas UMKM parfum mewah **Scentpeep** berbasis **Laravel 12**, Blade Views, dan Bootstrap 5.3.3.
+Sistem manajemen inventori parfum multi-lokasi, penjualan (invoice), pre-order, pengadaan bahan mentah packaging, dan pembukuan arus kas UMKM parfum mewah **Scentpeep** berbasis **Laravel 13 (13.35.0)**, Blade Views, dan Bootstrap 5.3.3.
 
 ---
 

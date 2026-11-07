@@ -127,7 +127,7 @@ Sistem mengadopsi kontrol akses berbasis peran (Role-Based Access Control / RBAC
 1. **Palet Warna Otomatis Berbasis HSL Golden Angle**:
    Menggunakan algoritma phyllotaxis matematis native ($H = ((id - 1) \times 137.507764 + 45.0) \pmod{360}$) tanpa pustaka eksternal untuk menghasilkan pembeda visual kontras tinggi (WCAG AAA compliant) yang konsisten di seluruh modul.
 2. **Kepatuhan Prinsip KISS & Ponytail**:
-   Mengoptimalkan fitur bawaan Laravel 12 dan PHP 8.2+, menghindari dependensi NPM/bundler yang berlebihan, serta menggunakan CDN murni untuk Bootstrap 5.3.3 dan Chart.js.
+   Mengoptimalkan fitur bawaan Laravel 13 dan PHP 8.3+, menghindari dependensi NPM/bundler yang berlebihan, serta menggunakan CDN murni untuk Bootstrap 5.3.3 dan Chart.js.
 3. **Pemberantasan N+1 Query & Optimasi Database**:
    Setiap pemanggilan relasi di dalam loop wajib menerapkan Eager Loading (`with(['product', 'location', 'category', 'user'])`) dan pengindeksan kolom pencarian/filter (`invoice_no`, `payment_status`, `type`, `sales_name`).
 4. **Keamanan Transaksional & Atomisitas Penuh**:

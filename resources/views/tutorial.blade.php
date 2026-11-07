@@ -1189,7 +1189,7 @@
             </div>
             <div class="modal-footer py-2 px-4 bg-light border-top d-flex justify-content-between align-items-center">
                 <span class="text-muted small font-mono" style="font-size: 0.75rem;">
-                    <i class="bi bi-cpu me-1"></i> Laravel 12 &bull; PHP 8.2+ &bull; MySQL &bull; Bootstrap 5.3.3
+                    <i class="bi bi-cpu me-1"></i> Laravel 13.35.0 &bull; PHP 8.3+ &bull; MySQL &bull; Bootstrap 5.3.3
                 </span>
                 <button type="button" class="btn btn-sm btn-dark px-3 py-1 rounded-2" data-bs-dismiss="modal">Tutup</button>
             </div>

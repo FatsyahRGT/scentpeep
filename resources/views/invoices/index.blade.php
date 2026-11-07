@@ -123,14 +123,88 @@
                     </select>
                 </div>
 
-                <!-- Filter Customer Tetap (Di Samping Lokasi Stok & Kiri Search Invoice) -->
-                <div style="min-width: 130px; flex: 1 1 auto; max-width: 155px;">
-                    <select name="customer_name" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
-                        <option value="">Semua Customer</option>
-                        @foreach($customers as $c)
-                        <option value="{{ $c->name }}" {{ request('customer_name') === $c->name ? 'selected' : '' }}>{{ $c->name }}</option>
-                        @endforeach
-                    </select>
+                <!-- Filter Customer Tetap (Custom Dropdown Mengacu ke CRUD Pelanggan Tetap) -->
+                <div class="dropdown" style="min-width: 135px; flex: 1 1 auto; max-width: 165px;" id="dropdownFilterCustomer">
+                    <input type="hidden" name="customer_name" id="filterCustomerInput" value="{{ request('customer_name') }}">
+                    <button type="button" 
+                            class="form-select form-select-sm text-start d-flex align-items-center justify-content-between text-truncate w-100 {{ request('customer_name') ? 'border-success text-success fw-semibold bg-success-subtle' : '' }}" 
+                            id="btnCustomerFilterDropdown" 
+                            data-bs-toggle="dropdown" 
+                            data-bs-auto-close="outside"
+                            aria-expanded="false"
+                            style="font-size: 0.8rem; padding: 0.25rem 0.6rem; cursor: pointer; background-image: none;">
+                        <span class="text-truncate d-inline-flex align-items-center">
+                            <i class="bi bi-person{{ request('customer_name') ? '-check-fill text-success' : ' text-muted' }} me-1" style="font-size: 0.82rem;"></i>
+                            <span id="selectedCustomerLabel" class="text-truncate">{{ request('customer_name') ?: 'Semua Customer' }}</span>
+                        </span>
+                        <i class="bi bi-chevron-down ms-1 text-muted" style="font-size: 0.7rem; flex-shrink: 0;"></i>
+                    </button>
+
+                    <div class="dropdown-menu p-0 shadow-lg border rounded-3 customer-filter-menu" 
+                         aria-labelledby="btnCustomerFilterDropdown"
+                         style="min-width: 240px; max-width: 280px; z-index: 1050; border-color: #e5e7eb; overflow: hidden;">
+                        
+                        <!-- Header Sticky -->
+                        <div class="px-3 py-2 bg-light border-bottom d-flex justify-content-between align-items-center">
+                            <span class="text-muted fw-bold font-mono" style="font-size: 0.70rem; letter-spacing: 0.04em;">
+                                <i class="bi bi-people-fill text-success me-1"></i> DAFTAR PELANGGAN
+                            </span>
+                            <span class="badge bg-white text-dark border font-mono" style="font-size: 0.68rem;">{{ $customers->count() }} tetap</span>
+                        </div>
+
+                        <!-- Sticky In-Menu Search Box -->
+                        <div class="p-2 border-bottom bg-white">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-end-0 text-muted ps-2 pe-1" style="font-size: 0.75rem;">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" 
+                                       id="filterCustomerSearchInput" 
+                                       class="form-control border-start-0 ps-1" 
+                                       placeholder="Cari nama pelanggan..." 
+                                       style="font-size: 0.78rem;" 
+                                       autocomplete="off">
+                            </div>
+                        </div>
+
+                        <!-- Scrollable List Container (max-height: 200px) -->
+                        <div class="overflow-y-auto" style="max-height: 200px;" id="filterCustomerList">
+                            <!-- Opsi: Semua Customer (Reset) -->
+                            <button type="button" 
+                                    class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between customer-filter-item {{ empty(request('customer_name')) ? 'active bg-success text-white fw-semibold' : '' }}" 
+                                    data-value="" 
+                                    onclick="selectCustomerFilter('')">
+                                <span class="d-inline-flex align-items-center text-truncate">
+                                    <i class="bi bi-asterisk me-2 {{ empty(request('customer_name')) ? 'text-white' : 'text-muted' }}"></i>
+                                    Semua Customer
+                                </span>
+                                @if(empty(request('customer_name')))
+                                    <i class="bi bi-check2 text-white fs-6"></i>
+                                @endif
+                            </button>
+
+                            @foreach($customers as $c)
+                            @php $isSelected = (request('customer_name') === $c->name); @endphp
+                            <button type="button" 
+                                    class="dropdown-item py-1.5 px-3 d-flex align-items-center justify-content-between customer-filter-item {{ $isSelected ? 'active bg-success text-white fw-semibold' : '' }}" 
+                                    data-value="{{ $c->name }}" 
+                                    onclick="selectCustomerFilter('{{ addslashes($c->name) }}')">
+                                <span class="d-inline-flex align-items-center text-truncate">
+                                    <i class="bi bi-person{{ $isSelected ? '-fill text-white' : ' text-secondary' }} me-2" style="font-size: 0.85rem;"></i>
+                                    <span class="customer-item-name text-truncate">{{ $c->name }}</span>
+                                </span>
+                                @if($isSelected)
+                                    <i class="bi bi-check2 text-white fs-6"></i>
+                                @endif
+                            </button>
+                            @endforeach
+
+                            <!-- State Ketika Pencarian Tidak Ditemukan -->
+                            <div id="filterCustomerEmptyMsg" class="p-3 text-center text-muted small d-none" style="font-size: 0.75rem;">
+                                <i class="bi bi-search me-1"></i> Tidak ada nama yang cocok
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Fitur Search Invoice (Digeser ke Paling Kanan dengan ms-auto) -->
@@ -270,4 +344,59 @@
     </div>
     @endif
 </div>
+
+@push('scripts')
+<script>
+function selectCustomerFilter(name) {
+    const input = document.getElementById('filterCustomerInput');
+    if (input) {
+        input.value = name;
+        const form = input.closest('form');
+        if (form) form.submit();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('filterCustomerSearchInput');
+    const customerList = document.getElementById('filterCustomerList');
+    const emptyMsg = document.getElementById('filterCustomerEmptyMsg');
+    const dropdownToggle = document.getElementById('btnCustomerFilterDropdown');
+
+    if (searchInput && customerList) {
+        searchInput.addEventListener('input', function () {
+            const query = this.value.trim().toLowerCase();
+            const items = customerList.querySelectorAll('.customer-filter-item');
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (!query || text.includes(query)) {
+                    item.classList.remove('d-none');
+                    item.classList.add('d-flex');
+                    visibleCount++;
+                } else {
+                    item.classList.remove('d-flex');
+                    item.classList.add('d-none');
+                }
+            });
+
+            if (emptyMsg) {
+                if (visibleCount === 0) {
+                    emptyMsg.classList.remove('d-none');
+                } else {
+                    emptyMsg.classList.add('d-none');
+                }
+            }
+        });
+
+        if (dropdownToggle) {
+            dropdownToggle.addEventListener('shown.bs.dropdown', function () {
+                searchInput.focus();
+                searchInput.select();
+            });
+        }
+    }
+});
+</script>
+@endpush
 @endsection

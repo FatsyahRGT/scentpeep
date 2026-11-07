@@ -119,7 +119,7 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 ---
 
 ## 5. Tech Stack & Default Skills
-- **Backend Framework**: Laravel 12 (PHP 8.2+)
+- **Backend Framework**: Laravel 13 (13.35.0, PHP 8.3+)
 - **Database**: SQLite / MySQL (PDO)
 - **Frontend**: Blade Views + Bootstrap 5.3.3 (CDN) + AdminLTE 4 Components + Bootstrap Icons + SweetAlert2 (CDN) + Chart.js (CDN)
 - **Testing**: PHPUnit / Laravel TestSuite (100% Passed - 96 tests)

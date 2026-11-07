@@ -14,7 +14,7 @@ Setiap sesi pengerjaan AI wajib mematuhi standar skill berikut secara default ta
      `& (Get-Content graphify-out\.graphify_python) -m graphify update .`
 2. **`ponytail` (Minimalist, KISS & YAGNI)**:
    - Prioritaskan solusi paling ringkas dan sederhana yang terbukti bekerja (*the laziest solution that actually works*).
-   - Maksimalkan fitur native Laravel 12, PHP 8.2+, dan standard library sebelum menambah paket/dependensi baru.
+   - Maksimalkan fitur native Laravel 13, PHP 8.3+, dan standard library sebelum menambah paket/dependensi baru.
    - Hindari over-engineering, boilerplate spekulatif, dan kode mubazir.
 3. **`db-perf` & `n1` (Database Performance & Anti N+1)**:
    - Wajib audit kueri Eloquent: selalu gunakan eager loading (`with(...)`) untuk relasi di loop/tabel guna mencegah masalah N+1.
