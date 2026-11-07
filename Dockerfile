@@ -13,7 +13,8 @@ RUN composer install \
     --no-plugins \
     --no-scripts \
     --prefer-dist \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --ignore-platform-req=ext-gd
 
 # ==========================================
 # Stage 2: Production PHP-FPM Application
@@ -25,6 +26,11 @@ WORKDIR /var/www/html
 # Install system runtime libraries & PHP extension dependencies
 RUN apk update && apk add --no-cache \
     curl \
+    freetype \
+    freetype-dev \
+    libjpeg-turbo \
+    libjpeg-turbo-dev \
+    libpng \
     libpng-dev \
     libxml2-dev \
     zip \
@@ -37,8 +43,9 @@ RUN apk update && apk add --no-cache \
     sqlite-dev \
     bash
 
-# Install required PHP extensions for Laravel
-RUN docker-php-ext-install \
+# Install required PHP extensions for Laravel (including GD for PhpSpreadsheet)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
     pdo \
     pdo_mysql \
     pdo_sqlite \
@@ -46,7 +53,8 @@ RUN docker-php-ext-install \
     bcmath \
     opcache \
     intl \
-    zip
+    zip \
+    gd
 
 # Configure PHP production opcache & security hardening (PHP2Shell mitigation)
 RUN { \
