@@ -62,13 +62,27 @@ class ExportReportsTest extends TestCase
     }
 
     /**
-     * Kriteria 9: Ekspor Excel dan PDF berhasil untuk laporan transaksi dan stok.
+     * Kriteria 9: Ekspor Excel, CSV, Word, dan PDF berhasil untuk laporan transaksi dan stok.
      */
     public function test_kriteria_9_export_transactions_excel(): void
     {
         $response = $this->actingAs($this->admin)->get(route('reports.transactions.excel'));
         $response->assertOk();
+        $this->assertStringContainsString('vnd.ms-excel', $response->headers->get('content-type'));
+    }
+
+    public function test_export_transactions_csv(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('reports.transactions.csv'));
+        $response->assertOk();
         $this->assertStringContainsString('text/csv', $response->headers->get('content-type'));
+    }
+
+    public function test_export_transactions_word(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('reports.transactions.word'));
+        $response->assertOk();
+        $this->assertStringContainsString('msword', $response->headers->get('content-type'));
     }
 
     public function test_kriteria_9_export_transactions_pdf(): void
@@ -77,6 +91,34 @@ class ExportReportsTest extends TestCase
         $response->assertOk();
         $response->assertSee('Laporan Transaksi Kas');
         $response->assertSee('Sauvage Test');
+    }
+
+    public function test_export_invoices_excel(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('reports.invoices.excel'));
+        $response->assertOk();
+        $this->assertStringContainsString('vnd.ms-excel', $response->headers->get('content-type'));
+    }
+
+    public function test_export_invoices_csv(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('reports.invoices.csv'));
+        $response->assertOk();
+        $this->assertStringContainsString('text/csv', $response->headers->get('content-type'));
+    }
+
+    public function test_export_invoices_word(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('reports.invoices.word'));
+        $response->assertOk();
+        $this->assertStringContainsString('msword', $response->headers->get('content-type'));
+    }
+
+    public function test_export_invoices_pdf(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('reports.invoices.pdf'));
+        $response->assertOk();
+        $response->assertSee('Laporan Rekapitulasi Invoice Penjualan');
     }
 
     public function test_kriteria_9_export_stocks_excel(): void

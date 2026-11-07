@@ -89,10 +89,21 @@ Route::middleware('auth')->group(function () {
             Route::delete('/transfer/{stockTransfer}', [StockController::class, 'destroyTransfer'])->name('transfer.destroy');
         });
 
-        // Reports Export (Excel & PDF)
+        // Reports Export (Word, PDF, Excel, CSV)
         Route::prefix('reports')->name('reports.')->group(function () {
+            // Transaksi Kas
             Route::get('/transactions/excel', [\App\Http\Controllers\ReportController::class, 'exportTransactionsExcel'])->name('transactions.excel');
+            Route::get('/transactions/csv', [\App\Http\Controllers\ReportController::class, 'exportTransactionsCsv'])->name('transactions.csv');
+            Route::get('/transactions/word', [\App\Http\Controllers\ReportController::class, 'exportTransactionsWord'])->name('transactions.word');
             Route::get('/transactions/pdf', [\App\Http\Controllers\ReportController::class, 'exportTransactionsPdf'])->name('transactions.pdf');
+
+            // Invoices Penjualan
+            Route::get('/invoices/excel', [\App\Http\Controllers\ReportController::class, 'exportInvoicesExcel'])->name('invoices.excel');
+            Route::get('/invoices/csv', [\App\Http\Controllers\ReportController::class, 'exportInvoicesCsv'])->name('invoices.csv');
+            Route::get('/invoices/word', [\App\Http\Controllers\ReportController::class, 'exportInvoicesWord'])->name('invoices.word');
+            Route::get('/invoices/pdf', [\App\Http\Controllers\ReportController::class, 'exportInvoicesPdf'])->name('invoices.pdf');
+
+            // Stocks
             Route::get('/stocks/excel', [\App\Http\Controllers\ReportController::class, 'exportStocksExcel'])->name('stocks.excel');
             Route::get('/stocks/pdf', [\App\Http\Controllers\ReportController::class, 'exportStocksPdf'])->name('stocks.pdf');
         });

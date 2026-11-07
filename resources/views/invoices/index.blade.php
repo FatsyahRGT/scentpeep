@@ -16,6 +16,50 @@
                 <a href="{{ route('invoices.evaluation') }}" class="btn btn-sm btn-outline-secondary fw-semibold rounded-pill px-3 d-inline-flex align-items-center gap-2 text-nowrap" title="Buka Evaluasi Penjualan (YoY)">
                     <i class="bi bi-graph-up-arrow"></i> Evaluasi YoY
                 </a>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary fw-semibold rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-2 text-nowrap dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Unduh Data Invoice">
+                        <i class="bi bi-download"></i> Download
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important; min-width: 215px;">
+                        <li><h6 class="dropdown-header text-uppercase font-mono small text-muted" style="font-size: 0.68rem; letter-spacing: 0.06em;">PILIH FORMAT DOKUMEN</h6></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('reports.invoices.word', request()->all()) }}">
+                                <i class="bi bi-file-earmark-word text-primary fs-5"></i>
+                                <div>
+                                    <div class="fw-semibold small">Microsoft Word</div>
+                                    <small class="text-muted" style="font-size: 0.72rem;">Dokumen resmi .doc</small>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('reports.invoices.pdf', request()->all()) }}" target="_blank">
+                                <i class="bi bi-file-earmark-pdf text-danger fs-5"></i>
+                                <div>
+                                    <div class="fw-semibold small">Dokumen PDF</div>
+                                    <small class="text-muted" style="font-size: 0.72rem;">Pratinjau cetak / simpan .pdf</small>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('reports.invoices.excel', request()->all()) }}">
+                                <i class="bi bi-file-earmark-excel text-success fs-5"></i>
+                                <div>
+                                    <div class="fw-semibold small">Microsoft Excel</div>
+                                    <small class="text-muted" style="font-size: 0.72rem;">Spreadsheet .xls / .xlsx</small>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('reports.invoices.csv', request()->all()) }}">
+                                <i class="bi bi-file-earmark-spreadsheet text-secondary fs-5"></i>
+                                <div>
+                                    <div class="fw-semibold small">Tabel CSV</div>
+                                    <small class="text-muted" style="font-size: 0.72rem;">Raw data .csv UTF-8</small>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
                 <a href="{{ route('invoices.create') }}" class="btn btn-sm btn-scent fw-semibold rounded-pill px-3 d-inline-flex align-items-center gap-2 text-nowrap">
                     <i class="bi bi-plus-lg"></i> Buat Invoice
                 </a>
