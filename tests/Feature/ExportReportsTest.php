@@ -68,7 +68,8 @@ class ExportReportsTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('reports.transactions.excel'));
         $response->assertOk();
-        $this->assertStringContainsString('vnd.ms-excel', $response->headers->get('content-type'));
+        $this->assertStringContainsString('spreadsheetml.sheet', $response->headers->get('content-type'));
+        $this->assertStringContainsString('.xlsx', $response->headers->get('content-disposition'));
     }
 
     public function test_export_transactions_csv(): void
@@ -99,7 +100,8 @@ class ExportReportsTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('reports.invoices.excel'));
         $response->assertOk();
-        $this->assertStringContainsString('vnd.ms-excel', $response->headers->get('content-type'));
+        $this->assertStringContainsString('spreadsheetml.sheet', $response->headers->get('content-type'));
+        $this->assertStringContainsString('.xlsx', $response->headers->get('content-disposition'));
     }
 
     public function test_export_invoices_csv(): void
@@ -139,8 +141,42 @@ class ExportReportsTest extends TestCase
             'category' => 'Penjualan',
         ]));
         $response->assertOk();
-        $response->assertSee('Tipe: Pemasukan (Masuk)');
-        $response->assertSee('Kategori: Penjualan');
+        $this->assertStringContainsString('spreadsheetml.sheet', $response->headers->get('content-type'));
+
+        $temp = tempnam(sys_get_temp_dir(), 'test_tx_xlsx_');
+        file_put_contents($temp, $response->streamedContent());
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+        $spreadsheet = $reader->load($temp);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $this->assertEquals('LAPORAN KAS SCENTPEEP', $sheet->getCell('A1')->getValue());
+        $this->assertStringContainsString('TIPE: PEMASUKAN (MASUK)', (string)$sheet->getCell('A3')->getValue());
+        $this->assertStringContainsString('KATEGORI: PENJUALAN', (string)$sheet->getCell('A3')->getValue());
+
+        unlink($temp);
+    }
+
+    public function test_export_invoices_excel_content_with_phpspreadsheet(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('reports.invoices.excel', [
+            'month' => 1,
+            'year' => 2026,
+        ]));
+        $response->assertOk();
+        $this->assertStringContainsString('spreadsheetml.sheet', $response->headers->get('content-type'));
+
+        $temp = tempnam(sys_get_temp_dir(), 'test_inv_xlsx_');
+        file_put_contents($temp, $response->streamedContent());
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+        $spreadsheet = $reader->load($temp);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $this->assertEquals('INVOICE SCENTPEEP', $sheet->getCell('A1')->getValue());
+        $this->assertEquals('REKAPITULASI INVOICE PENJUALAN', $sheet->getCell('A2')->getValue());
+        $this->assertStringContainsString('BULAN JANUARI', (string)$sheet->getCell('A3')->getValue());
+        $this->assertStringContainsString('TAHUN 2026', (string)$sheet->getCell('A3')->getValue());
+
+        unlink($temp);
     }
 
     public function test_export_invoices_pdf(): void

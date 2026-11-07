@@ -94,7 +94,7 @@
                                 <i class="bi bi-file-earmark-excel text-success fs-5"></i>
                                 <div>
                                     <div class="fw-semibold small">Microsoft Excel</div>
-                                    <small class="text-muted" style="font-size: 0.72rem;">Spreadsheet .xls / .xlsx</small>
+                                    <small class="text-muted" style="font-size: 0.72rem;">Spreadsheet .xlsx Modern</small>
                                 </div>
                             </a>
                         </li>

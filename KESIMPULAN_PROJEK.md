@@ -106,7 +106,7 @@ Aplikasi ini mencakup kebutuhan operasional harian:
    - Riwayat Kas Terkini.
 11. **Standardisasi Modul Ekspor Laporan & Dokumen Resmi Multi-Format (Word, PDF, Excel, & Print)**:
    - **Kop Surat Formal Terpadu**: Dilengkapi logo login asli resolusi tinggi ter-embed Base64 (bebas risiko broken-image offline), penamaan spesifik modul (`LAPORAN KAS SCENTPEEP`, `INVOICE SCENTPEEP`, `LAPORAN STOK SCENTPEEP`), serta tagline tunggal resmi `Authentic Inspired Fragrance - Retail Supply Chain`.
-   - **Tata Letak Word Portrait & Excel Centered**: Dokumen Word (.doc) diformat A4 portrait proporsional (lebar fixed 523pt) bebas garis batas kotor (`border: none; mso-border-alt: none;`), serta kop surat Excel (.xls) berorientasi sentral (centered) di tengah bentang data tabel.
+   - **Tata Letak Word Portrait & Excel Modern (.xlsx)**: Dokumen Word (.doc) diformat A4 portrait proporsional (lebar fixed 523pt) bebas garis batas kotor (`border: none; mso-border-alt: none;`), serta berkas Excel dimigrasi penuh ke format standar modern OpenXML (`.xlsx`) via PhpSpreadsheet dengan kop surat sentral dan pemformatan data native.
    - **Filter Dinamis Berskala Subjudul**: Teks formal `LAPORAN BERDASARKAN : [FILTER AKTIF]` sejajar ukuran subjudul, mendukung penyaringan bulan (`month`), tahun (`year`), tipe kas, kategori, lokasi, maupun customer.
    - **Pratinjau & Cetak Faktur Satuan (Single Invoice Print A4)**: Pratinjau cetak A4 faktur satuan resmi siap cetak dan simpan PDF langsung dari baris riwayat invoice penjualan dengan nomor dokumen otomatis.
 
@@ -122,7 +122,7 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 - **Backend Framework**: Laravel 12 (PHP 8.2+)
 - **Database**: SQLite / MySQL (PDO)
 - **Frontend**: Blade Views + Bootstrap 5.3.3 (CDN) + AdminLTE 4 Components + Bootstrap Icons + SweetAlert2 (CDN) + Chart.js (CDN)
-- **Testing**: PHPUnit / Laravel TestSuite (100% Passed - 95 tests)
+- **Testing**: PHPUnit / Laravel TestSuite (100% Passed - 96 tests)
 - **Default Agent Skills & Memory**:
   - `graphify`: Persistent knowledge graph di `graphify-out/`, auto-update setiap ada perubahan file.
   - `ponytail`: Minimalist & KISS, tanpa dependensi berlebih, solusi native paling sederhana.
