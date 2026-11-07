@@ -10,7 +10,7 @@
         <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
             <div class="card-body p-3 d-flex align-items-center">
                 <div class="flex-shrink-0 me-3">
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 44px; height: 44px; background-color: rgba(47, 179, 68, 0.1); color: #2fb344;">
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 44px; height: 44px; background-color: rgba(43, 123, 91, 0.1); color: #2b7b5b;">
                         <i class="bi bi-arrow-down-left-circle fs-4"></i>
                     </span>
                 </div>
@@ -40,7 +40,7 @@
         <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
             <div class="card-body p-3 d-flex align-items-center">
                 <div class="flex-shrink-0 me-3">
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 44px; height: 44px; background-color: var(--scent-amber-subtle, rgba(179,139,77,0.1)); color: var(--scent-amber, #b38b4d);">
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 44px; height: 44px; background-color: rgba(43, 123, 91, 0.1); color: #2b7b5b;">
                         <i class="bi bi-wallet2 fs-4"></i>
                     </span>
                 </div>

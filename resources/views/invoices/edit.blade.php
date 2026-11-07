@@ -113,7 +113,7 @@
                             <label for="total_price" class="form-label small fw-semibold text-muted">Total Harga (Bisa Custom / Diskon) <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted">Rp</span>
-                                <input type="number" name="total_price" id="total_price" step="0.01" min="0" class="form-control font-mono fw-bold @error('total_price') is-invalid @enderror" value="{{ old('total_price', $invoice->total_price) }}" required>
+                                <input type="number" name="total_price" id="total_price" step="any" min="0" class="form-control font-mono fw-bold @error('total_price') is-invalid @enderror" value="{{ old('total_price', (int)$invoice->total_price) }}" required>
                             </div>
                             @error('total_price')
                             <div class="invalid-feedback">{{ $message }}</div>

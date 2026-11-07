@@ -71,7 +71,7 @@
 <div class="card border-0 shadow-sm mb-4" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px; background: #ffffff;">
     <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div class="d-flex align-items-center gap-2">
-            <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 34px; height: 34px; background-color: var(--scent-amber-subtle, rgba(179,139,77,0.12)); color: var(--scent-amber, #b38b4d);">
+            <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 34px; height: 34px; background-color: rgba(43, 123, 91, 0.1); color: #2b7b5b;">
                 <i class="bi bi-graph-up-arrow"></i>
             </span>
             <div>

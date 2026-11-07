@@ -580,13 +580,32 @@ class StockController extends Controller
             ];
         });
 
-        // 3. Peringatan Stok Menipis (< 3 pcs)
-        $criticalStocks = Stock::with(['product', 'location'])
+        // 3. Peringatan Stok Menipis (< 3 pcs) & Stok Habis (0 pcs)
+        $criticalStocksFromDb = Stock::with(['product', 'location'])
             ->where('qty', '<', 3)
             ->whereHas('product', fn ($p) => $p->where('is_active', true))
             ->orderBy('qty', 'asc')
-            ->take(12)
             ->get();
+
+        $outOfStockProducts = $allProducts->filter(function ($p) {
+            return (int) $p->stocks->sum('qty') === 0;
+        })->values();
+
+        $existingProductIds = $criticalStocksFromDb->pluck('product_id')->toArray();
+        foreach ($outOfStockProducts as $oosp) {
+            if (!in_array($oosp->id, $existingProductIds)) {
+                $placeholderStock = new Stock([
+                    'product_id' => $oosp->id,
+                    'location_id' => null,
+                    'qty' => 0,
+                ]);
+                $placeholderStock->setRelation('product', $oosp);
+                $placeholderStock->setRelation('location', null);
+                $criticalStocksFromDb->push($placeholderStock);
+            }
+        }
+
+        $criticalStocks = $criticalStocksFromDb->sortBy('qty')->take(12)->values();
 
         // 4. Varian Parfum Terlaris (Best Seller) - hanya volume penjualan pcs, tanpa data keuangan
         $bestSellers = \App\Models\Invoice::select(
@@ -604,10 +623,6 @@ class StockController extends Controller
             ->where('status', \App\Models\PreOrder::STATUS_PENDING)
             ->latest()
             ->get();
-
-        $outOfStockProducts = $allProducts->filter(function ($p) {
-            return (int) $p->stocks->sum('qty') === 0;
-        })->values();
 
         // 6. Waktu Aktivitas / Mutasi Stok Terakhir Riil di Sistem
         $lastStockActivityTimestamp = collect([

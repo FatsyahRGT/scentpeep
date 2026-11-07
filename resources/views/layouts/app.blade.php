@@ -7,6 +7,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - Scentpeep Management System</title>
 
+    <!-- Favicon (Tab Browser) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/New_Project_4K_1000DPI.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/New_Project_4K_1000DPI.png') }}">
+
     <!-- Google Fonts: Source Serif 4 + Plus Jakarta Sans + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,8 +42,15 @@
             --color-border-subtle: #f0eee9;
             --scent-dark: #121212;
             --scent-dark-hover: #000000;
-            --scent-amber: #b38b4d;
-            --scent-amber-subtle: rgba(179, 139, 77, 0.08);
+            --scent-green: #2b7b5b;
+            --scent-green-hover: #226449;
+            --scent-green-subtle: rgba(43, 123, 91, 0.1);
+            --scent-green-border: rgba(43, 123, 91, 0.25);
+            --scent-cream: #f9efe8;
+
+            /* Legacy compatibility mapped to brand green */
+            --scent-amber: #2b7b5b;
+            --scent-amber-subtle: rgba(43, 123, 91, 0.1);
         }
 
         body {
@@ -100,9 +111,13 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.1rem;
         }
         .scent-brand:hover { color: #000000; }
+        .scent-brand .brand-dot {
+            color: var(--color-text-muted, #8a8880);
+            display: inline;
+        }
         .scent-brand-sub {
             font-family: var(--font-sans);
             font-size: 0.65rem;
@@ -113,7 +128,7 @@
         }
 
         /* ==========================================================
-           SIDEBAR
+           SIDEBAR (Hitam - Putih Bersih)
            ========================================================== */
         .admin-sidebar {
             position: fixed;
@@ -140,7 +155,11 @@
             transition: background 0.15s ease, color 0.15s ease;
         }
         .nav-side-link:hover { color: var(--color-text-main); background-color: var(--color-surface-hover); }
-        .nav-side-link.active { color: var(--scent-dark); background-color: #f1efea; font-weight: 600; }
+        .nav-side-link.active {
+            color: var(--scent-dark);
+            background-color: #f1efea;
+            font-weight: 600;
+        }
         .nav-side-link i { font-size: 1.1rem; }
         .nav-side-link[data-bs-toggle="collapse"] .nav-chevron {
             transition: transform 0.2s ease;
@@ -198,30 +217,66 @@
         }
 
         /* ==========================================================
-           LUXURY BUTTONS
+           LUXURY BUTTONS (Hitam - Putih - Hijau Scentpeep)
            ========================================================== */
-        .btn-scent {
-            background-color: var(--scent-dark);
-            color: #ffffff;
-            border: 1px solid var(--scent-dark);
-            font-weight: 500;
+        .btn-scent, .btn-primary {
+            background-color: var(--scent-green, #2b7b5b) !important;
+            color: #ffffff !important;
+            border: 1px solid var(--scent-green, #2b7b5b) !important;
+            font-weight: 600;
             font-size: 0.875rem;
             border-radius: 9999px;
             padding: 0.45rem 1.25rem;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .btn-scent:hover { background-color: var(--scent-dark-hover); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
-        .btn-scent-outline {
-            background-color: transparent;
-            color: var(--color-text-main);
-            border: 1px solid var(--color-border);
-            font-weight: 500;
+        .btn-scent:hover, .btn-primary:hover, .btn-scent:focus, .btn-primary:focus {
+            background-color: var(--scent-green-hover, #226449) !important;
+            border-color: var(--scent-green-hover, #226449) !important;
+            color: #ffffff !important;
+            box-shadow: 0 3px 12px rgba(43, 123, 91, 0.25) !important;
+        }
+        .btn-scent-outline, .btn-outline-primary {
+            background-color: #ffffff !important;
+            color: var(--scent-green, #2b7b5b) !important;
+            border: 1px solid var(--scent-green, #2b7b5b) !important;
+            font-weight: 600;
             font-size: 0.875rem;
             border-radius: 9999px;
             padding: 0.45rem 1.2rem;
             transition: all 0.2s ease;
         }
-        .btn-scent-outline:hover { background-color: #fff; border-color: var(--scent-dark); color: #000; }
+        .btn-scent-outline:hover, .btn-outline-primary:hover, .btn-scent-outline.active, .btn-outline-primary.active {
+            background-color: var(--scent-green, #2b7b5b) !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(43, 123, 91, 0.2) !important;
+        }
+
+        /* Tombol aksi halaman: Hijau - Putih - Hitam */
+        .btn-dark {
+            background-color: var(--scent-green, #2b7b5b) !important;
+            border-color: var(--scent-green, #2b7b5b) !important;
+            color: #ffffff !important;
+            transition: all 0.2s ease;
+        }
+        .btn-dark:hover, .btn-dark:focus, .btn-dark:active {
+            background-color: var(--scent-green-hover, #226449) !important;
+            border-color: var(--scent-green-hover, #226449) !important;
+            color: #ffffff !important;
+            box-shadow: 0 3px 10px rgba(43, 123, 91, 0.25) !important;
+        }
+
+        .btn-outline-dark {
+            background-color: #ffffff !important;
+            border-color: #121212 !important;
+            color: #121212 !important;
+            transition: all 0.2s ease;
+        }
+        .btn-outline-dark:hover, .btn-outline-dark:focus, .btn-outline-dark:active, .btn-outline-dark.active {
+            background-color: var(--scent-green, #2b7b5b) !important;
+            border-color: var(--scent-green, #2b7b5b) !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(43, 123, 91, 0.2) !important;
+        }
 
         /* ==========================================================
            STAT CARDS (KPI)
@@ -326,9 +381,17 @@
             min-height: 32px;
         }
         .form-select:focus, .form-control:focus {
-            border-color: var(--scent-dark);
-            box-shadow: 0 0 0 0.15rem rgba(18,18,18,0.08);
+            border-color: var(--scent-green, #2b7b5b) !important;
+            box-shadow: 0 0 0 0.2rem rgba(43, 123, 91, 0.15) !important;
             background-color: #ffffff;
+        }
+        .form-check-input:checked {
+            background-color: var(--scent-green, #2b7b5b) !important;
+            border-color: var(--scent-green, #2b7b5b) !important;
+        }
+        .form-check-input:focus {
+            border-color: var(--scent-green, #2b7b5b) !important;
+            box-shadow: 0 0 0 0.2rem rgba(43, 123, 91, 0.15) !important;
         }
 
         /* ==========================================================
@@ -365,8 +428,8 @@
             border-color: #c4c1b9;
         }
         .pagination .page-item.active .page-link {
-            background-color: var(--scent-dark, #121212) !important;
-            border-color: var(--scent-dark, #121212) !important;
+            background-color: var(--scent-green, #2b7b5b) !important;
+            border-color: var(--scent-green, #2b7b5b) !important;
             color: #ffffff !important;
             font-weight: 600;
         }
@@ -389,8 +452,38 @@
             transition: all 0.15s ease;
         }
         .pagination-luxury .page-link:hover { background-color: #f1efea; color: #000; }
-        .pagination-luxury .active .page-link { background-color: var(--scent-dark); color: #fff; font-weight: 600; border-color: var(--scent-dark); }
+        .pagination-luxury .active .page-link { background-color: var(--scent-green, #2b7b5b) !important; color: #fff !important; font-weight: 600; border-color: var(--scent-green, #2b7b5b) !important; }
         .pagination-luxury .disabled .page-link { color: #c7c5be; pointer-events: none; }
+
+        /* Bootstrap Green Overrides (Hitam - Putih - Hijau #2b7b5b) */
+        .btn-success {
+            background-color: var(--scent-green, #2b7b5b) !important;
+            border-color: var(--scent-green, #2b7b5b) !important;
+            color: #ffffff !important;
+        }
+        .btn-success:hover, .btn-success:focus, .btn-success:active {
+            background-color: var(--scent-green-hover, #226449) !important;
+            border-color: var(--scent-green-hover, #226449) !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(43, 123, 91, 0.25) !important;
+        }
+        .btn-outline-success {
+            color: var(--scent-green, #2b7b5b) !important;
+            border-color: var(--scent-green, #2b7b5b) !important;
+        }
+        .btn-outline-success:hover, .btn-outline-success:focus, .btn-outline-success:active, .btn-outline-success.active {
+            background-color: var(--scent-green, #2b7b5b) !important;
+            border-color: var(--scent-green, #2b7b5b) !important;
+            color: #ffffff !important;
+        }
+        .text-success { color: var(--scent-green, #2b7b5b) !important; }
+        .bg-success { background-color: var(--scent-green, #2b7b5b) !important; }
+        .bg-success-subtle { background-color: rgba(43, 123, 91, 0.1) !important; }
+        .border-success-subtle { border-color: rgba(43, 123, 91, 0.25) !important; }
+        .badge.bg-success { background-color: var(--scent-green, #2b7b5b) !important; color: #ffffff !important; }
+        .badge.text-bg-success { background-color: var(--scent-green, #2b7b5b) !important; color: #ffffff !important; }
+        .badge.bg-success-subtle { background-color: rgba(43, 123, 91, 0.1) !important; color: var(--scent-green, #2b7b5b) !important; border: 1px solid rgba(43, 123, 91, 0.25) !important; }
+        .stock-safe { background-color: rgba(43, 123, 91, 0.08) !important; color: var(--scent-green, #2b7b5b) !important; border: 1px solid rgba(43, 123, 91, 0.25) !important; }
 
         /* ==========================================================
            TABLER CLASS COMPATIBILITY LAYER
@@ -814,7 +907,7 @@
                     <span class="badge bg-light text-muted border border-hairline px-3 py-2 d-none d-xl-inline-flex" style="font-size:0.78rem;">
                         <i class="bi bi-calendar3 me-1"></i> {{ date('d M Y') }}
                     </span>
-                    <span class="badge px-3 py-2 fw-semibold" style="background-color: var(--scent-amber-subtle); color: var(--scent-amber); font-size:0.78rem;">
+                    <span class="badge px-3 py-2 fw-semibold" style="background-color: var(--scent-green-subtle); color: var(--scent-green); border: 1px solid var(--scent-green-border); font-size:0.78rem;">
                         <i class="bi bi-shield-check me-1"></i> {{ strtoupper(Auth::user()->role) }}
                     </span>
                 </div>
@@ -831,7 +924,7 @@
             <!-- Footer -->
             <footer class="border-top py-3 px-4 bg-white mt-auto text-muted small" style="border-color: var(--color-border) !important;">
                 <div class="container-fluid p-0 d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
-                    <div>&copy; {{ date('Y') }} <strong class="font-serif">Scentpeep</strong>, Sistem Rekap Stok & Ledger Transaksi UMKM Parfum</div>
+                    <div>&copy; {{ date('Y') }} <strong class="font-serif">Scentpeep<span class="text-secondary">.</span></strong>, Sistem Rekap Stok & Ledger Transaksi UMKM Parfum</div>
                     <div>Bootstrap 5.3 + SweetAlert2 (CDN)</div>
                 </div>
             </footer>

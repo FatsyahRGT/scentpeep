@@ -10,7 +10,7 @@
         <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px; background: #ffffff;">
             <div class="card-body p-3">
                 <div class="d-flex align-items-center">
-                    <span class="d-inline-flex align-items-center justify-content-center me-2 me-md-3 rounded-circle flex-shrink-0" style="width: 44px; height: 44px; background-color: var(--scent-amber-subtle, rgba(179,139,77,0.12)); color: var(--scent-amber, #b38b4d);">
+                    <span class="d-inline-flex align-items-center justify-content-center me-2 me-md-3 rounded-circle flex-shrink-0" style="width: 44px; height: 44px; background-color: rgba(43, 123, 91, 0.1); color: #2b7b5b;">
                         <i class="bi bi-people-fill fs-4"></i>
                     </span>
                     <div class="overflow-hidden">
@@ -26,7 +26,7 @@
         <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px; background: #ffffff;">
             <div class="card-body p-3">
                 <div class="d-flex align-items-center">
-                    <span class="d-inline-flex align-items-center justify-content-center me-2 me-md-3 rounded-circle flex-shrink-0" style="width: 44px; height: 44px; background-color: rgba(47, 179, 68, 0.1); color: #2fb344;">
+                    <span class="d-inline-flex align-items-center justify-content-center me-2 me-md-3 rounded-circle flex-shrink-0" style="width: 44px; height: 44px; background-color: rgba(43, 123, 91, 0.1); color: #2b7b5b;">
                         <i class="bi bi-person-check-fill fs-4"></i>
                     </span>
                     <div class="overflow-hidden">
@@ -135,49 +135,83 @@
     </div>
 </div>
 
-<!-- Tren Penjualan per Seller (Grafik Komparasi 6 Bulan Terakhir) -->
+<!-- Tren Penjualan per Seller (Grafik Komparasi Multi-Seller) -->
 <div class="card border-0 shadow-sm mb-4" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px; background: #ffffff;">
-    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div class="d-flex align-items-center gap-2">
-            <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; background-color: rgba(18, 18, 18, 0.06); color: var(--scent-dark, #121212);">
-                <i class="bi bi-graph-up text-dark fs-5"></i>
+            <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 38px; height: 38px; background-color: rgba(43, 123, 91, 0.1); color: #2b7b5b;">
+                <i class="bi bi-graph-up-arrow fs-5"></i>
             </span>
             <div>
-                <h5 class="card-title mb-0 font-serif fw-bold text-dark fs-6">Tren Penjualan per Seller (6 Bulan Terakhir)</h5>
-                <small class="text-muted">Komparasi performa volume penjualan &amp; omset antar tim sales</small>
+                <h5 class="card-title mb-0 font-serif fw-bold text-dark fs-6" id="sellerTrendTitle">{{ $sellerTrendData['period_title'] }}</h5>
+                <small class="text-muted" id="sellerTrendSubtitle">{{ $sellerTrendData['period_subtitle'] }}</small>
             </div>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
-            @if($topSeller && $topSeller['total_qty'] > 0)
-                @php $topPal = $topSeller['palette']; @endphp
-                <span class="badge d-none d-md-inline-flex align-items-center gap-1 px-2 py-1" style="background-color: {{ $topPal['badge_bg'] }}; color: {{ $topPal['badge_text'] }}; border: 1px solid {{ $topPal['border'] }}; font-size: 0.78rem;">
-                    <i class="bi bi-trophy-fill text-warning me-1"></i> Top Seller: <strong>{{ $topSeller['name'] }}</strong> ({{ number_format($topSeller['total_qty']) }} pcs)
-                </span>
-            @endif
-            <div class="btn-group btn-group-sm" role="group" aria-label="Seller Metric Type">
-                <button type="button" class="btn btn-outline-dark active fw-semibold" onclick="switchSellerMetric('qty')" id="btnSellerQty">
+            <!-- Filter Dropdown Periode (Tahun & Bulan) -->
+            <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                <div class="input-group input-group-sm shadow-2xs" style="width: auto;">
+                    <span class="input-group-text bg-light border text-muted px-2" style="font-size: 0.72rem; border-color: var(--color-border) !important;">
+                        <i class="bi bi-calendar3 me-1 text-dark"></i> Thn
+                    </span>
+                    <select class="form-select form-select-sm fw-semibold" id="sellerTrendYearSelect" onchange="onSellerTrendFilterChange()" style="min-width: 85px; font-size: 0.78rem; border-color: var(--color-border);">
+                        @foreach($sellerTrendData['available_years'] as $yr)
+                            <option value="{{ $yr }}" {{ $sellerTrendData['selected_year'] == $yr ? 'selected' : '' }}>{{ $yr }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="input-group input-group-sm shadow-2xs" style="width: auto;">
+                    <span class="input-group-text bg-light border text-muted px-2" style="font-size: 0.72rem; border-color: var(--color-border) !important;">
+                        <i class="bi bi-calendar-event me-1 text-dark"></i> Bln
+                    </span>
+                    <select class="form-select form-select-sm fw-semibold" id="sellerTrendMonthSelect" onchange="onSellerTrendFilterChange()" style="min-width: 145px; font-size: 0.78rem; border-color: var(--color-border);">
+                        <option value="" {{ empty($sellerTrendData['selected_month']) ? 'selected' : '' }}>Semua Bulan (1 Tahun)</option>
+                        @foreach($sellerTrendData['months_list'] as $mNum => $mName)
+                            <option value="{{ $mNum }}" {{ $sellerTrendData['selected_month'] == $mNum ? 'selected' : '' }}>{{ $mName }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-secondary px-2 {{ empty($sellerTrendData['selected_month']) ? 'd-none' : '' }}" id="btnResetMonthFilter" onclick="resetSellerTrendMonth()" title="Kembali ke Tampilan 1 Tahun Penuh" style="font-size: 0.75rem;">
+                    <i class="bi bi-x-circle me-1"></i> 1 Tahun
+                </button>
+            </div>
+
+            <!-- Top Seller Badge Container -->
+            <div id="sellerTrendTopSellerBadge">
+                @if($topSeller && $topSeller['total_qty'] > 0)
+                    @php $topPal = $topSeller['palette'] ?? \App\Models\Location::paletteForName($topSeller['name']); @endphp
+                    <span class="badge d-none d-xl-inline-flex align-items-center gap-1 px-2.5 py-1.5 shadow-2xs" style="background-color: {{ $topPal['badge_bg'] }}; color: {{ $topPal['badge_text'] }}; border: 1px solid {{ $topPal['border'] }}; font-size: 0.78rem;">
+                        <i class="bi bi-trophy-fill text-warning me-1"></i> Top Seller: <strong>{{ $topSeller['name'] }}</strong> ({{ number_format($topSeller['total_qty']) }} pcs)
+                    </span>
+                @endif
+            </div>
+
+            <div class="btn-group btn-group-sm shadow-2xs" role="group" aria-label="Seller Metric Type">
+                <button type="button" class="btn btn-outline-dark active fw-semibold" onclick="switchSellerMetric('qty')" id="btnSellerQty" style="font-size: 0.78rem;">
                     <i class="bi bi-box-seam me-1"></i> Volume (Pcs)
                 </button>
-                <button type="button" class="btn btn-outline-dark fw-semibold" onclick="switchSellerMetric('omset')" id="btnSellerOmset">
+                <button type="button" class="btn btn-outline-dark fw-semibold" onclick="switchSellerMetric('omset')" id="btnSellerOmset" style="font-size: 0.78rem;">
                     <i class="bi bi-cash me-1"></i> Omset (Rp)
                 </button>
             </div>
         </div>
     </div>
-    <div class="card-body p-3 p-md-4">
+    <div class="card-body p-3 p-md-4" id="sellerTrendCardBody" style="transition: opacity 0.2s ease;">
         <!-- Seller Quick Summary Badges Strip -->
-        <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom" id="sellerTrendBadgesContainer">
             <span class="small fw-bold text-muted text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">
                 <i class="bi bi-people-fill me-1"></i> Komparasi Seller:
             </span>
             @forelse($sellerTrendData['datasets'] as $ds)
-                <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1" style="background-color: {{ $ds['badge_bg'] }}; color: {{ $ds['text_color'] }}; border: 1px solid {{ $ds['border'] }}; font-size: 0.78rem;">
+                <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1 shadow-2xs" style="background-color: {{ $ds['badge_bg'] }}; color: {{ $ds['text_color'] }}; border: 1px solid {{ $ds['border'] }}; font-size: 0.78rem;">
                     <span class="rounded-circle d-inline-block" style="width: 8px; height: 8px; background-color: {{ $ds['color'] }};"></span>
                     <strong>{{ $ds['name'] }}:</strong> {{ number_format($ds['total_qty']) }} pcs
                     <span class="opacity-75 ms-1 font-mono">(Rp {{ number_format($ds['total_omset'], 0, ',', '.') }})</span>
                 </span>
             @empty
-                <span class="text-muted small">Belum ada data seller terdaftar.</span>
+                <span class="text-muted small">Belum ada data seller terdaftar pada periode ini.</span>
             @endforelse
         </div>
 
@@ -307,33 +341,38 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const sellerData = @json($sellerTrendData);
+let sellerData = @json($sellerTrendData);
+let sellerChart = null;
+let currentMetric = 'qty';
+
+function buildDatasets(metric) {
+    return (sellerData.datasets || []).map(ds => ({
+        label: ds.name,
+        data: metric === 'qty' ? ds.qty : ds.omset,
+        borderColor: ds.color,
+        backgroundColor: ds.color + '25',
+        borderWidth: 2.5,
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: ds.color,
+        fill: false,
+    }));
+}
+
+function initSellerSalesChart() {
     const ctx = document.getElementById('sellerSalesChart');
     if (!ctx) return;
 
-    let currentMetric = 'qty';
+    if (sellerChart) {
+        sellerChart.destroy();
+    }
 
-    const buildDatasets = (metric) => {
-        return (sellerData.datasets || []).map(ds => ({
-            label: ds.name,
-            data: metric === 'qty' ? ds.qty : ds.omset,
-            borderColor: ds.color,
-            backgroundColor: ds.color + '25',
-            borderWidth: 2.5,
-            tension: 0.35,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            pointBackgroundColor: ds.color,
-            fill: false,
-        }));
-    };
-
-    const sellerChart = new Chart(ctx, {
+    sellerChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: sellerData.labels || [],
-            datasets: buildDatasets('qty')
+            datasets: buildDatasets(currentMetric)
         },
         options: {
             responsive: true,
@@ -372,15 +411,120 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+}
 
-    window.switchSellerMetric = function (metric) {
-        currentMetric = metric;
+window.switchSellerMetric = function (metric) {
+    currentMetric = metric;
+    if (sellerChart) {
         sellerChart.data.datasets = buildDatasets(metric);
         sellerChart.update();
+    }
+    document.getElementById('btnSellerQty')?.classList.toggle('active', metric === 'qty');
+    document.getElementById('btnSellerOmset')?.classList.toggle('active', metric === 'omset');
+};
 
-        document.getElementById('btnSellerQty').classList.toggle('active', metric === 'qty');
-        document.getElementById('btnSellerOmset').classList.toggle('active', metric === 'omset');
-    };
+window.onSellerTrendFilterChange = function () {
+    const year = document.getElementById('sellerTrendYearSelect')?.value;
+    const month = document.getElementById('sellerTrendMonthSelect')?.value;
+    loadSellerTrend(year, month);
+};
+
+window.resetSellerTrendMonth = function () {
+    const monthSelect = document.getElementById('sellerTrendMonthSelect');
+    if (monthSelect) monthSelect.value = '';
+    onSellerTrendFilterChange();
+};
+
+window.loadSellerTrend = async function (year, month) {
+    const cardBody = document.getElementById('sellerTrendCardBody');
+    if (cardBody) cardBody.style.opacity = '0.5';
+
+    try {
+        const url = new URL(window.location.href);
+        if (year) url.searchParams.set('sales_year', year);
+        if (month) {
+            url.searchParams.set('sales_month', month);
+        } else {
+            url.searchParams.delete('sales_month');
+        }
+        url.searchParams.set('ajax_trend', '1');
+
+        const response = await fetch(url.toString(), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) throw new Error('Network error: ' + response.status);
+        const data = await response.json();
+
+        sellerData = data;
+
+        // Update Period Title & Subtitle
+        const titleEl = document.getElementById('sellerTrendTitle');
+        if (titleEl && data.period_title) titleEl.textContent = data.period_title;
+        const subTitleEl = document.getElementById('sellerTrendSubtitle');
+        if (subTitleEl && data.period_subtitle) subTitleEl.textContent = data.period_subtitle;
+
+        // Toggle Reset Month Button
+        const resetBtn = document.getElementById('btnResetMonthFilter');
+        if (resetBtn) resetBtn.classList.toggle('d-none', !month);
+
+        // Update Top Seller Badge
+        const topSellerContainer = document.getElementById('sellerTrendTopSellerBadge');
+        if (topSellerContainer) {
+            if (data.period_top_seller && data.period_top_seller.total_qty > 0) {
+                const ts = data.period_top_seller;
+                topSellerContainer.innerHTML = `
+                    <span class="badge d-none d-xl-inline-flex align-items-center gap-1 px-2.5 py-1.5 shadow-2xs" style="background-color: ${ts.badge_bg}; color: ${ts.text_color}; border: 1px solid ${ts.border}; font-size: 0.78rem;">
+                        <i class="bi bi-trophy-fill text-warning me-1"></i> Top Seller: <strong>${ts.name}</strong> (${new Intl.NumberFormat('id-ID').format(ts.total_qty)} pcs)
+                    </span>
+                `;
+            } else {
+                topSellerContainer.innerHTML = '';
+            }
+        }
+
+        // Update Summary Badges
+        const badgesContainer = document.getElementById('sellerTrendBadgesContainer');
+        if (badgesContainer) {
+            if (data.datasets && data.datasets.length > 0) {
+                let badgesHtml = `
+                    <span class="small fw-bold text-muted text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">
+                        <i class="bi bi-people-fill me-1"></i> Komparasi Seller:
+                    </span>
+                `;
+                data.datasets.forEach(ds => {
+                    badgesHtml += `
+                        <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1 shadow-2xs" style="background-color: ${ds.badge_bg}; color: ${ds.text_color}; border: 1px solid ${ds.border}; font-size: 0.78rem;">
+                            <span class="rounded-circle d-inline-block" style="width: 8px; height: 8px; background-color: ${ds.color};"></span>
+                            <strong>${ds.name}:</strong> ${new Intl.NumberFormat('id-ID').format(ds.total_qty)} pcs
+                            <span class="opacity-75 ms-1 font-mono">(Rp ${new Intl.NumberFormat('id-ID').format(ds.total_omset)})</span>
+                        </span>
+                    `;
+                });
+                badgesContainer.innerHTML = badgesHtml;
+            } else {
+                badgesContainer.innerHTML = '<span class="text-muted small">Belum ada data seller terdaftar pada periode ini.</span>';
+            }
+        }
+
+        // Re-render Chart
+        initSellerSalesChart();
+
+        // Sync clean URL without reloading page
+        url.searchParams.delete('ajax_trend');
+        window.history.replaceState({}, '', url.toString());
+    } catch (err) {
+        console.error('Gagal memperbarui grafik tren penjualan:', err);
+    } finally {
+        if (cardBody) cardBody.style.opacity = '1';
+    }
+};
+
+document.addEventListener('DOMContentLoaded', function () {
+    initSellerSalesChart();
 });
 </script>
 @endpush

@@ -3,6 +3,34 @@
 @section('title', 'Dashboard')
 @section('page-header', 'Ringkasan Kas & Stok Scentpeep')
 
+@push('styles')
+<style>
+    .kpi-slider-pill-btn {
+        border: none;
+        background: transparent;
+        color: #6b7280;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
+    .kpi-slider-pill-btn:hover {
+        color: var(--scent-green, #2b7b5b);
+        background-color: rgba(43, 123, 91, 0.08);
+    }
+    .kpi-slider-pill-btn.active {
+        background-color: var(--scent-green, #2b7b5b) !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 6px rgba(43, 123, 91, 0.25);
+    }
+    .hover-bg-light:hover {
+        background-color: #f3f4f6 !important;
+    }
+    .kpi-slider-track {
+        display: flex;
+        transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+</style>
+@endpush
+
 @section('content')
 <!-- Quick Action & Monthly Snapshot Banner -->
 <div class="card border-0 shadow-sm mb-4 bg-white" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
@@ -65,74 +93,270 @@
         </div>
     </div>
 </div>
-<!-- Top KPI Financial & Stock Cards -->
-<div class="row g-2 g-md-3 mb-4">
-    <!-- Total Saldo Kas -->
-    <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center">
-                    <span class="d-inline-flex align-items-center justify-content-center me-2 me-md-3 rounded-circle flex-shrink-0" style="width: 44px; height: 44px; background-color: var(--scent-amber-subtle, rgba(179,139,77,0.1)); color: var(--scent-amber, #b38b4d);">
-                        <i class="bi bi-wallet2 fs-4"></i>
-                    </span>
-                    <div class="overflow-hidden">
-                        <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.68rem; letter-spacing: 0.05em;">Saldo Kas</div>
-                        <div class="font-serif fw-bold fs-4 text-dark text-truncate">Rp {{ number_format($netSaldo, 0, ',', '.') }}</div>
-                    </div>
-                </div>
+<!-- KPI Animated Web Slider Banner (25 Detik / 25000 ms) -->
+<div class="kpi-slider-wrapper card border-0 shadow-sm mb-4 bg-white overflow-hidden position-relative" id="kpiSliderContainer" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 16px;">
+    <!-- Top Navigation Bar: 4 Tab Pills di Kiri, Posisi Slide & Tombol Prev/Next di Kanan -->
+    <div class="p-2.5 px-3 px-md-4 bg-light-subtle border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <!-- 4 Tab Pill Nav Buttons (Saldo Kas, Pemasukan, Pengeluaran, Total Stok) -->
+        <div class="d-inline-flex align-items-center p-1 rounded-pill bg-white border shadow-2xs gap-1 flex-wrap" id="kpiSliderPillsNav" role="tablist">
+            <button type="button" class="btn btn-sm rounded-pill px-3 py-1 font-mono fw-semibold d-inline-flex align-items-center gap-1.5 transition-all text-nowrap kpi-slider-pill-btn active" data-slide="0" style="font-size: 0.78rem;">
+                <i class="bi bi-wallet2 text-warning"></i> Saldo Kas
+            </button>
+            <button type="button" class="btn btn-sm rounded-pill px-3 py-1 font-mono fw-semibold d-inline-flex align-items-center gap-1.5 transition-all text-nowrap kpi-slider-pill-btn" data-slide="1" style="font-size: 0.78rem;">
+                <i class="bi bi-arrow-down-left text-success"></i> Pemasukan
+            </button>
+            <button type="button" class="btn btn-sm rounded-pill px-3 py-1 font-mono fw-semibold d-inline-flex align-items-center gap-1.5 transition-all text-nowrap kpi-slider-pill-btn" data-slide="2" style="font-size: 0.78rem;">
+                <i class="bi bi-arrow-up-right text-danger"></i> Pengeluaran
+            </button>
+            <button type="button" class="btn btn-sm rounded-pill px-3 py-1 font-mono fw-semibold d-inline-flex align-items-center gap-1.5 transition-all text-nowrap kpi-slider-pill-btn" data-slide="3" style="font-size: 0.78rem;">
+                <i class="bi bi-box-seam text-dark"></i> Total Stok
+            </button>
+        </div>
+
+        <!-- Sisi Kanan: Slide Position Badge (1 / 4) & Prev/Next Arrows -->
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-white text-muted border px-2 py-1 font-mono d-none d-sm-inline-flex align-items-center gap-1 shadow-2xs" style="font-size: 0.72rem;">
+                <span id="kpiSliderCurrentNum">1</span> / 4
+            </span>
+            <div class="btn-group shadow-2xs rounded-3 overflow-hidden border" role="group">
+                <button type="button" class="btn btn-sm btn-white px-2.5 py-1 text-dark border-0 hover-bg-light" id="kpiSliderBtnPrev" title="Slide Sebelumnya (‹)" aria-label="Previous Slide">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-white px-2.5 py-1 text-dark border-0 border-start hover-bg-light" id="kpiSliderBtnNext" title="Slide Berikutnya (›)" aria-label="Next Slide">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Total Income -->
-    <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center">
-                    <span class="d-inline-flex align-items-center justify-content-center me-2 me-md-3 rounded-circle flex-shrink-0" style="width: 44px; height: 44px; background-color: rgba(47, 179, 68, 0.1); color: #2fb344;">
-                        <i class="bi bi-arrow-down-left fs-4"></i>
+    <!-- Slider Track Horizontal (display: flex; transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);) -->
+    <div class="position-relative overflow-hidden w-100 bg-white">
+        <div class="kpi-slider-track" id="kpiSliderTrack" style="display: flex; transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1); width: 100%;">
+            
+            <!-- SLIDE 1: SALDO KAS -->
+            <div class="kpi-slide p-3 p-md-4" style="flex: 0 0 100%; min-width: 100%; max-width: 100%; box-sizing: border-box;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-dark text-white font-mono px-2 py-1 text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Slide 1</span>
+                        <h6 class="font-serif fw-bold text-dark mb-0 fs-5">Saldo Kas & Likuiditas Finansial</h6>
+                    </div>
+                    <span class="text-muted small d-none d-md-inline font-mono">
+                        <i class="bi bi-shield-check me-1"></i>Buku Kas Operasional
                     </span>
-                    <div class="overflow-hidden">
-                        <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pemasukan</div>
-                        <div class="font-serif fw-bold fs-4 text-success text-truncate">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
+                </div>
+
+                <div class="row g-3 align-items-stretch">
+                    <div class="col-12 col-lg-7">
+                        <div class="p-3 p-md-4 rounded-3 h-100 d-flex flex-column justify-content-center" style="background: rgba(43, 123, 91, 0.06); border: 1px solid rgba(43, 123, 91, 0.2);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle flex-shrink-0"
+                                     style="width: 56px; height: 56px; min-width: 56px; min-height: 56px; aspect-ratio: 1 / 1; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; background-color: rgba(43, 123, 91, 0.12); color: #2b7b5b; border: 1px solid rgba(43, 123, 91, 0.25);">
+                                    <i class="bi bi-wallet2 fs-3" style="line-height: 1; margin: 0;"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.72rem; letter-spacing: 0.05em;">Saldo Kas Riil Saat Ini</div>
+                                    <div class="font-serif fw-bold fs-2 text-dark text-truncate my-1">Rp {{ number_format($netSaldo, 0, ',', '.') }}</div>
+                                    <div class="small text-muted font-sans text-truncate">Akumulasi bersih: total pemasukan dikurangi pengeluaran operasional.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <div class="p-3 p-md-4 rounded-3 bg-light border h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small fw-bold text-dark font-serif">Kondisi Kas:</span>
+                                    <span class="badge {{ $netSaldo >= 0 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle' }} font-mono">
+                                        {{ $netSaldo >= 0 ? 'Surplus (Aman)' : 'Defisit (Perhatian)' }}
+                                    </span>
+                                </div>
+                                <p class="small text-muted mb-3" style="line-height: 1.5;">
+                                    Pencatatan kas riil beroperasi secara terpisah dari piutang invoice penjualan untuk menjamin kepastian dana tunai & rekening.
+                                </p>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-dark px-3 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5 font-mono" style="font-size: 0.78rem;">
+                                    <i class="bi bi-journal-text"></i> Buku Kas Utama &rarr;
+                                </a>
+                                <a href="{{ route('transactions.create') }}" class="btn btn-sm btn-outline-dark px-3 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5 font-mono" style="font-size: 0.78rem;">
+                                    <i class="bi bi-plus-lg"></i> Catat Kas
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- SLIDE 2: PEMASUKAN -->
+            <div class="kpi-slide p-3 p-md-4" style="flex: 0 0 100%; min-width: 100%; max-width: 100%; box-sizing: border-box;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle font-mono px-2 py-1 text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Slide 2</span>
+                        <h6 class="font-serif fw-bold text-dark mb-0 fs-5">Pemasukan Kas & Penerimaan Dana</h6>
+                    </div>
+                    <span class="text-success small fw-semibold d-none d-md-inline font-mono">
+                        <i class="bi bi-arrow-down-left me-1"></i>Arus Kas Masuk
+                    </span>
+                </div>
+
+                <div class="row g-3 align-items-stretch">
+                    <div class="col-12 col-lg-7">
+                        <div class="p-3 p-md-4 rounded-3 h-100 d-flex flex-column justify-content-center" style="background: rgba(43, 123, 91, 0.06); border: 1px solid rgba(43, 123, 91, 0.2);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle flex-shrink-0"
+                                     style="width: 56px; height: 56px; min-width: 56px; min-height: 56px; aspect-ratio: 1 / 1; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; background-color: rgba(43, 123, 91, 0.12); color: #2b7b5b; border: 1px solid rgba(43, 123, 91, 0.25);">
+                                    <i class="bi bi-arrow-down-left fs-3" style="line-height: 1; margin: 0;"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Pemasukan Kas</div>
+                                    <div class="font-serif fw-bold fs-2 text-success text-truncate my-1">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
+                                    <div class="small text-muted font-sans text-truncate">Total dana riil yang telah diterima masuk ke rekening / kasir fisik.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <div class="p-3 p-md-4 rounded-3 bg-light border h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small fw-bold text-dark font-serif">Pemasukan Bulan Ini:</span>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle font-mono">
+                                        +Rp {{ number_format($thisMonthIncome, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                                <p class="small text-muted mb-3" style="line-height: 1.5;">
+                                    Termasuk pelunasan piutang invoice riil, setoran modal, dan penerimaan kas operasional lainnya yang sudah dicatat.
+                                </p>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ route('transactions.index', ['type' => 'INCOME']) }}" class="btn btn-sm btn-dark px-3 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5 font-mono" style="font-size: 0.78rem;">
+                                    <i class="bi bi-list-check"></i> Riwayat Pemasukan &rarr;
+                                </a>
+                                <a href="{{ route('transactions.create') }}?type=INCOME" class="btn btn-sm btn-outline-success px-3 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5 font-mono" style="font-size: 0.78rem;">
+                                    <i class="bi bi-plus-circle"></i> Tambah Pemasukan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: PENGELUARAN -->
+            <div class="kpi-slide p-3 p-md-4" style="flex: 0 0 100%; min-width: 100%; max-width: 100%; box-sizing: border-box;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle font-mono px-2 py-1 text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Slide 3</span>
+                        <h6 class="font-serif fw-bold text-dark mb-0 fs-5">Pengeluaran Kas & Beban Operasional</h6>
+                    </div>
+                    <span class="text-danger small fw-semibold d-none d-md-inline font-mono">
+                        <i class="bi bi-arrow-up-right me-1"></i>Arus Kas Keluar
+                    </span>
+                </div>
+
+                <div class="row g-3 align-items-stretch">
+                    <div class="col-12 col-lg-7">
+                        <div class="p-3 p-md-4 rounded-3 h-100 d-flex flex-column justify-content-center" style="background: rgba(214, 57, 57, 0.06); border: 1px solid rgba(214, 57, 57, 0.2);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle flex-shrink-0"
+                                     style="width: 56px; height: 56px; min-width: 56px; min-height: 56px; aspect-ratio: 1 / 1; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; background-color: rgba(214, 57, 57, 0.12); color: #d63939; border: 1px solid rgba(214, 57, 57, 0.25);">
+                                    <i class="bi bi-arrow-up-right fs-3" style="line-height: 1; margin: 0;"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Pengeluaran Kas</div>
+                                    <div class="font-serif fw-bold fs-2 text-danger text-truncate my-1">Rp {{ number_format($totalOutcome, 0, ',', '.') }}</div>
+                                    <div class="small text-muted font-sans text-truncate">Total beban operasional, belanja kemasan botol & box, gaji, dan iklan.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <div class="p-3 p-md-4 rounded-3 bg-light border h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small fw-bold text-dark font-serif">Pengeluaran Bulan Ini:</span>
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle font-mono">
+                                        -Rp {{ number_format($thisMonthOutcome, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                                <p class="small text-muted mb-3" style="line-height: 1.5;">
+                                    Pengeluaran tercatat rapi berdasarkan kategori biaya operasional untuk memantau efisiensi anggaran usaha.
+                                </p>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ route('transactions.index', ['type' => 'OUTCOME']) }}" class="btn btn-sm btn-dark px-3 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5 font-mono" style="font-size: 0.78rem;">
+                                    <i class="bi bi-list-check"></i> Riwayat Pengeluaran &rarr;
+                                </a>
+                                <a href="{{ route('transactions.create') }}?type=OUTCOME" class="btn btn-sm btn-outline-danger px-3 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5 font-mono" style="font-size: 0.78rem;">
+                                    <i class="bi bi-dash-circle"></i> Catat Pengeluaran
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: TOTAL STOK -->
+            <div class="kpi-slide p-3 p-md-4" style="flex: 0 0 100%; min-width: 100%; max-width: 100%; box-sizing: border-box;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-dark text-white font-mono px-2 py-1 text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Slide 4</span>
+                        <h6 class="font-serif fw-bold text-dark mb-0 fs-5">Total Stok Fisik Parfum Tersedia</h6>
+                    </div>
+                    <span class="text-muted small d-none d-md-inline font-mono">
+                        <i class="bi bi-boxes me-1"></i>Inventaris Multi-Lokasi
+                    </span>
+                </div>
+
+                <div class="row g-3 align-items-stretch">
+                    <div class="col-12 col-lg-7">
+                        <div class="p-3 p-md-4 rounded-3 h-100 d-flex flex-column justify-content-center" style="background: rgba(18, 18, 18, 0.04); border: 1px solid rgba(18, 18, 18, 0.12);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle flex-shrink-0"
+                                     style="width: 56px; height: 56px; min-width: 56px; min-height: 56px; aspect-ratio: 1 / 1; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; background-color: rgba(18, 18, 18, 0.08); color: var(--scent-dark, #121212); border: 1px solid rgba(18, 18, 18, 0.2);">
+                                    <i class="bi bi-box-seam fs-3" style="line-height: 1; margin: 0;"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.72rem; letter-spacing: 0.05em;">Total Stok Fisik di Sistem</div>
+                                    <div class="font-serif fw-bold fs-2 text-dark text-truncate my-1">
+                                        {{ number_format($totalSystemStock, 0, ',', '.') }} <span class="fs-5 text-muted fw-normal font-sans">pcs</span>
+                                    </div>
+                                    <div class="small text-muted font-sans text-truncate">Kuantitas fisik siap jual yang tersebar di titik gudang & reseller aktif.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <div class="p-3 p-md-4 rounded-3 bg-light border h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small fw-bold text-dark font-serif">Titik Penyimpanan:</span>
+                                    <span class="badge bg-light text-dark border font-mono">
+                                        {{ count($locationStockSummaries) }} Lokasi Aktif
+                                    </span>
+                                </div>
+                                <p class="small text-muted mb-3" style="line-height: 1.5;">
+                                    Stok siap dialokasikan untuk penerbitan invoice langsung, pesanan pelanggan, maupun mutasi antar lokasi.
+                                </p>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ route('stocks.index') }}" class="btn btn-sm btn-dark px-3 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5 font-mono" style="font-size: 0.78rem;">
+                                    <i class="bi bi-boxes"></i> Master Stok &rarr;
+                                </a>
+                                <a href="{{ route('stocks.reseller') }}" class="btn btn-sm btn-outline-dark px-3 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5 font-mono" style="font-size: 0.78rem;">
+                                    <i class="bi bi-display"></i> Sebaran Reseller
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Total Outcome -->
-    <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center">
-                    <span class="d-inline-flex align-items-center justify-content-center me-2 me-md-3 rounded-circle flex-shrink-0" style="width: 44px; height: 44px; background-color: rgba(214, 57, 57, 0.1); color: #d63939;">
-                        <i class="bi bi-arrow-up-right fs-4"></i>
-                    </span>
-                    <div class="overflow-hidden">
-                        <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pengeluaran</div>
-                        <div class="font-serif fw-bold fs-4 text-danger text-truncate">Rp {{ number_format($totalOutcome, 0, ',', '.') }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Total Stock in System -->
-    <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm h-100" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center">
-                    <span class="d-inline-flex align-items-center justify-content-center me-2 me-md-3 rounded-circle flex-shrink-0" style="width: 44px; height: 44px; background-color: rgba(18, 18, 18, 0.06); color: var(--scent-dark, #121212);">
-                        <i class="bi bi-box-seam fs-4"></i>
-                    </span>
-                    <div class="overflow-hidden">
-                        <div class="text-muted small fw-semibold text-uppercase text-truncate" style="font-size: 0.68rem; letter-spacing: 0.05em;">Total Stok</div>
-                        <div class="font-serif fw-bold fs-4 text-dark text-truncate">{{ number_format($totalSystemStock, 0, ',', '.') }} <span class="fs-6 text-muted fw-normal font-sans">pcs</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Progress Bar (25 Detik Auto-Slide Timer) -->
+    <div class="progress" style="height: 3px; border-radius: 0; background-color: var(--color-border-subtle, #f0eee9);">
+        <div class="progress-bar" id="kpiSliderProgressBar" role="progressbar" style="width: 0%; background-color: #2b7b5b; transition: width 0.1s linear;"></div>
     </div>
 </div>
 
@@ -281,8 +505,20 @@
                     <h4 class="font-serif card-title mb-0 fw-bold fs-5">Peringatan Stok Menipis (&lt; 3 pcs)</h4>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-warning-subtle text-warning border px-2 py-1">{{ $criticalStocks->count() }} Varian Menipis</span>
-                    <a href="{{ route('stocks.reseller', ['filter_status' => 'low']) }}" class="small text-muted text-decoration-none">Lihat di Katalog &rarr;</a>
+                    @php
+                        $habisCount = $criticalStocks->where('qty', 0)->count();
+                        $menipisCount = $criticalStocks->where('qty', '>', 0)->count();
+                    @endphp
+                    @if($habisCount > 0)
+                        <span class="badge bg-danger-subtle text-danger border px-2 py-1">{{ $habisCount }} Habis</span>
+                    @endif
+                    @if($menipisCount > 0)
+                        <span class="badge bg-warning-subtle text-warning border px-2 py-1">{{ $menipisCount }} Menipis</span>
+                    @endif
+                    @if($habisCount === 0 && $menipisCount === 0)
+                        <span class="badge bg-success-subtle text-success border px-2 py-1">0 Alert</span>
+                    @endif
+                    <a href="{{ route('stocks.reseller', ['filter_status' => $habisCount > 0 ? 'empty' : 'low']) }}" class="small text-muted text-decoration-none">Lihat di Katalog &rarr;</a>
                 </div>
             </div>
             <div class="card-body p-0">
@@ -311,12 +547,12 @@
                                             {{ $item->location->name }}
                                         </span>
                                     @else
-                                        <span class="text-muted small">-</span>
+                                        <span class="badge bg-light text-muted border font-mono">Semua Lokasi</span>
                                     @endif
                                 </td>
                                 <td class="text-end py-2 px-3">
                                     <span class="badge {{ $item->qty == 0 ? 'bg-danger text-white' : 'bg-warning text-dark' }} px-2 py-1">
-                                        {{ $item->qty }} pcs
+                                        {{ $item->qty == 0 ? '0 pcs (HABIS)' : $item->qty . ' pcs' }}
                                     </span>
                                 </td>
                             </tr>
@@ -380,52 +616,89 @@
 <!-- Tren Penjualan per Seller (Multi-Seller Performance Comparison) -->
 <div class="row g-4 mb-4">
     <div class="col-12">
-        <div class="card border-0 shadow-sm" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px;">
-            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-bottom: 1px solid var(--color-border-subtle, #f0eee9);">
+        <div class="card border-0 shadow-sm" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px; background: #ffffff;">
+            <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center flex-wrap gap-3" style="border-bottom: 1px solid var(--color-border-subtle, #f0eee9);">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; background-color: rgba(18, 18, 18, 0.06); color: var(--scent-dark, #121212);">
-                        <i class="bi bi-graph-up text-dark fs-5"></i>
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 38px; height: 38px; background-color: rgba(43, 123, 91, 0.1); color: #2b7b5b;">
+                        <i class="bi bi-graph-up-arrow fs-5"></i>
                     </span>
                     <div>
-                        <h4 class="font-serif card-title mb-0 fw-bold fs-5">Tren Penjualan per Seller (6 Bulan Terakhir)</h4>
-                        <small class="text-muted">Komparasi volume penjualan (pcs) antar reseller & tim sales berdasarkan warna default identitas</small>
+                        <h4 class="font-serif card-title mb-0 fw-bold fs-5" id="sellerTrendTitle">{{ $sellerTrendData['period_title'] }}</h4>
+                        <small class="text-muted" id="sellerTrendSubtitle">{{ $sellerTrendData['period_subtitle'] }}</small>
                     </div>
                 </div>
+                
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    @if($topSeller && $topSeller['total_qty'] > 0)
-                        @php $topPal = $topSeller['palette']; @endphp
-                        <span class="badge d-none d-md-inline-flex align-items-center gap-1 px-2 py-1" style="background-color: {{ $topPal['badge_bg'] }}; color: {{ $topPal['badge_text'] }}; border: 1px solid {{ $topPal['border'] }}; font-size: 0.78rem;">
-                            <i class="bi bi-trophy-fill text-warning me-1"></i> Top Seller: <strong>{{ $topSeller['name'] }}</strong> ({{ number_format($topSeller['total_qty']) }} pcs)
-                        </span>
-                    @endif
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Seller Metric Type">
-                        <button type="button" class="btn btn-outline-dark active fw-semibold" onclick="switchSellerMetric('qty')" id="btnSellerQty">
+                    <!-- Filter Dropdown Periode (Tahun & Bulan) -->
+                    <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                        <div class="input-group input-group-sm shadow-2xs" style="width: auto;">
+                            <span class="input-group-text bg-light border text-muted px-2" style="font-size: 0.72rem; border-color: var(--color-border) !important;">
+                                <i class="bi bi-calendar3 me-1 text-dark"></i> Thn
+                            </span>
+                            <select class="form-select form-select-sm fw-semibold" id="sellerTrendYearSelect" onchange="onSellerTrendFilterChange()" style="min-width: 85px; font-size: 0.78rem; border-color: var(--color-border);">
+                                @foreach($sellerTrendData['available_years'] as $yr)
+                                    <option value="{{ $yr }}" {{ $sellerTrendData['selected_year'] == $yr ? 'selected' : '' }}>{{ $yr }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="input-group input-group-sm shadow-2xs" style="width: auto;">
+                            <span class="input-group-text bg-light border text-muted px-2" style="font-size: 0.72rem; border-color: var(--color-border) !important;">
+                                <i class="bi bi-calendar-event me-1 text-dark"></i> Bln
+                            </span>
+                            <select class="form-select form-select-sm fw-semibold" id="sellerTrendMonthSelect" onchange="onSellerTrendFilterChange()" style="min-width: 145px; font-size: 0.78rem; border-color: var(--color-border);">
+                                <option value="" {{ empty($sellerTrendData['selected_month']) ? 'selected' : '' }}>Semua Bulan (1 Tahun)</option>
+                                @foreach($sellerTrendData['months_list'] as $mNum => $mName)
+                                    <option value="{{ $mNum }}" {{ $sellerTrendData['selected_month'] == $mNum ? 'selected' : '' }}>{{ $mName }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-secondary px-2 {{ empty($sellerTrendData['selected_month']) ? 'd-none' : '' }}" id="btnResetMonthFilter" onclick="resetSellerTrendMonth()" title="Kembali ke Tampilan 1 Tahun Penuh" style="font-size: 0.75rem;">
+                            <i class="bi bi-x-circle me-1"></i> 1 Tahun
+                        </button>
+                    </div>
+
+                    <!-- Top Seller Badge Container -->
+                    <div id="sellerTrendTopSellerBadge">
+                        @if($topSeller && $topSeller['total_qty'] > 0)
+                            @php $topPal = $topSeller['palette'] ?? \App\Models\Location::paletteForName($topSeller['name']); @endphp
+                            <span class="badge d-none d-xl-inline-flex align-items-center gap-1 px-2.5 py-1.5 shadow-2xs" style="background-color: {{ $topPal['badge_bg'] }}; color: {{ $topPal['badge_text'] }}; border: 1px solid {{ $topPal['border'] }}; font-size: 0.78rem;">
+                                <i class="bi bi-trophy-fill text-warning me-1"></i> Top Seller: <strong>{{ $topSeller['name'] }}</strong> ({{ number_format($topSeller['total_qty']) }} pcs)
+                            </span>
+                        @endif
+                    </div>
+
+                    <!-- Toggle Metrik: Qty / Omset -->
+                    <div class="btn-group btn-group-sm shadow-2xs" role="group" aria-label="Seller Metric Type">
+                        <button type="button" class="btn btn-outline-dark active fw-semibold" onclick="switchSellerMetric('qty')" id="btnSellerQty" style="font-size: 0.78rem;">
                             <i class="bi bi-box-seam me-1"></i> Volume (Pcs)
                         </button>
-                        <button type="button" class="btn btn-outline-dark fw-semibold" onclick="switchSellerMetric('omset')" id="btnSellerOmset">
+                        <button type="button" class="btn btn-outline-dark fw-semibold" onclick="switchSellerMetric('omset')" id="btnSellerOmset" style="font-size: 0.78rem;">
                             <i class="bi bi-cash me-1"></i> Omzet (Rp)
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="card-body p-3">
+
+            <div class="card-body p-3" id="sellerTrendCardBody" style="transition: opacity 0.2s ease;">
                 <!-- Seller Quick Summary Badges Strip -->
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom" id="sellerTrendBadgesContainer">
                     <span class="small fw-bold text-muted text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">
                         <i class="bi bi-people-fill me-1"></i> Komparasi Seller:
                     </span>
                     @forelse($sellerTrendData['datasets'] as $ds)
-                        <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1" style="background-color: {{ $ds['badge_bg'] }}; color: {{ $ds['text_color'] }}; border: 1px solid {{ $ds['border'] }}; font-size: 0.78rem;">
+                        <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1 shadow-2xs" style="background-color: {{ $ds['badge_bg'] }}; color: {{ $ds['text_color'] }}; border: 1px solid {{ $ds['border'] }}; font-size: 0.78rem;">
                             <span class="rounded-circle d-inline-block" style="width: 8px; height: 8px; background-color: {{ $ds['color'] }};"></span>
                             <strong>{{ $ds['name'] }}:</strong> {{ number_format($ds['total_qty']) }} pcs
                             <span class="opacity-75 ms-1 font-mono">(Rp {{ number_format($ds['total_omset'], 0, ',', '.') }})</span>
                         </span>
                     @empty
-                        <span class="text-muted small">Belum ada data seller terdaftar.</span>
+                        <span class="text-muted small">Belum ada data seller terdaftar pada periode ini.</span>
                     @endforelse
                 </div>
 
-                <div style="position: relative; height: 280px; width: 100%;">
+                <div style="position: relative; height: 320px; width: 100%;">
                     <canvas id="sellerSalesChart"></canvas>
                 </div>
             </div>
@@ -663,9 +936,12 @@
     let currentChartType = 'bar';
     let currentSellerMetric = 'qty';
 
-    const sellerTrendRaw = {!! json_encode($sellerTrendData) !!};
+    let sellerTrendRaw = {!! json_encode($sellerTrendData) !!};
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize KPI Slider Banner (25 Seconds)
+        initKpiSlider();
+
         // Initialize Cashflow Trend Chart
         initCashflowChart();
         
@@ -696,13 +972,13 @@
                     {
                         label: 'Pemasukan (Income)',
                         data: incomeData,
-                        backgroundColor: currentChartType === 'bar' ? 'rgba(47, 179, 68, 0.75)' : 'rgba(47, 179, 68, 0.1)',
-                        borderColor: '#2fb344',
+                        backgroundColor: currentChartType === 'bar' ? 'rgba(43, 123, 91, 0.75)' : 'rgba(43, 123, 91, 0.1)',
+                        borderColor: '#2b7b5b',
                         borderWidth: currentChartType === 'line' ? 2.5 : 1,
                         borderRadius: currentChartType === 'bar' ? 4 : 0,
                         fill: currentChartType === 'line',
                         tension: 0.35,
-                        pointBackgroundColor: '#2fb344',
+                        pointBackgroundColor: '#2b7b5b',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                         pointRadius: currentChartType === 'line' ? 4 : 0,
@@ -1000,6 +1276,206 @@
         document.getElementById('btnSellerQty').classList.toggle('active', metric === 'qty');
         document.getElementById('btnSellerOmset').classList.toggle('active', metric === 'omset');
         initSellerSalesChart();
+    }
+
+    function onSellerTrendFilterChange() {
+        const year = document.getElementById('sellerTrendYearSelect')?.value;
+        const month = document.getElementById('sellerTrendMonthSelect')?.value;
+        loadSellerTrend(year, month);
+    }
+
+    function resetSellerTrendMonth() {
+        const monthSelect = document.getElementById('sellerTrendMonthSelect');
+        if (monthSelect) monthSelect.value = '';
+        onSellerTrendFilterChange();
+    }
+
+    async function loadSellerTrend(year, month) {
+        const cardBody = document.getElementById('sellerTrendCardBody');
+        if (cardBody) cardBody.style.opacity = '0.5';
+
+        try {
+            const url = new URL(window.location.href);
+            if (year) url.searchParams.set('sales_year', year);
+            if (month) {
+                url.searchParams.set('sales_month', month);
+            } else {
+                url.searchParams.delete('sales_month');
+            }
+            url.searchParams.set('ajax_trend', '1');
+
+            const response = await fetch(url.toString(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error('Network error: ' + response.status);
+            const data = await response.json();
+
+            sellerTrendRaw = data;
+
+            // Update Period Title & Subtitle
+            const titleEl = document.getElementById('sellerTrendTitle');
+            if (titleEl && data.period_title) titleEl.textContent = data.period_title;
+            const subTitleEl = document.getElementById('sellerTrendSubtitle');
+            if (subTitleEl && data.period_subtitle) subTitleEl.textContent = data.period_subtitle;
+
+            // Toggle Reset Month Button
+            const resetBtn = document.getElementById('btnResetMonthFilter');
+            if (resetBtn) resetBtn.classList.toggle('d-none', !month);
+
+            // Update Top Seller Badge
+            const topSellerContainer = document.getElementById('sellerTrendTopSellerBadge');
+            if (topSellerContainer) {
+                if (data.period_top_seller && data.period_top_seller.total_qty > 0) {
+                    const ts = data.period_top_seller;
+                    topSellerContainer.innerHTML = `
+                        <span class="badge d-none d-xl-inline-flex align-items-center gap-1 px-2.5 py-1.5 shadow-2xs" style="background-color: ${ts.badge_bg}; color: ${ts.text_color}; border: 1px solid ${ts.border}; font-size: 0.78rem;">
+                            <i class="bi bi-trophy-fill text-warning me-1"></i> Top Seller: <strong>${ts.name}</strong> (${new Intl.NumberFormat('id-ID').format(ts.total_qty)} pcs)
+                        </span>
+                    `;
+                } else {
+                    topSellerContainer.innerHTML = '';
+                }
+            }
+
+            // Update Summary Badges
+            const badgesContainer = document.getElementById('sellerTrendBadgesContainer');
+            if (badgesContainer) {
+                if (data.datasets && data.datasets.length > 0) {
+                    let badgesHtml = `
+                        <span class="small fw-bold text-muted text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">
+                            <i class="bi bi-people-fill me-1"></i> Komparasi Seller:
+                        </span>
+                    `;
+                    data.datasets.forEach(ds => {
+                        badgesHtml += `
+                            <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1 shadow-2xs" style="background-color: ${ds.badge_bg}; color: ${ds.text_color}; border: 1px solid ${ds.border}; font-size: 0.78rem;">
+                                <span class="rounded-circle d-inline-block" style="width: 8px; height: 8px; background-color: ${ds.color};"></span>
+                                <strong>${ds.name}:</strong> ${new Intl.NumberFormat('id-ID').format(ds.total_qty)} pcs
+                                <span class="opacity-75 ms-1 font-mono">(Rp ${new Intl.NumberFormat('id-ID').format(ds.total_omset)})</span>
+                            </span>
+                        `;
+                    });
+                    badgesContainer.innerHTML = badgesHtml;
+                } else {
+                    badgesContainer.innerHTML = '<span class="text-muted small">Belum ada data seller terdaftar pada periode ini.</span>';
+                }
+            }
+
+            // Re-render Chart
+            initSellerSalesChart();
+
+            // Sync clean URL without reloading page
+            url.searchParams.delete('ajax_trend');
+            window.history.replaceState({}, '', url.toString());
+        } catch (err) {
+            console.error('Gagal memperbarui grafik tren penjualan:', err);
+        } finally {
+            if (cardBody) cardBody.style.opacity = '1';
+        }
+    }
+
+    // KPI Animated Web Slider Banner (25 Detik / 25000 ms)
+    function initKpiSlider() {
+        const kpiSliderContainer = document.getElementById('kpiSliderContainer');
+        const kpiSliderTrack = document.getElementById('kpiSliderTrack');
+        const kpiPillButtons = document.querySelectorAll('.kpi-slider-pill-btn');
+        const kpiCurrentNumDisplay = document.getElementById('kpiSliderCurrentNum');
+        const kpiBtnPrev = document.getElementById('kpiSliderBtnPrev');
+        const kpiBtnNext = document.getElementById('kpiSliderBtnNext');
+        const kpiProgressBar = document.getElementById('kpiSliderProgressBar');
+
+        if (!kpiSliderContainer || !kpiSliderTrack) return;
+
+        const slideDuration = 25000; // 25 Detik (25000 ms)
+        const TICK_INTERVAL = 100;
+        const totalSlides = 4;
+        let currentSlide = 0;
+        let elapsedMs = 0;
+        let isPaused = false;
+        let timerId = null;
+
+        function updateSlider(index) {
+            currentSlide = (index + totalSlides) % totalSlides;
+            kpiSliderTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            kpiPillButtons.forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === currentSlide);
+            });
+
+            if (kpiCurrentNumDisplay) {
+                kpiCurrentNumDisplay.textContent = currentSlide + 1;
+            }
+
+            elapsedMs = 0;
+            if (kpiProgressBar) {
+                kpiProgressBar.style.width = '0%';
+            }
+        }
+
+        function nextSlide() {
+            updateSlider(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            updateSlider(currentSlide - 1);
+        }
+
+        kpiPillButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetIdx = parseInt(this.getAttribute('data-slide'), 10);
+                updateSlider(targetIdx);
+            });
+        });
+
+        if (kpiBtnPrev) kpiBtnPrev.addEventListener('click', prevSlide);
+        if (kpiBtnNext) kpiBtnNext.addEventListener('click', nextSlide);
+
+        // Pause on Hover
+        kpiSliderContainer.addEventListener('mouseenter', () => {
+            isPaused = true;
+        });
+
+        kpiSliderContainer.addEventListener('mouseleave', () => {
+            isPaused = false;
+        });
+
+        // Touch Swipe Support
+        let touchStartX = 0;
+        let touchEndX = 0;
+        kpiSliderContainer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            isPaused = true;
+        }, { passive: true });
+
+        kpiSliderContainer.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            isPaused = false;
+            if (touchStartX - touchEndX > 50) {
+                nextSlide();
+            } else if (touchEndX - touchStartX > 50) {
+                prevSlide();
+            }
+        }, { passive: true });
+
+        // Auto-Slide Timer (25 Detik)
+        timerId = setInterval(() => {
+            if (!isPaused) {
+                elapsedMs += TICK_INTERVAL;
+                const progressPercent = Math.min((elapsedMs / slideDuration) * 100, 100);
+                if (kpiProgressBar) {
+                    kpiProgressBar.style.width = `${progressPercent}%`;
+                }
+                if (elapsedMs >= slideDuration) {
+                    nextSlide();
+                }
+            }
+        }, TICK_INTERVAL);
+
+        updateSlider(0);
     }
 </script>
 @endpush

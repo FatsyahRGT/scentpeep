@@ -250,6 +250,8 @@ class InvoiceAndProcurementTest extends TestCase
         $response->assertOk();
         $response->assertSee('Edit Invoice INV-EDIT-01');
         $response->assertSee('Customer Edit Test');
+        $response->assertSee('value="360000"', false);
+        $response->assertDontSee('value="360000.00"', false);
     }
 
     public function test_admin_can_update_invoice_and_adjusts_stock_atomically(): void

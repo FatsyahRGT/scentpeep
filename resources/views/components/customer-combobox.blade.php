@@ -5,7 +5,7 @@
 @php
     $isRequired = $required ?? true;
     $fieldLabel = $label ?? 'Nama Customer / Pembeli';
-    $placeholderText = $placeholder ?? "Ketik 'e' (Eda, Ega, Egi) atau ketik nama pembeli...";
+    $placeholderText = $placeholder ?? 'Ketik nama pembeli atau pilih pelanggan tetap...';
 @endphp
 
 <div class="position-relative" id="customerCombobox">
@@ -234,12 +234,21 @@ document.addEventListener('DOMContentLoaded', function () {
         renderQuickButtons(sorted, filterText);
 
         if (sorted.length === 0) {
-            listContainer.innerHTML = `
-                <li class="list-group-item text-muted small py-4 text-center">
-                    <i class="bi bi-person-plus fs-4 d-block mb-1 text-secondary"></i>
-                    Nama <strong>"${filterText}"</strong> belum ada di daftar Pelanggan Tetap.<br>
-                    <span class="text-secondary small">Klik tombol <strong>"+ Jadikan Tetap"</strong> untuk menyimpannya, atau lanjutkan sebagai <em>Customer Custom</em>.</span>
-                </li>`;
+            if (!filterText.trim()) {
+                listContainer.innerHTML = `
+                    <li class="list-group-item text-muted small py-4 text-center">
+                        <i class="bi bi-people fs-4 d-block mb-1 text-secondary"></i>
+                        Belum ada Pelanggan Tetap terdaftar.<br>
+                        <span class="text-secondary small">Ketik nama di kolom input lalu klik <strong>"+ Jadikan Tetap"</strong> untuk menambahkan pelanggan pertama Anda.</span>
+                    </li>`;
+            } else {
+                listContainer.innerHTML = `
+                    <li class="list-group-item text-muted small py-4 text-center">
+                        <i class="bi bi-person-plus fs-4 d-block mb-1 text-secondary"></i>
+                        Nama <strong>"${filterText}"</strong> belum ada di daftar Pelanggan Tetap.<br>
+                        <span class="text-secondary small">Klik tombol <strong>"+ Jadikan Tetap"</strong> untuk menyimpannya, atau lanjutkan sebagai <em>Customer Custom</em>.</span>
+                    </li>`;
+            }
             return;
         }
 
