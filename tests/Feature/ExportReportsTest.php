@@ -112,6 +112,31 @@ class ExportReportsTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('reports.invoices.word'));
         $response->assertOk();
         $this->assertStringContainsString('msword', $response->headers->get('content-type'));
+        $response->assertSee('mso-page-orientation: portrait');
+    }
+
+    public function test_export_invoices_with_filter_description(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('reports.invoices.pdf', [
+            'month' => 1,
+            'year' => 2026,
+            'customer_name' => 'Budi Pelanggan',
+        ]));
+        $response->assertOk();
+        $response->assertSee('Bulan: Januari');
+        $response->assertSee('Tahun: 2026');
+        $response->assertSee('Pelanggan: Budi Pelanggan');
+    }
+
+    public function test_export_transactions_with_filter_description(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('reports.transactions.excel', [
+            'type' => 'INCOME',
+            'category' => 'Penjualan',
+        ]));
+        $response->assertOk();
+        $response->assertSee('Tipe: Pemasukan (Masuk)');
+        $response->assertSee('Kategori: Penjualan');
     }
 
     public function test_export_invoices_pdf(): void

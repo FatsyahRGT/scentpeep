@@ -123,6 +123,11 @@
                     <div class="fw-bold text-uppercase text-secondary" style="font-size: 11px; letter-spacing: 0.08em; margin-top: 2px;">
                         Laporan Transaksi Kas &amp; Rekapitulasi Arus Kas
                     </div>
+                    <div class="mt-1 mb-1">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle font-mono-num fw-semibold" style="font-size: 8.5px; padding: 2px 7px;">
+                            <i class="bi bi-funnel-fill me-1"></i> Filter: {{ $filterDescription ?? 'Semua Data Kas' }}
+                        </span>
+                    </div>
                     <div class="text-muted" style="font-size: 9.5px; margin-top: 1px;">
                         Buku Kas Harian &bull; Penerimaan Penjualan &bull; Mutasi Kas Operasional Resmi
                     </div>

@@ -128,6 +128,43 @@ class ReportController extends Controller
     }
 
     /**
+     * Build human-readable filter description string for Transactions report.
+     */
+    protected function getTransactionsFilterDescription(Request $request): string
+    {
+        $parts = [];
+
+        if ($request->filled('type')) {
+            $parts[] = 'Tipe: ' . ($request->type === 'INCOME' ? 'Pemasukan (Masuk)' : 'Pengeluaran (Keluar)');
+        }
+
+        if ($request->filled('category')) {
+            $parts[] = 'Kategori: ' . $request->category;
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $parts[] = 'Periode: ' . date('d/m/Y', strtotime($request->start_date)) . ' s/d ' . date('d/m/Y', strtotime($request->end_date));
+        } elseif ($request->filled('start_date')) {
+            $parts[] = 'Mulai: ' . date('d/m/Y', strtotime($request->start_date));
+        } elseif ($request->filled('end_date')) {
+            $parts[] = 'Sampai: ' . date('d/m/Y', strtotime($request->end_date));
+        }
+
+        if ($request->filled('location_id')) {
+            $loc = Location::find($request->location_id);
+            if ($loc) {
+                $parts[] = 'Lokasi: ' . $loc->name;
+            }
+        }
+
+        if ($request->filled('search')) {
+            $parts[] = 'Pencarian: "' . $request->search . '"';
+        }
+
+        return !empty($parts) ? implode(' • ', $parts) : 'Semua Data Kas (Tanpa Filter)';
+    }
+
+    /**
      * Export Transactions as Excel (.xls).
      */
     public function exportTransactionsExcel(Request $request): Response
@@ -136,13 +173,15 @@ class ReportController extends Controller
         $totalIncome = (float) $transactions->where('type', Transaction::TYPE_INCOME)->sum('amount');
         $totalOutcome = (float) $transactions->where('type', Transaction::TYPE_OUTCOME)->sum('amount');
         $netSaldo = $totalIncome - $totalOutcome;
+        $filterDescription = $this->getTransactionsFilterDescription($request);
 
         $filename = 'Laporan_Transaksi_Scentpeep_' . date('Ymd_His') . '.xls';
         $content = view('reports.transactions_excel', compact(
             'transactions',
             'totalIncome',
             'totalOutcome',
-            'netSaldo'
+            'netSaldo',
+            'filterDescription'
         ))->render();
 
         return response($content, 200, [
@@ -161,13 +200,15 @@ class ReportController extends Controller
         $totalIncome = (float) $transactions->where('type', Transaction::TYPE_INCOME)->sum('amount');
         $totalOutcome = (float) $transactions->where('type', Transaction::TYPE_OUTCOME)->sum('amount');
         $netSaldo = $totalIncome - $totalOutcome;
+        $filterDescription = $this->getTransactionsFilterDescription($request);
 
         $filename = 'Laporan_Transaksi_Scentpeep_' . date('Ymd_His') . '.doc';
         $content = view('reports.transactions_word', compact(
             'transactions',
             'totalIncome',
             'totalOutcome',
-            'netSaldo'
+            'netSaldo',
+            'filterDescription'
         ))->render();
 
         return response($content, 200, [
@@ -186,12 +227,14 @@ class ReportController extends Controller
         $totalIncome = (float) $transactions->where('type', Transaction::TYPE_INCOME)->sum('amount');
         $totalOutcome = (float) $transactions->where('type', Transaction::TYPE_OUTCOME)->sum('amount');
         $netSaldo = $totalIncome - $totalOutcome;
+        $filterDescription = $this->getTransactionsFilterDescription($request);
 
         return response()->view('reports.transactions_pdf', compact(
             'transactions',
             'totalIncome',
             'totalOutcome',
-            'netSaldo'
+            'netSaldo',
+            'filterDescription'
         ));
     }
 
@@ -308,6 +351,53 @@ class ReportController extends Controller
     }
 
     /**
+     * Build human-readable filter description string for Invoices report.
+     */
+    protected function getInvoicesFilterDescription(Request $request): string
+    {
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        $parts = [];
+
+        if ($request->filled('month') && isset($months[(int)$request->month])) {
+            $parts[] = 'Bulan: ' . $months[(int)$request->month];
+        }
+
+        if ($request->filled('year')) {
+            $parts[] = 'Tahun: ' . $request->year;
+        }
+
+        if ($request->filled('customer_name')) {
+            $parts[] = 'Pelanggan: ' . $request->customer_name;
+        }
+
+        if ($request->filled('sales_name')) {
+            $parts[] = 'Sales: ' . $request->sales_name;
+        }
+
+        if ($request->filled('payment_status')) {
+            $parts[] = 'Status: ' . $request->payment_status;
+        }
+
+        if ($request->filled('location_id')) {
+            $loc = Location::find($request->location_id);
+            if ($loc) {
+                $parts[] = 'Lokasi: ' . $loc->name;
+            }
+        }
+
+        if ($request->filled('search')) {
+            $parts[] = 'Pencarian: "' . $request->search . '"';
+        }
+
+        return !empty($parts) ? implode(' • ', $parts) : 'Semua Data Transaksi (Tanpa Filter)';
+    }
+
+    /**
      * Export Invoices as Excel (.xls).
      */
     public function exportInvoicesExcel(Request $request): Response
@@ -317,6 +407,7 @@ class ReportController extends Controller
         $totalAmount = (float) $invoices->sum('total_price');
         $totalPaid = (float) $invoices->where('payment_status', 'LUNAS')->sum('total_price');
         $totalUnpaid = (float) $invoices->where('payment_status', 'BELUM LUNAS')->sum('total_price');
+        $filterDescription = $this->getInvoicesFilterDescription($request);
 
         $filename = 'Laporan_Invoice_Penjualan_Scentpeep_' . date('Ymd_His') . '.xls';
         $content = view('reports.invoices_excel', compact(
@@ -324,7 +415,8 @@ class ReportController extends Controller
             'totalQty',
             'totalAmount',
             'totalPaid',
-            'totalUnpaid'
+            'totalUnpaid',
+            'filterDescription'
         ))->render();
 
         return response($content, 200, [
@@ -344,6 +436,7 @@ class ReportController extends Controller
         $totalAmount = (float) $invoices->sum('total_price');
         $totalPaid = (float) $invoices->where('payment_status', 'LUNAS')->sum('total_price');
         $totalUnpaid = (float) $invoices->where('payment_status', 'BELUM LUNAS')->sum('total_price');
+        $filterDescription = $this->getInvoicesFilterDescription($request);
 
         $filename = 'Laporan_Invoice_Penjualan_Scentpeep_' . date('Ymd_His') . '.doc';
         $content = view('reports.invoices_word', compact(
@@ -351,7 +444,8 @@ class ReportController extends Controller
             'totalQty',
             'totalAmount',
             'totalPaid',
-            'totalUnpaid'
+            'totalUnpaid',
+            'filterDescription'
         ))->render();
 
         return response($content, 200, [
@@ -371,13 +465,15 @@ class ReportController extends Controller
         $totalAmount = (float) $invoices->sum('total_price');
         $totalPaid = (float) $invoices->where('payment_status', 'LUNAS')->sum('total_price');
         $totalUnpaid = (float) $invoices->where('payment_status', 'BELUM LUNAS')->sum('total_price');
+        $filterDescription = $this->getInvoicesFilterDescription($request);
 
         return response()->view('reports.invoices_pdf', compact(
             'invoices',
             'totalQty',
             'totalAmount',
             'totalPaid',
-            'totalUnpaid'
+            'totalUnpaid',
+            'filterDescription'
         ));
     }
 

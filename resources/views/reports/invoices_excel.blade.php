@@ -1,17 +1,14 @@
-@php
-    $logoEmblemPath = public_path('images/New_Project_4K_1000DPI.png');
-    $logoEmblem = file_exists($logoEmblemPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoEmblemPath)) : asset('images/New_Project_4K_1000DPI.png');
-@endphp
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <style>
         body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 10pt; }
-        .brand-title { font-size: 15pt; font-weight: bold; color: #165b3d; }
-        .brand-subtitle { font-size: 10pt; font-weight: bold; color: #374151; }
-        .brand-tagline { font-size: 8.5pt; color: #6b7280; font-style: italic; }
-        .meta-bar { font-size: 8.5pt; color: #4b5563; background-color: #f8fafc; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
-        .kpi-bar { font-size: 9pt; font-weight: bold; background-color: #f0fdf4; color: #165b3d; border-bottom: 2px solid #165b3d; }
+        .brand-title { font-size: 16pt; font-weight: bold; color: #165b3d; text-align: center; }
+        .brand-subtitle { font-size: 11pt; font-weight: bold; color: #374151; text-align: center; }
+        .brand-filter { font-size: 9.5pt; font-weight: bold; color: #165b3d; background-color: #f0fdf4; text-align: center; border: 1px solid #bbf7d0; }
+        .brand-tagline { font-size: 8.5pt; color: #6b7280; font-style: italic; text-align: center; }
+        .meta-bar { font-size: 8.5pt; color: #4b5563; background-color: #f8fafc; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; text-align: center; }
+        .kpi-bar { font-size: 9pt; font-weight: bold; background-color: #f1f5f9; color: #0f172a; border-bottom: 2px solid #165b3d; text-align: center; }
         table { border-collapse: collapse; width: 100%; margin-top: 8px; }
         th { background-color: #165b3d; color: #ffffff; font-weight: bold; border: 1px solid #124d33; text-align: center; padding: 7px 6px; font-size: 9pt; }
         td { border: 1px solid #d1d5db; padding: 5px 6px; font-size: 8.5pt; }
@@ -27,15 +24,22 @@
 </head>
 <body>
     <table>
-        <!-- Kop Surat Resmi -->
+        <!-- Kop Surat Resmi Berada di Tengah (Centered) -->
         <tr>
             <td colspan="11" class="brand-title">SCENTPEEP PARFUM</td>
         </tr>
         <tr>
-            <td colspan="11" class="brand-subtitle">LAPORAN REKAPITULASI INVOICE PENJUALAN RESMI</td>
+            <td colspan="11" class="brand-subtitle">LAPORAN REKAPITULASI INVOICE PENJUALAN</td>
         </tr>
         <tr>
-            <td colspan="11" class="brand-tagline">Authentic Inspired Fragrance &bull; Artisanal Perfumery &bull; Retail Supply Chain &bull; Mall &amp; Store Distribution Hub</td>
+            <td colspan="11" class="brand-filter">
+                FILTER TERPILIH: {{ $filterDescription ?? 'Semua Data Transaksi' }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="11" class="brand-tagline">
+                Authentic Inspired Fragrance &bull; Artisanal Perfumery &bull; Retail Supply Chain &bull; Mall &amp; Store Distribution Hub
+            </td>
         </tr>
         <tr>
             <td colspan="11" class="meta-bar">
