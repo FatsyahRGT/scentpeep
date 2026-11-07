@@ -62,14 +62,11 @@
             margin-top: 1pt;
         }
         .brand-filter {
-            font-size: 7.5pt;
+            font-size: 9pt;
             font-weight: bold;
-            color: #165b3d;
-            background-color: #f0fdf4;
-            padding: 1pt 4pt;
-            margin-top: 2pt;
-            display: inline-block;
-            border: 0.5pt solid #bbf7d0;
+            color: #1f2937;
+            text-transform: uppercase;
+            margin-top: 1pt;
         }
         .brand-tagline {
             font-size: 7pt;
@@ -193,10 +190,10 @@
                 <img src="{{ $logoEmblem }}" width="42" height="42" style="width: 42pt; height: 42pt; object-fit: contain;">
             </td>
             <td style="vertical-align: middle;">
-                <div class="brand-title">SCENTPEEP PARFUM</div>
+                <div class="brand-title">LAPORAN KAS</div>
                 <div class="brand-subtitle">Laporan Transaksi Kas &amp; Arus Keuangan Resmi</div>
-                <div class="brand-filter">Filter: {{ $filterDescription ?? 'Semua Data Kas' }}</div>
-                <div class="brand-tagline">Buku Kas Harian &bull; Penerimaan Penjualan &bull; Mutasi Operasional Resmi</div>
+                <div class="brand-filter">Laporan Berdasarkan  {{ $filterDescription ?? 'Semua Data' }}</div>
+                <div class="brand-tagline">Authentic Inspired Fragrance - Retail Supply Chain</div>
             </td>
             <td style="width: 140pt; vertical-align: middle;" class="kop-meta">
                 <div>No: <strong>DOC-SP/FIN/{{ date('Ymd') }}-{{ str_pad($transactions->count(), 3, '0', STR_PAD_LEFT) }}</strong></div>

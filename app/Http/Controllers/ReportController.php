@@ -52,6 +52,14 @@ class ReportController extends Controller
             $query->whereDate('tanggal', '<=', $request->end_date);
         }
 
+        if ($request->filled('month')) {
+            $query->whereMonth('tanggal', $request->month);
+        }
+
+        if ($request->filled('year')) {
+            $query->whereYear('tanggal', $request->year);
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -132,7 +140,21 @@ class ReportController extends Controller
      */
     protected function getTransactionsFilterDescription(Request $request): string
     {
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
         $parts = [];
+
+        if ($request->filled('month') && isset($months[(int)$request->month])) {
+            $parts[] = 'Bulan ' . $months[(int)$request->month];
+        }
+
+        if ($request->filled('year')) {
+            $parts[] = 'Tahun ' . $request->year;
+        }
 
         if ($request->filled('type')) {
             $parts[] = 'Tipe: ' . ($request->type === 'INCOME' ? 'Pemasukan (Masuk)' : 'Pengeluaran (Keluar)');
@@ -161,7 +183,7 @@ class ReportController extends Controller
             $parts[] = 'Pencarian: "' . $request->search . '"';
         }
 
-        return !empty($parts) ? implode(' • ', $parts) : 'Semua Data Kas (Tanpa Filter)';
+        return !empty($parts) ? implode(' • ', $parts) : 'Semua Data';
     }
 
     /**
@@ -364,11 +386,11 @@ class ReportController extends Controller
         $parts = [];
 
         if ($request->filled('month') && isset($months[(int)$request->month])) {
-            $parts[] = 'Bulan: ' . $months[(int)$request->month];
+            $parts[] = 'Bulan ' . $months[(int)$request->month];
         }
 
         if ($request->filled('year')) {
-            $parts[] = 'Tahun: ' . $request->year;
+            $parts[] = 'Tahun ' . $request->year;
         }
 
         if ($request->filled('customer_name')) {
@@ -394,7 +416,7 @@ class ReportController extends Controller
             $parts[] = 'Pencarian: "' . $request->search . '"';
         }
 
-        return !empty($parts) ? implode(' • ', $parts) : 'Semua Data Transaksi (Tanpa Filter)';
+        return !empty($parts) ? implode(' • ', $parts) : 'Semua Data';
     }
 
     /**

@@ -109,7 +109,7 @@
         </div>
     </div>
 
-    <!-- Kop Surat Resmi SCENTPEEP PARFUM -->
+    <!-- Kop Surat Resmi INVOICES -->
     <div class="mb-3 pb-2">
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
@@ -118,21 +118,16 @@
                 </td>
                 <td style="vertical-align: middle;">
                     <div class="font-brand-serif fw-bold" style="font-size: 21px; color: #165b3d; letter-spacing: 0.04em; line-height: 1.15;">
-                        SCENTPEEP PARFUM
+                        INVOICES
                     </div>
                     <div class="fw-bold text-uppercase text-secondary" style="font-size: 11px; letter-spacing: 0.08em; margin-top: 2px;">
                         Laporan Rekapitulasi Invoice Penjualan
                     </div>
-                    <div class="mt-1 mb-1">
-                        <span class="badge bg-success-subtle text-success border border-success-subtle font-mono-num fw-semibold" style="font-size: 8.5px; padding: 2px 7px;">
-                            <i class="bi bi-funnel-fill me-1"></i> Filter: {{ $filterDescription ?? 'Semua Data Transaksi' }}
-                        </span>
+                    <div class="fw-bold text-uppercase text-dark" style="font-size: 11px; letter-spacing: 0.08em; margin-top: 2px;">
+                        Laporan Berdasarkan  {{ $filterDescription ?? 'Semua Data' }}
                     </div>
-                    <div class="text-muted" style="font-size: 9.5px; margin-top: 1px;">
-                        Authentic Inspired Fragrance &bull; Artisanal Perfumery &bull; Retail Supply Chain
-                    </div>
-                    <div class="text-muted" style="font-size: 9px;">
-                        Mall &amp; Store Distribution Hub &bull; Sistem POS &amp; Pembukuan Kas Resmi
+                    <div class="text-muted" style="font-size: 9.5px; margin-top: 2px;">
+                        Authentic Inspired Fragrance - Retail Supply Chain
                     </div>
                 </td>
                 <td style="width: 220px; vertical-align: middle; text-align: right; font-size: 9px; line-height: 1.45;" class="font-mono-num">

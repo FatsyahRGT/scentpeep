@@ -5,7 +5,7 @@
         body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 10pt; }
         .brand-title { font-size: 16pt; font-weight: bold; color: #165b3d; text-align: center; }
         .brand-subtitle { font-size: 11pt; font-weight: bold; color: #374151; text-align: center; }
-        .brand-filter { font-size: 9.5pt; font-weight: bold; color: #165b3d; background-color: #f0fdf4; text-align: center; border: 1px solid #bbf7d0; }
+        .brand-filter { font-size: 11pt; font-weight: bold; color: #1f2937; text-align: center; text-transform: uppercase; }
         .brand-tagline { font-size: 8.5pt; color: #6b7280; font-style: italic; text-align: center; }
         .meta-bar { font-size: 8.5pt; color: #4b5563; background-color: #f8fafc; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; text-align: center; }
         .kpi-bar { font-size: 9pt; font-weight: bold; background-color: #f1f5f9; color: #0f172a; border-bottom: 2px solid #165b3d; text-align: center; }
@@ -26,19 +26,19 @@
     <table>
         <!-- Kop Surat Resmi Berada di Tengah (Centered) -->
         <tr>
-            <td colspan="11" class="brand-title">SCENTPEEP PARFUM</td>
+            <td colspan="11" class="brand-title">INVOICES</td>
         </tr>
         <tr>
             <td colspan="11" class="brand-subtitle">LAPORAN REKAPITULASI INVOICE PENJUALAN</td>
         </tr>
         <tr>
             <td colspan="11" class="brand-filter">
-                FILTER TERPILIH: {{ $filterDescription ?? 'Semua Data Transaksi' }}
+                LAPORAN BERDASARKAN  {{ $filterDescription ?? 'Semua Data' }}
             </td>
         </tr>
         <tr>
             <td colspan="11" class="brand-tagline">
-                Authentic Inspired Fragrance &bull; Artisanal Perfumery &bull; Retail Supply Chain &bull; Mall &amp; Store Distribution Hub
+                Authentic Inspired Fragrance - Retail Supply Chain
             </td>
         </tr>
         <tr>

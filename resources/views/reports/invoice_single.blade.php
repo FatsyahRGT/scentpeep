@@ -129,11 +129,8 @@
                         <div class="font-brand-serif fw-bold" style="font-size: 22px; color: #165b3d; letter-spacing: 0.04em; line-height: 1.15;">
                             SCENTPEEP PARFUM
                         </div>
-                        <div class="fw-semibold text-secondary" style="font-size: 11.5px; margin-top: 2px;">
-                            Authentic Inspired Fragrance &amp; Artisanal Perfumery
-                        </div>
-                        <div class="text-muted" style="font-size: 9.5px;">
-                            Mall &amp; Store Distribution Hub &bull; Scentpeep Management System
+                        <div class="text-muted" style="font-size: 10px; margin-top: 2px;">
+                            Authentic Inspired Fragrance - Retail Supply Chain
                         </div>
                     </td>
                     <td style="width: 200px; vertical-align: middle; text-align: right;">

@@ -100,16 +100,13 @@
                 </td>
                 <td style="vertical-align: middle;">
                     <div class="font-brand-serif fw-bold" style="font-size: 21px; color: #165b3d; letter-spacing: 0.04em; line-height: 1.15;">
-                        SCENTPEEP PARFUM
+                        LAPORAN STOK
                     </div>
                     <div class="fw-bold text-uppercase text-secondary" style="font-size: 11px; letter-spacing: 0.08em; margin-top: 2px;">
                         Laporan Matriks Inventori Stok Fisik
                     </div>
-                    <div class="text-muted" style="font-size: 9.5px; margin-top: 1px;">
-                        Monitoring Stok Multi-Lokasi &bull; Gudang Pusat &bull; Reseller &bull; Toko
-                    </div>
-                    <div class="text-muted" style="font-size: 9px;">
-                        Mall &amp; Store Distribution Hub &bull; Scentpeep Inventory Control Management
+                    <div class="text-muted" style="font-size: 9.5px; margin-top: 2px;">
+                        Authentic Inspired Fragrance - Retail Supply Chain
                     </div>
                 </td>
                 <td style="width: 220px; vertical-align: middle; text-align: right; font-size: 9px; line-height: 1.45;" class="font-mono-num">
