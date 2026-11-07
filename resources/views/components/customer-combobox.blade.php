@@ -34,7 +34,7 @@
         <!-- Tombol + Jadikan Tetap (Muncul otomatis saat mengetik nama yang belum terdaftar) -->
         <button type="button"
                 id="btnSaveRegular"
-                class="btn btn-outline-dark btn-sm px-2 px-md-3 d-none align-items-center gap-1 text-nowrap fw-medium"
+                class="btn btn-scent btn-sm px-2 px-md-3 d-none align-items-center gap-1 text-nowrap fw-medium"
                 title="Simpan nama ini ke daftar Pelanggan Tetap">
             <i class="bi bi-bookmark-plus-fill"></i>
             <span class="d-none d-sm-inline">+ Jadikan Tetap</span>
@@ -117,12 +117,17 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
+    const customerApi = {
+        list: '{{ route('customers.json', [], false) }}',
+        store: '{{ route('customers.store', [], false) }}',
+        base: '{{ route('customers.store', [], false) }}'
+    };
     
     // Inisialisasi data master pelanggan tetap dari Controller dengan fallback fetch AJAX
     let regularCustomers = @json($customers ?? []);
     if (!regularCustomers || regularCustomers.length === 0) {
-        fetch('{{ route('customers.json') }}', { headers: { 'Accept': 'application/json' } })
+        fetch(customerApi.list, { headers: { 'Accept': 'application/json' } })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -355,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // AJAX 1: POST /customers (Jadikan Pelanggan Tetap)
-    btnSave.addEventListener('click', function () {
+    btnSave.addEventListener('click', async function () {
         const newName = input.value.trim();
         if (!newName) return;
 
@@ -363,37 +368,47 @@ document.addEventListener('DOMContentLoaded', function () {
         const originalHtml = btnSave.innerHTML;
         btnSave.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...`;
 
-        fetch('{{ route('customers.store') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify({ name: newName })
-        })
-        .then(response => response.json().then(data => ({ status: response.status, body: data })))
-        .then(res => {
+        try {
+            const response = await fetch(customerApi.store, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ name: newName })
+            });
+
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (e) {
+                data = null;
+            }
+
             btnSave.disabled = false;
             btnSave.innerHTML = originalHtml;
 
-            if (res.status === 201 || res.body.success) {
-                const created = res.body.data;
+            if (response.ok && (response.status === 201 || data?.success)) {
+                const created = data.data;
                 regularCustomers.push(created);
                 idInput.value = created.id;
                 checkInputStatus();
                 renderList(newName);
-                showFeedback(res.body.message || `"${newName}" disimpan sebagai Pelanggan Tetap!`);
+                showFeedback(data.message || `"${newName}" disimpan sebagai Pelanggan Tetap!`);
+            } else if (response.status === 419) {
+                showFeedback('Sesi Anda telah berakhir (CSRF expired). Silakan muat ulang halaman (F5).', true);
+            } else if (response.status === 401) {
+                showFeedback('Sesi login telah habis. Silakan login kembali.', true);
             } else {
-                const errMsg = res.body.errors?.name?.[0] || res.body.message || 'Gagal menyimpan pelanggan tetap.';
+                const errMsg = data?.errors?.name?.[0] || data?.message || `Gagal menyimpan pelanggan tetap (HTTP ${response.status}).`;
                 showFeedback(errMsg, true);
             }
-        })
-        .catch(err => {
+        } catch (err) {
             btnSave.disabled = false;
             btnSave.innerHTML = originalHtml;
-            showFeedback('Terjadi kesalahan jaringan.', true);
-        });
+            showFeedback('Gagal terhubung ke server. Pastikan server web aktif.', true);
+        }
     });
 
     // Delegasi Event di dalam Dropdown (Pilih, Edit, Simpan Edit, Hapus)
@@ -436,31 +451,39 @@ document.addEventListener('DOMContentLoaded', function () {
             const customerToDelete = regularCustomers.find(c => c.id === id);
             const custName = customerToDelete ? customerToDelete.name : 'pelanggan ini';
 
-            const executeDelete = () => {
-                fetch(`/customers/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
+            const executeDelete = async () => {
+                try {
+                    const response = await fetch(`${customerApi.base}/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+
+                    let data = null;
+                    try {
+                        data = await response.json();
+                    } catch (e) {
+                        data = null;
                     }
-                })
-                .then(response => response.json().then(data => ({ status: response.status, body: data })))
-                .then(res => {
-                    if (res.body.success) {
+
+                    if (response.ok && data?.success) {
                         regularCustomers = regularCustomers.filter(c => c.id !== id);
                         if (Number(idInput.value) === id) {
                             idInput.value = '';
                         }
                         checkInputStatus();
                         renderList(input.value);
-                        showFeedback(res.body.message || `Pelanggan "${custName}" berhasil dihapus.`);
+                        showFeedback(data.message || `Pelanggan "${custName}" berhasil dihapus.`);
+                    } else if (response.status === 419) {
+                        showFeedback('Sesi Anda telah berakhir. Silakan muat ulang halaman (F5).', true);
                     } else {
-                        showFeedback(res.body.message || 'Gagal menghapus pelanggan.', true);
+                        showFeedback(data?.message || `Gagal menghapus pelanggan (HTTP ${response.status}).`, true);
                     }
-                })
-                .catch(err => {
-                    showFeedback('Terjadi kesalahan jaringan.', true);
-                });
+                } catch (err) {
+                    showFeedback('Gagal terhubung ke server. Pastikan server web aktif.', true);
+                }
             };
 
             if (typeof Swal !== 'undefined') {
@@ -487,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // AJAX 2: PUT /customers/{id} (Simpan Perubahan Nama)
-    function saveInlineEdit(id) {
+    async function saveInlineEdit(id) {
         const editField = document.getElementById(`editInput_${id}`);
         const updatedName = editField ? editField.value.trim() : '';
 
@@ -496,35 +519,43 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch(`/customers/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify({ name: updatedName })
-        })
-        .then(response => response.json().then(data => ({ status: response.status, body: data })))
-        .then(res => {
-            if (res.body.success) {
+        try {
+            const response = await fetch(`${customerApi.base}/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ name: updatedName })
+            });
+
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (e) {
+                data = null;
+            }
+
+            if (response.ok && data?.success) {
                 const idx = regularCustomers.findIndex(c => c.id === id);
                 if (idx !== -1) regularCustomers[idx].name = updatedName;
                 if (Number(idInput.value) === id) input.value = updatedName;
-                showFeedback(res.body.message || `Nama pelanggan diperbarui menjadi "${updatedName}".`);
+                showFeedback(data.message || `Nama pelanggan diperbarui menjadi "${updatedName}".`);
+            } else if (response.status === 419) {
+                showFeedback('Sesi Anda telah berakhir. Silakan muat ulang halaman (F5).', true);
             } else {
-                const errMsg = res.body.errors?.name?.[0] || res.body.message || 'Gagal memperbarui nama pelanggan.';
+                const errMsg = data?.errors?.name?.[0] || data?.message || `Gagal memperbarui nama pelanggan (HTTP ${response.status}).`;
                 showFeedback(errMsg, true);
             }
             editingId = null;
             checkInputStatus();
             renderList(input.value);
-        })
-        .catch(err => {
-            showFeedback('Terjadi kesalahan jaringan.', true);
+        } catch (err) {
+            showFeedback('Gagal terhubung ke server. Pastikan server web aktif.', true);
             editingId = null;
             renderList(input.value);
-        });
+        }
     }
 
     // Klik di luar combobox menutup dropdown

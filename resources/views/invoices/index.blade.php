@@ -133,75 +133,68 @@
                             data-bs-auto-close="outside"
                             aria-expanded="false"
                             style="font-size: 0.8rem; padding: 0.25rem 0.6rem; cursor: pointer; background-image: none;">
-                        <span class="text-truncate d-inline-flex align-items-center">
-                            <i class="bi bi-person{{ request('customer_name') ? '-check-fill text-success' : ' text-muted' }} me-1" style="font-size: 0.82rem;"></i>
-                            <span id="selectedCustomerLabel" class="text-truncate">{{ request('customer_name') ?: 'Semua Customer' }}</span>
-                        </span>
+                        <span id="selectedCustomerLabel" class="text-truncate">{{ request('customer_name') ?: 'Semua Customer' }}</span>
                         <i class="bi bi-chevron-down ms-1 text-muted" style="font-size: 0.7rem; flex-shrink: 0;"></i>
                     </button>
 
-                    <div class="dropdown-menu p-0 shadow-lg border rounded-3 customer-filter-menu" 
+                    <div class="dropdown-menu p-0 shadow-sm border rounded-3 customer-filter-menu" 
                          aria-labelledby="btnCustomerFilterDropdown"
-                         style="min-width: 240px; max-width: 280px; z-index: 1050; border-color: #e5e7eb; overflow: hidden;">
+                         style="min-width: 220px; max-width: 260px; z-index: 1050; border-color: #e5e7eb; overflow: hidden;">
                         
-                        <!-- Header Sticky -->
-                        <div class="px-3 py-2 bg-light border-bottom d-flex justify-content-between align-items-center">
-                            <span class="text-muted fw-bold font-mono" style="font-size: 0.70rem; letter-spacing: 0.04em;">
-                                <i class="bi bi-people-fill text-success me-1"></i> DAFTAR PELANGGAN
+                        <!-- Header Sticky Minimalis -->
+                        <div class="px-2.5 py-1.5 bg-light border-bottom d-flex justify-content-between align-items-center">
+                            <span class="text-muted fw-bold font-mono" style="font-size: 0.68rem; letter-spacing: 0.04em;">
+                                DAFTAR PELANGGAN
                             </span>
-                            <span class="badge bg-white text-dark border font-mono" style="font-size: 0.68rem;">{{ $customers->count() }} tetap</span>
+                            <span class="badge bg-white text-dark border font-mono" style="font-size: 0.65rem;">{{ $customers->count() }} tetap</span>
                         </div>
 
                         <!-- Sticky In-Menu Search Box -->
-                        <div class="p-2 border-bottom bg-white">
+                        <div class="p-1.5 border-bottom bg-white">
                             <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-light border-end-0 text-muted ps-2 pe-1" style="font-size: 0.75rem;">
+                                <span class="input-group-text bg-light border-end-0 text-muted ps-2 pe-1" style="font-size: 0.72rem;">
                                     <i class="bi bi-search"></i>
                                 </span>
                                 <input type="text" 
                                        id="filterCustomerSearchInput" 
-                                       class="form-control border-start-0 ps-1" 
+                                       class="form-control border-start-0 ps-1 py-1" 
                                        placeholder="Cari nama pelanggan..." 
-                                       style="font-size: 0.78rem;" 
+                                       style="font-size: 0.75rem;" 
                                        autocomplete="off">
                             </div>
                         </div>
 
-                        <!-- Scrollable List Container (max-height: 200px) -->
-                        <div class="overflow-y-auto" style="max-height: 200px;" id="filterCustomerList">
+                        <!-- Scrollable List Container (Tinggi 3 Baris User ~105px) -->
+                        <div class="overflow-y-auto" style="max-height: 105px;" id="filterCustomerList">
                             <!-- Opsi: Semua Customer (Reset) -->
                             <button type="button" 
-                                    class="dropdown-item py-2 px-3 d-flex align-items-center justify-content-between customer-filter-item {{ empty(request('customer_name')) ? 'active bg-success text-white fw-semibold' : '' }}" 
+                                    class="dropdown-item py-1.5 px-2.5 d-flex align-items-center justify-content-between customer-filter-item {{ empty(request('customer_name')) ? 'active bg-success text-white fw-semibold' : '' }}" 
                                     data-value="" 
+                                    style="font-size: 0.78rem;"
                                     onclick="selectCustomerFilter('')">
-                                <span class="d-inline-flex align-items-center text-truncate">
-                                    <i class="bi bi-asterisk me-2 {{ empty(request('customer_name')) ? 'text-white' : 'text-muted' }}"></i>
-                                    Semua Customer
-                                </span>
+                                <span class="text-truncate">Semua Customer</span>
                                 @if(empty(request('customer_name')))
-                                    <i class="bi bi-check2 text-white fs-6"></i>
+                                    <i class="bi bi-check2 text-white" style="font-size: 0.8rem;"></i>
                                 @endif
                             </button>
 
                             @foreach($customers as $c)
                             @php $isSelected = (request('customer_name') === $c->name); @endphp
                             <button type="button" 
-                                    class="dropdown-item py-1.5 px-3 d-flex align-items-center justify-content-between customer-filter-item {{ $isSelected ? 'active bg-success text-white fw-semibold' : '' }}" 
+                                    class="dropdown-item py-1.5 px-2.5 d-flex align-items-center justify-content-between customer-filter-item {{ $isSelected ? 'active bg-success text-white fw-semibold' : '' }}" 
                                     data-value="{{ $c->name }}" 
+                                    style="font-size: 0.78rem;"
                                     onclick="selectCustomerFilter('{{ addslashes($c->name) }}')">
-                                <span class="d-inline-flex align-items-center text-truncate">
-                                    <i class="bi bi-person{{ $isSelected ? '-fill text-white' : ' text-secondary' }} me-2" style="font-size: 0.85rem;"></i>
-                                    <span class="customer-item-name text-truncate">{{ $c->name }}</span>
-                                </span>
+                                <span class="customer-item-name text-truncate">{{ $c->name }}</span>
                                 @if($isSelected)
-                                    <i class="bi bi-check2 text-white fs-6"></i>
+                                    <i class="bi bi-check2 text-white" style="font-size: 0.8rem;"></i>
                                 @endif
                             </button>
                             @endforeach
 
                             <!-- State Ketika Pencarian Tidak Ditemukan -->
-                            <div id="filterCustomerEmptyMsg" class="p-3 text-center text-muted small d-none" style="font-size: 0.75rem;">
-                                <i class="bi bi-search me-1"></i> Tidak ada nama yang cocok
+                            <div id="filterCustomerEmptyMsg" class="p-2 text-center text-muted small d-none" style="font-size: 0.72rem;">
+                                Tidak ada nama yang cocok
                             </div>
                         </div>
                     </div>
