@@ -1,3 +1,7 @@
+@php
+    $logoEmblemPath = public_path('images/New_Project_4K_1000DPI.png');
+    $logoEmblem = file_exists($logoEmblemPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoEmblemPath)) : asset('images/New_Project_4K_1000DPI.png');
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -13,7 +17,7 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            font-size: 10.5px;
+            font-size: 10px;
             color: #1c1917;
             background: #ffffff;
             margin: 0;
@@ -105,32 +109,37 @@
         </div>
     </div>
 
-    <!-- Official Accounting Document Header -->
-    <div class="border-bottom border-2 border-dark pb-3 mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <div style="width: 52px; height: 52px; background: #165b3d; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
-                    <i class="bi bi-flower1 fs-2"></i>
-                </div>
-                <div>
-                    <h1 class="font-brand-serif fw-bold text-dark m-0 fs-3" style="letter-spacing: 0.05em; color: #165b3d !important;">
+    <!-- Kop Surat Resmi SCENTPEEP PARFUM -->
+    <div class="mb-3 pb-2">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="width: 72px; vertical-align: middle; padding-right: 14px;">
+                    <img src="{{ $logoEmblem }}" alt="Logo Scentpeep" style="width: 62px; height: 62px; object-fit: contain; border-radius: 8px;">
+                </td>
+                <td style="vertical-align: middle;">
+                    <div class="font-brand-serif fw-bold" style="font-size: 21px; color: #165b3d; letter-spacing: 0.04em; line-height: 1.15;">
                         SCENTPEEP PARFUM
-                    </h1>
-                    <div class="fw-bold text-uppercase text-secondary" style="font-size: 11px; letter-spacing: 0.08em;">
+                    </div>
+                    <div class="fw-bold text-uppercase text-secondary" style="font-size: 11px; letter-spacing: 0.08em; margin-top: 2px;">
                         Laporan Rekapitulasi Invoice Penjualan
                     </div>
-                    <div class="text-muted" style="font-size: 9.5px;">
-                        Authentic Inspired Fragrance & Artisanal Perfumery &bull; Sistem POS & Pembukuan Kas Resmi
+                    <div class="text-muted" style="font-size: 9.5px; margin-top: 1px;">
+                        Authentic Inspired Fragrance &bull; Artisanal Perfumery &bull; Retail Supply Chain
                     </div>
-                </div>
-            </div>
-            <div class="text-end font-mono-num" style="font-size: 9.5px; line-height: 1.45;">
-                <div><span class="text-muted">No. Dokumen:</span> <strong>DOC-SP/INV/{{ date('Ymd') }}-{{ str_pad($invoices->count(), 3, '0', STR_PAD_LEFT) }}</strong></div>
-                <div><span class="text-muted">Tgl Cetak:</span> <strong>{{ date('d/m/Y H:i') }} WIB</strong></div>
-                <div><span class="text-muted">Dicetak Oleh:</span> <strong>{{ Auth::user()->name }} ({{ ucfirst(Auth::user()->role) }})</strong></div>
-                <div><span class="text-muted">Mata Uang:</span> <strong>IDR (Rupiah Indonesia)</strong></div>
-            </div>
-        </div>
+                    <div class="text-muted" style="font-size: 9px;">
+                        Mall &amp; Store Distribution Hub &bull; Sistem POS &amp; Pembukuan Kas Resmi
+                    </div>
+                </td>
+                <td style="width: 220px; vertical-align: middle; text-align: right; font-size: 9px; line-height: 1.45;" class="font-mono-num">
+                    <div><span class="text-muted">No. Dokumen:</span> <strong>DOC-SP/INV/{{ date('Ymd') }}-{{ str_pad($invoices->count(), 3, '0', STR_PAD_LEFT) }}</strong></div>
+                    <div><span class="text-muted">Tgl Cetak:</span> <strong>{{ date('d/m/Y H:i') }} WIB</strong></div>
+                    <div><span class="text-muted">Dicetak Oleh:</span> <strong>{{ Auth::user()->name }}</strong></div>
+                    <div><span class="text-muted">Otoritas / Hak:</span> <strong class="text-uppercase">{{ Auth::user()->role }}</strong></div>
+                </td>
+            </tr>
+        </table>
+        <!-- Garis Ganda Resmi Kop Surat -->
+        <div style="border-top: 2px solid #165b3d; border-bottom: 0.75px solid #165b3d; height: 2px; margin-top: 10px;"></div>
     </div>
 
     <!-- Executive Summary / KPI Cards -->

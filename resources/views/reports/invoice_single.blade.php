@@ -1,3 +1,7 @@
+@php
+    $logoEmblemPath = public_path('images/New_Project_4K_1000DPI.png');
+    $logoEmblem = file_exists($logoEmblemPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoEmblemPath)) : asset('images/New_Project_4K_1000DPI.png');
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -114,35 +118,39 @@
             </div>
         </div>
 
-        <!-- Invoice Header -->
-        <div class="d-flex justify-content-between align-items-start border-bottom border-2 border-dark pb-4 mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <div style="width: 58px; height: 58px; background: #165b3d; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
-                    <i class="bi bi-flower1 fs-1"></i>
-                </div>
-                <div>
-                    <h1 class="font-brand-serif fw-bold m-0 fs-3" style="letter-spacing: 0.04em; color: #165b3d !important;">
-                        SCENTPEEP PARFUM
-                    </h1>
-                    <div class="fw-semibold text-secondary" style="font-size: 11.5px;">
-                        Authentic Inspired Fragrance &amp; Artisanal Perfumery
-                    </div>
-                    <div class="text-muted" style="font-size: 10px;">
-                        Mall &amp; Store Distribution Hub &bull; Scentpeep Management System
-                    </div>
-                </div>
-            </div>
-            <div class="text-end">
-                <span class="d-inline-block px-3 py-1 bg-dark text-white font-mono-num fw-bold rounded text-uppercase" style="font-size: 10px; letter-spacing: 0.08em;">
-                    FAKTUR PENJUALAN
-                </span>
-                <div class="font-mono-num fw-bold text-dark fs-5 mt-1">
-                    {{ $invoice->invoice_no }}
-                </div>
-                <div class="text-muted small">
-                    Tanggal: <strong class="text-dark">{{ ($invoice->tanggal ?? $invoice->created_at)->format('d F Y') }}</strong>
-                </div>
-            </div>
+        <!-- Kop Surat Resmi Faktur Penjualan -->
+        <div class="mb-4 pb-3">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 72px; vertical-align: middle; padding-right: 14px;">
+                        <img src="{{ $logoEmblem }}" alt="Logo Scentpeep" style="width: 65px; height: 65px; object-fit: contain; border-radius: 8px;">
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <div class="font-brand-serif fw-bold" style="font-size: 22px; color: #165b3d; letter-spacing: 0.04em; line-height: 1.15;">
+                            SCENTPEEP PARFUM
+                        </div>
+                        <div class="fw-semibold text-secondary" style="font-size: 11.5px; margin-top: 2px;">
+                            Authentic Inspired Fragrance &amp; Artisanal Perfumery
+                        </div>
+                        <div class="text-muted" style="font-size: 9.5px;">
+                            Mall &amp; Store Distribution Hub &bull; Scentpeep Management System
+                        </div>
+                    </td>
+                    <td style="width: 200px; vertical-align: middle; text-align: right;">
+                        <span class="d-inline-block px-3 py-1 bg-dark text-white font-mono-num fw-bold rounded text-uppercase" style="font-size: 9.5px; letter-spacing: 0.08em;">
+                            FAKTUR PENJUALAN
+                        </span>
+                        <div class="font-mono-num fw-bold text-dark fs-5 mt-1">
+                            {{ $invoice->invoice_no }}
+                        </div>
+                        <div class="text-muted small">
+                            Tanggal: <strong class="text-dark">{{ ($invoice->tanggal ?? $invoice->created_at)->format('d F Y') }}</strong>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <!-- Garis Ganda Kop Surat -->
+            <div style="border-top: 2px solid #165b3d; border-bottom: 0.75px solid #165b3d; height: 2px; margin-top: 10px;"></div>
         </div>
 
         <!-- Bill To & Transaction Metadata Grid -->

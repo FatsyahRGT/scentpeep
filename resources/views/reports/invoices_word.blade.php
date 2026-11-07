@@ -1,3 +1,7 @@
+@php
+    $logoEmblemPath = public_path('images/New_Project_4K_1000DPI.png');
+    $logoEmblem = file_exists($logoEmblemPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoEmblemPath)) : asset('images/New_Project_4K_1000DPI.png');
+@endphp
 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -47,20 +51,7 @@
         .brand-tagline {
             font-size: 8.5pt;
             color: #6b7280;
-            margin-bottom: 10pt;
-        }
-        table.meta-box {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #f9fafb;
-            border: 0.75pt solid #d1d5db;
-            margin-bottom: 12pt;
-        }
-        table.meta-box td {
-            padding: 5pt 8pt;
-            font-size: 8.5pt;
-            color: #374151;
-            border: none;
+            margin-bottom: 2pt;
         }
         table.summary-cards {
             width: 100%;
@@ -162,15 +153,18 @@
 </head>
 <body>
 <div class="Section1">
-    <!-- Header Resmi Scentpeep -->
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 8pt;">
+    <!-- Kop Surat Resmi SCENTPEEP PARFUM -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 6pt;">
         <tr>
-            <td style="vertical-align: top;">
+            <td style="width: 58pt; vertical-align: middle; padding-right: 12pt;">
+                <img src="{{ $logoEmblem }}" width="56" height="56" style="width: 56pt; height: 56pt; object-fit: contain;">
+            </td>
+            <td style="vertical-align: middle;">
                 <h1 class="brand-title">SCENTPEEP PARFUM</h1>
                 <div class="brand-subtitle">Laporan Rekapitulasi Invoice Penjualan</div>
-                <div class="brand-tagline">Authentic Inspired Fragrance &bull; Sistem POS & Pembukuan Kas Resmi</div>
+                <div class="brand-tagline">Authentic Inspired Fragrance &bull; Artisanal Perfumery &bull; Retail Supply Chain</div>
             </td>
-            <td style="text-align: right; vertical-align: top; font-size: 8pt; color: #4b5563; line-height: 1.45;">
+            <td style="text-align: right; vertical-align: middle; font-size: 8pt; color: #4b5563; line-height: 1.45; font-family: 'Consolas', monospace;">
                 <div>No. Dokumen: <strong>DOC-SP/INV/{{ date('Ymd') }}-{{ str_pad($invoices->count(), 3, '0', STR_PAD_LEFT) }}</strong></div>
                 <div>Tanggal Cetak: <strong>{{ date('d/m/Y H:i') }} WIB</strong></div>
                 <div>Dicetak Oleh: <strong>{{ Auth::user()->name }} ({{ ucfirst(Auth::user()->role) }})</strong></div>
@@ -178,6 +172,8 @@
             </td>
         </tr>
     </table>
+    <!-- Garis Ganda Resmi Kop Surat -->
+    <div style="border-top: 2pt solid #165b3d; border-bottom: 0.5pt solid #165b3d; height: 2pt; margin-top: 2pt; margin-bottom: 12pt;"></div>
 
     <!-- Ringkasan KPI Eksekutif -->
     <table class="summary-cards">
