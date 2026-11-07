@@ -477,6 +477,20 @@ class InvoiceController extends Controller
         return redirect()->back()->with('success', "Invoice {$invoice->invoice_no} berhasil ditandai LUNAS.");
     }
 
+    public function print(Invoice $invoice): View
+    {
+        $user = Auth::user();
+        if ($user->isReseller()) {
+            if ($invoice->created_by !== $user->id && $invoice->sales_name !== $user->name && $invoice->location_id !== $user->location?->id) {
+                abort(403, 'Akses ditolak. Anda hanya dapat mencetak invoice Anda sendiri.');
+            }
+        }
+
+        $invoice->load(['product', 'location', 'creator']);
+
+        return view('reports.invoice_single', compact('invoice'));
+    }
+
     public function destroy(Invoice $invoice): RedirectResponse
     {
         $user = Auth::user();

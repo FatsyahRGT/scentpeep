@@ -227,6 +227,9 @@
                         </td>
                         <td class="py-2 px-2 text-end text-nowrap">
                             <div class="d-inline-flex gap-1 align-items-center justify-content-end">
+                                <a href="{{ route('invoices.print', $inv) }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="tooltip" title="Cetak Faktur Satuan (A4)" aria-label="Cetak Faktur Satuan" style="width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-printer" style="font-size: 0.75rem;"></i>
+                                </a>
                                 <a href="{{ route('invoices.edit', $inv) }}" class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="tooltip" title="Edit Invoice" aria-label="Edit Invoice" style="width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
                                     <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
                                 </a>

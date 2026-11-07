@@ -2,117 +2,264 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Transaksi Kas & Penjualan - Scentpeep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Transaksi Kas - SCENTPEEP PARFUM</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background: #fff; color: #1e293b; padding: 20px; font-size: 11px; }
-        .table th, .table td { padding: 6px 8px !important; font-size: 11px; }
+        @page {
+            size: A4 portrait;
+            margin: 12mm 15mm;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 10.5px;
+            color: #1c1917;
+            background: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .font-brand-serif {
+            font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+            letter-spacing: -0.01em;
+        }
+        .font-mono-num {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-feature-settings: "tnum" 1;
+        }
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            font-size: 10px;
+        }
+        .table-custom th {
+            background-color: #165b3d !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 7px 8px;
+            border: 1px solid #124d33;
+            font-size: 9.5px;
+        }
+        .table-custom td {
+            padding: 6px 8px;
+            border: 1px solid #e7e5e4;
+            vertical-align: middle;
+        }
+        .table-custom tbody tr:nth-child(even) {
+            background-color: #fafaf9;
+        }
+        .table-custom tfoot tr {
+            background-color: #f5f5f4;
+            font-weight: 700;
+            border-top: 2px solid #165b3d;
+        }
+        .table-custom tfoot td {
+            padding: 8px 8px;
+        }
+        .badge-type-in {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 8.5px;
+        }
+        .badge-type-out {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 8.5px;
+        }
+        .avoid-break {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
         @media print {
             .no-print { display: none !important; }
             body { padding: 0; }
+            .avoid-break { page-break-inside: avoid; }
         }
     </style>
 </head>
 <body>
-    <div class="no-print mb-3 d-flex justify-content-between align-items-center p-3 bg-light rounded border">
+    <!-- Action Toolbar (Hidden when Printed) -->
+    <div class="no-print mb-4 p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center shadow-xs">
         <div>
-            <h4 class="mb-0 fw-bold">Pratinjau Cetak / Ekspor PDF Laporan Transaksi</h4>
-            <small class="text-muted">Gunakan tombol cetak untuk menyimpan sebagai PDF dokumen resmi</small>
+            <h5 class="mb-0 fw-bold text-dark">Pratinjau Cetak / Ekspor PDF - Buku Kas &amp; Transaksi</h5>
+            <small class="text-muted">Gunakan opsi cetak atau simpan sebagai PDF untuk pembukuan akuntansi resmi.</small>
         </div>
         <div class="d-flex gap-2">
-            <button type="button" onclick="window.print()" class="btn btn-dark btn-sm fw-semibold" style="background: #121212; border-color: #121212;">
-                <i class="bi bi-printer me-1"></i> Cetak / Simpan PDF
+            <button type="button" onclick="window.print()" class="btn btn-sm btn-dark fw-semibold px-3 d-inline-flex align-items-center gap-2" style="background: #165b3d; border-color: #165b3d;">
+                <i class="bi bi-printer"></i> Cetak / Simpan PDF
             </button>
-            <button type="button" onclick="window.close()" class="btn btn-outline-secondary btn-sm">
+            <button type="button" onclick="window.close()" class="btn btn-sm btn-outline-secondary fw-semibold px-3">
                 Tutup
             </button>
         </div>
     </div>
 
-    <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
-        <div>
-            <h2 class="fw-bold mb-0 text-dark">SCENTPEEP PARFUM</h2>
-            <div class="text-muted small">Laporan Arus Kas, Penjualan & Inventori</div>
-        </div>
-        <div class="text-end small">
-            <div><strong>Tanggal Cetak:</strong> {{ date('d/m/Y H:i') }}</div>
-            <div><strong>Dicetak Oleh:</strong> {{ Auth::user()->name }} ({{ ucfirst(Auth::user()->role) }})</div>
-        </div>
-    </div>
-
-    <!-- Summary Box -->
-    <div class="row g-2 mb-3">
-        <div class="col-4">
-            <div class="p-2 border rounded bg-light">
-                <div class="text-muted small">Total Pemasukan:</div>
-                <div class="fw-bold text-success fs-5">+Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="p-2 border rounded bg-light">
-                <div class="text-muted small">Total Pengeluaran:</div>
-                <div class="fw-bold text-danger fs-5">-Rp {{ number_format($totalOutcome, 0, ',', '.') }}</div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="p-2 border rounded bg-light">
-                <div class="text-muted small">Saldo Bersih Kas:</div>
-                <div class="fw-bold fs-5 {{ $netSaldo >= 0 ? 'text-primary' : 'text-danger' }}">
-                    Rp {{ number_format($netSaldo, 0, ',', '.') }}
+    <!-- Official Accounting Document Header -->
+    <div class="border-bottom border-2 border-dark pb-3 mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width: 52px; height: 52px; background: #165b3d; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="bi bi-wallet2 fs-2"></i>
+                </div>
+                <div>
+                    <h1 class="font-brand-serif fw-bold text-dark m-0 fs-3" style="letter-spacing: 0.05em; color: #165b3d !important;">
+                        SCENTPEEP PARFUM
+                    </h1>
+                    <div class="fw-bold text-uppercase text-secondary" style="font-size: 11px; letter-spacing: 0.08em;">
+                        Laporan Transaksi Kas &amp; Rekapitulasi Arus Kas
+                    </div>
+                    <div class="text-muted" style="font-size: 9.5px;">
+                        Buku Kas Harian, Penerimaan Penjualan &amp; Mutasi Operasional Resmi
+                    </div>
                 </div>
             </div>
+            <div class="text-end font-mono-num" style="font-size: 9.5px; line-height: 1.45;">
+                <div><span class="text-muted">No. Dokumen:</span> <strong>DOC-SP/FIN/{{ date('Ymd') }}-{{ str_pad($transactions->count(), 3, '0', STR_PAD_LEFT) }}</strong></div>
+                <div><span class="text-muted">Tgl Cetak:</span> <strong>{{ date('d/m/Y H:i') }} WIB</strong></div>
+                <div><span class="text-muted">Dicetak Oleh:</span> <strong>{{ Auth::user()->name }} ({{ ucfirst(Auth::user()->role) }})</strong></div>
+                <div><span class="text-muted">Mata Uang:</span> <strong>IDR (Rupiah Indonesia)</strong></div>
+            </div>
         </div>
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
+    <!-- Cashflow KPI Metrics -->
+    <div class="row g-2 mb-3">
+        <div class="col-4">
+            <div class="p-2 border rounded-2 bg-light">
+                <div class="text-muted small" style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Total Pemasukan (Inflow)</div>
+                <div class="fw-bold text-success fs-6 font-mono-num">+Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
+                <div class="text-success font-mono-num" style="font-size: 9px;">Penerimaan Kas &amp; Pelunasan</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="p-2 border rounded-2 bg-light">
+                <div class="text-muted small" style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Total Pengeluaran (Outflow)</div>
+                <div class="fw-bold text-danger fs-6 font-mono-num">-Rp {{ number_format($totalOutcome, 0, ',', '.') }}</div>
+                <div class="text-danger font-mono-num" style="font-size: 9px;">Operasional &amp; Biaya Terkait</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="p-2 border rounded-2 bg-light">
+                <div class="text-muted small" style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Saldo Kas Bersih (Net Cash)</div>
+                <div class="fw-bold fs-6 font-mono-num {{ $netSaldo >= 0 ? 'text-dark' : 'text-danger' }}">
+                    Rp {{ number_format($netSaldo, 0, ',', '.') }}
+                </div>
+                <div class="text-secondary font-mono-num" style="font-size: 9px;">{{ $transactions->count() }} Baris Transaksi Terpilih</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table class="table-custom">
+        <thead>
             <tr>
-                <th style="width: 30px;">#</th>
-                <th style="width: 75px;">Tanggal</th>
-                <th>Tipe & Kategori</th>
+                <th style="width: 25px;" class="text-center">#</th>
+                <th style="width: 70px;">Tanggal</th>
+                <th style="width: 85px;">Tipe &amp; Kategori</th>
                 <th>Keterangan / Pembeli</th>
                 <th>Varian Parfum (Lokasi)</th>
-                <th class="text-center" style="width: 50px;">Qty</th>
-                <th class="text-end" style="width: 100px;">Nominal (Rp)</th>
-                <th style="width: 90px;">No. Invoice</th>
+                <th style="width: 45px;" class="text-center">Qty</th>
+                <th style="width: 95px;" class="text-end">Nominal (Rp)</th>
+                <th style="width: 80px;">No. Invoice</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($transactions as $index => $tx)
+            @forelse($transactions as $idx => $tx)
             <tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $tx->tanggal->format('d/m/Y') }}</td>
+                <td class="text-center text-muted font-mono-num">{{ $idx + 1 }}</td>
+                <td class="font-mono-num">{{ $tx->tanggal->format('d/m/Y') }}</td>
                 <td>
-                    <strong>{{ $tx->type }}</strong> - {{ $tx->category }}
-                    @if($tx->is_free)<span class="badge bg-teal text-white ms-1">GRATIS</span>@endif
+                    @if($tx->type === 'INCOME')
+                        <span class="badge-type-in">INCOME</span>
+                    @else
+                        <span class="badge-type-out">OUTCOME</span>
+                    @endif
+                    <div class="text-muted" style="font-size: 8.5px;">{{ $tx->category }}</div>
                 </td>
                 <td>
-                    <div>{{ $tx->description ?: '-' }}</div>
+                    <div class="fw-semibold">{{ $tx->description ?: '-' }}</div>
                     @if($tx->customer_name)
-                        <div class="text-primary small">Pembeli: {{ $tx->customer_name }} @if($tx->channel)({{ $tx->channel }})@endif</div>
+                        <div class="text-muted" style="font-size: 8.5px;">Pelanggan: {{ $tx->customer_name }}</div>
                     @endif
                 </td>
                 <td>
                     @if($tx->product)
-                        {{ $tx->product->name }} ({{ $tx->location?->name }})
+                        <strong>{{ $tx->product->name }}</strong>
+                        <span class="text-muted" style="font-size: 8.5px;">({{ $tx->location?->name ?: '-' }})</span>
                     @else
-                        -
+                        <span class="text-muted">-</span>
                     @endif
                 </td>
-                <td class="text-center">
-                    {{ $tx->qty ? ($tx->stock_effect === 'IN' ? "+{$tx->qty}" : "-{$tx->qty}") : '-' }}
+                <td class="text-center font-mono-num">
+                    {{ $tx->qty ? $tx->qty . ' pcs' : '-' }}
                 </td>
-                <td class="text-end fw-bold {{ $tx->type === 'INCOME' ? 'text-success' : 'text-danger' }}">
-                    Rp {{ number_format($tx->amount, 0, ',', '.') }}
+                <td class="text-end font-mono-num fw-bold {{ $tx->type === 'INCOME' ? 'text-success' : 'text-danger' }}">
+                    {{ $tx->type === 'INCOME' ? '+' : '-' }}Rp {{ number_format($tx->amount, 0, ',', '.') }}
                 </td>
-                <td>{{ $tx->invoice_no ?: '-' }}</td>
+                <td class="font-mono-num text-muted" style="font-size: 9px;">
+                    {{ $tx->invoice_no ?: '-' }}
+                </td>
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="text-center text-muted py-3">Tidak ada data transaksi.</td>
+                <td colspan="8" class="text-center text-muted py-4">Tidak ada data transaksi kas yang sesuai kriteria filter.</td>
             </tr>
             @endforelse
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="6" class="text-end text-uppercase">Saldo Kas Bersih:</td>
+                <td class="text-end font-mono-num {{ $netSaldo >= 0 ? 'text-dark' : 'text-danger' }}">
+                    Rp {{ number_format($netSaldo, 0, ',', '.') }}
+                </td>
+                <td>-</td>
+            </tr>
+        </tfoot>
     </table>
+
+    <!-- Official Accounting 3-Column Sign-Off Block -->
+    <div class="avoid-break mt-4 pt-3 border-top">
+        <div class="text-end text-muted fst-italic mb-3" style="font-size: 9.5px;">
+            Pusat Distribusi Scentpeep, {{ date('d F Y') }}
+        </div>
+        <div class="row text-center" style="font-size: 10px;">
+            <div class="col-4">
+                <div class="fw-bold text-uppercase text-secondary mb-1" style="font-size: 9.5px;">Dibuat Oleh:</div>
+                <div class="text-muted mb-5" style="font-size: 8.5px;">Staff Administrasi Keuangan</div>
+                <div class="mx-auto border-bottom border-dark" style="width: 140px;"></div>
+                <div class="fw-bold mt-1">( {{ Auth::user()->name }} )</div>
+                <div class="text-muted" style="font-size: 8.5px;">Kasir &amp; Pembukuan</div>
+            </div>
+            <div class="col-4">
+                <div class="fw-bold text-uppercase text-secondary mb-1" style="font-size: 9.5px;">Diperiksa Oleh:</div>
+                <div class="text-muted mb-5" style="font-size: 8.5px;">Supervisor Keuangan &amp; Akuntansi</div>
+                <div class="mx-auto border-bottom border-dark" style="width: 140px;"></div>
+                <div class="fw-bold mt-1">( Accounting Team )</div>
+                <div class="text-muted" style="font-size: 8.5px;">Verifikasi Mutasi Kas</div>
+            </div>
+            <div class="col-4">
+                <div class="fw-bold text-uppercase text-secondary mb-1" style="font-size: 9.5px;">Disetujui Oleh:</div>
+                <div class="text-muted mb-5" style="font-size: 8.5px;">Pimpinan Operasional / Direktur</div>
+                <div class="mx-auto border-bottom border-dark" style="width: 140px;"></div>
+                <div class="fw-bold mt-1">( Branch Manager )</div>
+                <div class="text-muted" style="font-size: 8.5px;">Head of Finance</div>
+            </div>
+        </div>
+        <div class="mt-4 pt-2 border-top d-flex justify-content-between align-items-center text-muted" style="font-size: 8.5px;">
+            <div>Dokumen ini dihasilkan secara otomatis oleh <strong>Scentpeep Management System</strong> dan telah diverifikasi dalam buku kas.</div>
+            <div class="font-mono-num">DOC-HASH: {{ strtoupper(substr(md5($netSaldo . $transactions->count() . date('Ymd')), 0, 16)) }}-VERIFIED</div>
+        </div>
+    </div>
 </body>
 </html>

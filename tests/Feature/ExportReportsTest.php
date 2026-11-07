@@ -135,4 +135,26 @@ class ExportReportsTest extends TestCase
         $response->assertSee('Laporan Matriks Inventori Stok Fisik');
         $response->assertSee('Sauvage Test');
     }
+
+    public function test_print_single_invoice_view(): void
+    {
+        $invoice = \App\Models\Invoice::create([
+            'invoice_no' => 'INV-TEST-PRINT',
+            'tanggal' => now()->toDateString(),
+            'sales_name' => 'Admin Test',
+            'customer_name' => 'Pelanggan Cetak',
+            'product_id' => $this->product->id,
+            'qty' => 2,
+            'location_id' => $this->gudang->id,
+            'total_price' => 400000,
+            'payment_status' => 'LUNAS',
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('invoices.print', $invoice));
+        $response->assertOk();
+        $response->assertSee('FAKTUR PENJUALAN');
+        $response->assertSee('INV-TEST-PRINT');
+        $response->assertSee('Pelanggan Cetak');
+        $response->assertSee('Sauvage Test');
+    }
 }

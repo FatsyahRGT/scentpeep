@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
 
     // 1. Invoices (Penjualan Parfum per Varian - Akses Semua User)
     Route::get('/invoices/evaluation', [InvoiceController::class, 'evaluation'])->name('invoices.evaluation');
+    Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::post('/invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.markPaid');
     Route::resource('invoices', InvoiceController::class);
 
