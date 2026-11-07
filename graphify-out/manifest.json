@@ -516,9 +516,9 @@
     "semantic_hash": ""
   },
   "resources/views/transactions/index.blade.php": {
-    "mtime": 1794034744.3718977,
-    "seen": 1794034843.045311,
-    "ast_hash": "5c58af067c3b3e6618e56b368221a7ae",
+    "mtime": 1794039018.5186195,
+    "seen": 1794039050.0912132,
+    "ast_hash": "7ec0e3fff677e862bbd3295472adad3f",
     "semantic_hash": ""
   },
   "resources/views/users/create.blade.php": {
@@ -690,9 +690,9 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/index.blade.php": {
-    "mtime": 1794037771.2267294,
-    "seen": 1794037896.0780087,
-    "ast_hash": "7e585825b9a0fe22a30cad19e991cdd9",
+    "mtime": 1794038390.7114313,
+    "seen": 1794038690.0234098,
+    "ast_hash": "a93f587fa99b6d152e3fd98bf832376e",
     "semantic_hash": ""
   },
   "resources/views/pre_orders/create.blade.php": {
@@ -966,9 +966,9 @@
     "semantic_hash": ""
   },
   "resources/views/tutorial.blade.php": {
-    "mtime": 1793729159.214435,
-    "seen": 1793729188.737893,
-    "ast_hash": "4411d10205098bbfc2c044edd7b50d45",
+    "mtime": 1794038611.7417161,
+    "seen": 1794038690.0238984,
+    "ast_hash": "01636a2a233cb8755abfd3ba9665a781",
     "semantic_hash": ""
   },
   "app/Http/Controllers/CustomerController.php": {

@@ -67,7 +67,7 @@
             <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-download"></i> Ekspor
+                        <i class="bi bi-download"></i> Download
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-color: var(--color-border, #e8e6e1) !important;">
                         <li>
@@ -91,12 +91,12 @@
         <!-- Pemisah Visual -->
         <hr class="my-3 opacity-25">
 
-        <!-- Baris Kedua: Horizontal Filter Toolbar -->
+        <!-- Baris Kedua: Horizontal Filter Toolbar (Anti-Overlap & Responsif) -->
         <form action="{{ route('transactions.index') }}" method="GET" class="m-0" id="filterTransactionsForm">
-            <div class="row g-2 align-items-center">
+            <div class="d-flex flex-wrap align-items-center gap-2">
                 <!-- Tipe Arus Kas -->
-                <div class="col-6 col-md-4 col-xl-2">
-                    <select name="type" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                <div style="min-width: 120px; flex: 1 1 auto; max-width: 135px;">
+                    <select name="type" class="form-select form-select-sm rounded-3" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Tipe</option>
                         <option value="INCOME" {{ request('type') === 'INCOME' ? 'selected' : '' }}>Masuk</option>
                         <option value="OUTCOME" {{ request('type') === 'OUTCOME' ? 'selected' : '' }}>Keluar</option>
@@ -104,8 +104,8 @@
                 </div>
 
                 <!-- Kategori -->
-                <div class="col-6 col-md-4 col-xl-2">
-                    <select name="category" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                <div style="min-width: 130px; flex: 1 1 auto; max-width: 155px;">
+                    <select name="category" class="form-select form-select-sm rounded-3" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Kategori</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -115,8 +115,8 @@
 
                 <!-- Lokasi (Admin Only) -->
                 @if(!Auth::user()->isReseller() && isset($locations))
-                <div class="col-12 col-md-4 col-xl-2">
-                    <select name="location_id" class="form-select form-select-sm rounded-3" onchange="this.form.submit()">
+                <div style="min-width: 125px; flex: 1 1 auto; max-width: 145px;">
+                    <select name="location_id" class="form-select form-select-sm rounded-3" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
                         <option value="">Semua Lokasi</option>
                         @foreach($locations as $loc)
                             <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
@@ -125,26 +125,24 @@
                 </div>
                 @endif
 
-                <!-- Rentang Tanggal -->
-                <div class="col-12 col-md-6 col-xl-3">
-                    <div class="d-flex align-items-center gap-1">
-                        <input type="date" name="start_date" class="form-control form-control-sm rounded-3" value="{{ request('start_date') }}" title="Dari Tanggal" onchange="this.form.submit()">
-                        <span class="text-muted small">&ndash;</span>
-                        <input type="date" name="end_date" class="form-control form-control-sm rounded-3" value="{{ request('end_date') }}" title="Sampai Tanggal" onchange="this.form.submit()">
-                    </div>
+                <!-- Rentang Tanggal (Kompak & Anti-Nabrak) -->
+                <div class="d-flex align-items-center gap-1 flex-shrink-0" style="min-width: 275px; max-width: 295px;">
+                    <input type="date" name="start_date" class="form-control form-control-sm rounded-3" value="{{ request('start_date') }}" title="Dari Tanggal" onchange="this.form.submit()" style="font-size: 0.78rem; padding: 0.25rem 0.45rem;">
+                    <span class="text-muted small px-1">&ndash;</span>
+                    <input type="date" name="end_date" class="form-control form-control-sm rounded-3" value="{{ request('end_date') }}" title="Sampai Tanggal" onchange="this.form.submit()" style="font-size: 0.78rem; padding: 0.25rem 0.45rem;">
                 </div>
 
-                <!-- Cari Keterangan / Ref -->
-                <div class="col-12 col-md-6 col-xl-3">
+                <!-- Cari Keterangan / Ref (Kompak Anti-Squish) -->
+                <div style="min-width: 175px; max-width: 230px; flex: 1 1 auto;">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-white border-end-0 text-muted ps-3 rounded-start-3"><i class="bi bi-search"></i></span>
-                        <input type="search" name="search" class="form-control border-start-0 ps-2" placeholder="Cari keterangan / ref..." value="{{ request('search') }}">
+                        <span class="input-group-text bg-white border-end-0 text-muted ps-2 pe-1 rounded-start-3"><i class="bi bi-search"></i></span>
+                        <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari keterangan/ref..." value="{{ request('search') }}" style="font-size: 0.8rem;">
                         @if(request()->anyFilled(['search', 'type', 'category', 'location_id', 'start_date', 'end_date']))
                         <a href="{{ route('transactions.index') }}" class="btn btn-outline-secondary px-2 d-inline-flex align-items-center" title="Reset Semua Filter">
                             <i class="bi bi-arrow-counterclockwise"></i>
                         </a>
                         @endif
-                        <button type="submit" class="btn btn-dark px-3 rounded-end-3" title="Cari">
+                        <button type="submit" class="btn btn-scent px-2.5 rounded-end-3" title="Cari">
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
