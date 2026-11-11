@@ -662,13 +662,9 @@
                                 <i class="bi bi-receipt-cutoff"></i>
                                 <span>Buat Invoice Penjualan</span>
                             </a>
-                            <a class="nav-side-link {{ request()->routeIs('invoices.index') && request('tab') !== 'po_pending' ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
+                            <a class="nav-side-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-file-earmark-text"></i>
                                 <span>Daftar Invoice</span>
-                            </a>
-                            <a class="nav-side-link {{ request()->routeIs('invoices.index') && request('tab') === 'po_pending' ? 'active' : '' }}" href="{{ route('invoices.index', ['tab' => 'po_pending']) }}" onclick="closeMobileSidebarIfOpen()">
-                                <i class="bi bi-hourglass-split"></i>
-                                <span>Pesanan Pre-Order (PO)</span>
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('invoices.evaluation') ? 'active' : '' }}" href="{{ route('invoices.evaluation') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-graph-up-arrow"></i>
@@ -737,13 +733,9 @@
                                 <i class="bi bi-plus-circle"></i>
                                 <span>Buat Invoice Baru</span>
                             </a>
-                            <a class="nav-side-link {{ request()->routeIs('invoices.index') && request('tab') !== 'po_pending' ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
+                            <a class="nav-side-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-file-earmark-text"></i>
-                                <span>Semua Invoice</span>
-                            </a>
-                            <a class="nav-side-link {{ request()->routeIs('invoices.index') && request('tab') === 'po_pending' ? 'active' : '' }}" href="{{ route('invoices.index', ['tab' => 'po_pending']) }}" onclick="closeMobileSidebarIfOpen()">
-                                <i class="bi bi-hourglass-split"></i>
-                                <span>Pesanan Pre-Order (PO)</span>
+                                <span>Riwayat Invoice</span>
                             </a>
                         </div>
                     </div>

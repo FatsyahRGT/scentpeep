@@ -69,37 +69,80 @@
         <!-- Pemisah Visual -->
         <hr class="my-3 opacity-25">
 
-        <!-- Tab Filter Cepat (Semua, Penjualan Langsung, PO Menunggu, PO Selesai) -->
-        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-            <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all'])) }}" 
-               class="btn btn-sm {{ ($tab === 'all') ? 'btn-dark text-white fw-bold shadow-sm' : 'btn-outline-secondary' }} rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
-                <i class="bi bi-collection"></i> Semua Invoice
-                <span class="badge {{ ($tab === 'all') ? 'bg-light text-dark' : 'bg-secondary text-white' }} rounded-pill font-mono" style="font-size: 0.68rem;">{{ $countAll }}</span>
-            </a>
-            <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'regular'])) }}" 
-               class="btn btn-sm {{ ($tab === 'regular') ? 'btn-dark text-white fw-bold shadow-sm' : 'btn-outline-secondary' }} rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
-                <i class="bi bi-box-seam text-success"></i> Penjualan Langsung
-                <span class="badge {{ ($tab === 'regular') ? 'bg-light text-dark' : 'bg-secondary text-white' }} rounded-pill font-mono" style="font-size: 0.68rem;">{{ $countRegular }}</span>
-            </a>
-            <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_pending'])) }}" 
-               class="btn btn-sm {{ ($tab === 'po_pending') ? 'btn-warning text-dark fw-bold shadow-sm' : 'btn-outline-warning text-dark' }} rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
-                <i class="bi bi-hourglass-split text-warning-emphasis"></i> PO Menunggu (Pending)
-                <span class="badge {{ ($tab === 'po_pending') ? 'bg-dark text-white' : 'bg-warning-subtle text-warning-emphasis border' }} rounded-pill font-mono" style="font-size: 0.68rem;">{{ $countPoPending }}</span>
-            </a>
-            <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_completed'])) }}" 
-               class="btn btn-sm {{ ($tab === 'po_completed') ? 'btn-dark text-white fw-bold shadow-sm' : 'btn-outline-secondary' }} rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
-                <i class="bi bi-check2-all text-info"></i> PO Selesai
-                <span class="badge {{ ($tab === 'po_completed') ? 'bg-light text-dark' : 'bg-secondary text-white' }} rounded-pill font-mono" style="font-size: 0.68rem;">{{ $countPoCompleted }}</span>
-            </a>
-        </div>
-
-        <!-- Baris Kedua: Horizontal Filter & Search Toolbar (Anti-Squish & Rapi) -->
+        <!-- Baris Kedua & Ketiga: Form Filter, Tab Status, Search Bar, & Dropdown Grid -->
         <form method="GET" action="{{ route('invoices.index') }}" class="m-0" id="filterInvoicesForm">
             <input type="hidden" name="tab" value="{{ $tab }}">
-            <div class="d-flex flex-wrap align-items-center gap-2">
+
+            <!-- Baris Kedua: 4 Tombol Tab Status (Kiri) + Search Bar (Kanan) -->
+            <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 mb-3">
+                <!-- Sisi Kiri: 4 Tombol Tab dalam Wadah Segmented Track -->
+                <div class="invoice-status-track" style="background-color: #f3f4f6; border: 1px solid #e5e7eb; padding: 5px; border-radius: 999px; display: inline-flex; flex-wrap: wrap; gap: 4px;">
+                    <!-- 1. Semua Invoice -->
+                    <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all'])) }}" 
+                       class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill text-nowrap text-decoration-none shadow-xs" 
+                       style="{{ ($tab === 'all') ? 'background-color: #2b7b5b; color: #ffffff; font-weight: 600;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;">
+                        <i class="bi bi-collection {{ ($tab === 'all') ? 'text-white' : 'text-muted' }}"></i>
+                        <span>Semua Invoice</span>
+                        <span class="badge rounded-pill font-mono px-2 py-0.5" 
+                              style="{{ ($tab === 'all') ? 'background-color: #ffffff; color: #2b7b5b;' : 'background-color: #e5e7eb; color: #374151;' }} font-size: 0.7rem;">
+                            {{ $countAll }}
+                        </span>
+                    </a>
+
+                    <!-- 2. Penjualan Langsung -->
+                    <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'regular'])) }}" 
+                       class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill text-nowrap text-decoration-none shadow-xs" 
+                       style="{{ ($tab === 'regular') ? 'background-color: #2b7b5b; color: #ffffff; font-weight: 600;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;">
+                        <i class="bi bi-box-seam {{ ($tab === 'regular') ? 'text-white' : 'text-success' }}"></i>
+                        <span>Penjualan Langsung</span>
+                        <span class="badge rounded-pill font-mono px-2 py-0.5" 
+                              style="{{ ($tab === 'regular') ? 'background-color: #ffffff; color: #2b7b5b;' : 'background-color: #e5e7eb; color: #374151;' }} font-size: 0.7rem;">
+                            {{ $countRegular }}
+                        </span>
+                    </a>
+
+                    <!-- 3. PO Menunggu (Pending) -->
+                    <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_pending'])) }}" 
+                       class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill text-nowrap text-decoration-none shadow-xs" 
+                       style="{{ ($tab === 'po_pending') ? 'background-color: #f59e0b; color: #111827; font-weight: 700;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;">
+                        <i class="bi bi-hourglass-split {{ ($tab === 'po_pending') ? 'text-dark' : 'text-warning-emphasis' }}"></i>
+                        <span>PO Menunggu (Pending)</span>
+                        <span class="badge rounded-pill font-mono px-2 py-0.5" 
+                              style="{{ ($tab === 'po_pending') ? 'background-color: #111827; color: #ffffff;' : (($countPoPending > 0) ? 'background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a;' : 'background-color: #e5e7eb; color: #374151;') }} font-size: 0.7rem;">
+                            {{ $countPoPending }}
+                        </span>
+                    </a>
+
+                    <!-- 4. PO Selesai -->
+                    <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_completed'])) }}" 
+                       class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill text-nowrap text-decoration-none shadow-xs" 
+                       style="{{ ($tab === 'po_completed') ? 'background-color: #0d9488; color: #ffffff; font-weight: 600;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;">
+                        <i class="bi bi-check2-all {{ ($tab === 'po_completed') ? 'text-white' : 'text-teal' }}" style="{{ ($tab !== 'po_completed') ? 'color: #0d9488;' : '' }}"></i>
+                        <span>PO Selesai</span>
+                        <span class="badge rounded-pill font-mono px-2 py-0.5" 
+                              style="{{ ($tab === 'po_completed') ? 'background-color: #ffffff; color: #0d9488;' : 'background-color: #e5e7eb; color: #374151;' }} font-size: 0.7rem;">
+                            {{ $countPoCompleted }}
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Sisi Kanan: Search Bar ("Cari no. invoice / customer...") -->
+                <div class="w-100 w-xl-auto" style="min-width: 290px;">
+                    <div class="input-group input-group-sm w-100">
+                        <span class="input-group-text bg-white border-end-0 text-muted ps-2.5 pe-1"><i class="bi bi-search"></i></span>
+                        <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari no. invoice / customer..." value="{{ request('search') }}" style="font-size: 0.8rem;">
+                        <button type="submit" class="btn btn-sm btn-scent px-2.5" title="Cari">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Baris Ketiga: Murni Barisan Dropdown Filter yang Merata -->
+            <div class="row g-2 align-items-center">
                 <!-- Filter Tahun -->
-                <div style="min-width: 108px; flex: 1 1 auto; max-width: 125px;">
-                    <select name="year" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
+                <div class="col-6 col-md-4 col-xl-2">
+                    <select name="year" class="form-select form-select-sm w-100" onchange="this.form.submit()" style="font-size: 0.8rem;">
                         <option value="">Semua Tahun</option>
                         @foreach($availableYears as $yr)
                         <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>Tahun {{ $yr }}</option>
@@ -108,8 +151,8 @@
                 </div>
 
                 <!-- Filter Bulan -->
-                <div style="min-width: 108px; flex: 1 1 auto; max-width: 125px;">
-                    <select name="month" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
+                <div class="col-6 col-md-4 col-xl-2">
+                    <select name="month" class="form-select form-select-sm w-100" onchange="this.form.submit()" style="font-size: 0.8rem;">
                         <option value="">Semua Bulan</option>
                         @foreach($months as $num => $name)
                         <option value="{{ $num }}" {{ request('month') == $num ? 'selected' : '' }}>{{ $name }}</option>
@@ -119,8 +162,8 @@
 
                 <!-- Filter Sales -->
                 @if(!Auth::user()->isReseller())
-                <div style="min-width: 115px; flex: 1 1 auto; max-width: 135px;">
-                    <select name="sales_name" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
+                <div class="col-6 col-md-4 col-xl-2">
+                    <select name="sales_name" class="form-select form-select-sm w-100" onchange="this.form.submit()" style="font-size: 0.8rem;">
                         <option value="">Semua Sales</option>
                         @foreach($salesOptions as $s)
                         <option value="{{ $s }}" {{ request('sales_name') === $s ? 'selected' : '' }}>{{ $s }}</option>
@@ -130,8 +173,8 @@
                 @endif
 
                 <!-- Filter Status Bayar -->
-                <div style="min-width: 112px; flex: 1 1 auto; max-width: 130px;">
-                    <select name="payment_status" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
+                <div class="col-6 col-md-4 col-xl-2">
+                    <select name="payment_status" class="form-select form-select-sm w-100" onchange="this.form.submit()" style="font-size: 0.8rem;">
                         <option value="">Status Bayar</option>
                         <option value="BELUM LUNAS" {{ request('payment_status') === 'BELUM LUNAS' ? 'selected' : '' }}>Belum Lunas</option>
                         <option value="LUNAS" {{ request('payment_status') === 'LUNAS' ? 'selected' : '' }}>Lunas</option>
@@ -139,8 +182,8 @@
                 </div>
 
                 <!-- Filter Lokasi Stok -->
-                <div style="min-width: 112px; flex: 1 1 auto; max-width: 130px;">
-                    <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem; padding-right: 1.6rem; padding-left: 0.6rem;">
+                <div class="col-6 col-md-4 col-xl-2">
+                    <select name="location_id" class="form-select form-select-sm w-100" onchange="this.form.submit()" style="font-size: 0.8rem;">
                         <option value="">Lokasi Stok</option>
                         @foreach($locations as $loc)
                         <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
@@ -149,93 +192,89 @@
                 </div>
 
                 <!-- Filter Customer Tetap (Custom Dropdown Mengacu ke CRUD Pelanggan Tetap) -->
-                <div class="dropdown" style="min-width: 135px; flex: 1 1 auto; max-width: 165px;" id="dropdownFilterCustomer">
-                    <input type="hidden" name="customer_name" id="filterCustomerInput" value="{{ request('customer_name') }}">
-                    <button type="button" 
-                            class="form-select form-select-sm text-start d-flex align-items-center justify-content-between text-truncate w-100 {{ request('customer_name') ? 'border-success text-success fw-semibold bg-success-subtle' : '' }}" 
-                            id="btnCustomerFilterDropdown" 
-                            data-bs-toggle="dropdown" 
-                            data-bs-auto-close="outside"
-                            aria-expanded="false"
-                            style="font-size: 0.8rem; padding: 0.25rem 0.6rem; cursor: pointer; background-image: none;">
-                        <span id="selectedCustomerLabel" class="text-truncate">{{ request('customer_name') ?: 'Semua Customer' }}</span>
-                        <i class="bi bi-chevron-down ms-1 text-muted" style="font-size: 0.7rem; flex-shrink: 0;"></i>
-                    </button>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="dropdown w-100" id="dropdownFilterCustomer">
+                        <input type="hidden" name="customer_name" id="filterCustomerInput" value="{{ request('customer_name') }}">
+                        <button type="button" 
+                                class="form-select form-select-sm text-start d-flex align-items-center justify-content-between text-truncate w-100 {{ request('customer_name') ? 'border-success text-success fw-semibold bg-success-subtle' : '' }}" 
+                                id="btnCustomerFilterDropdown" 
+                                data-bs-toggle="dropdown" 
+                                data-bs-auto-close="outside"
+                                aria-expanded="false"
+                                style="font-size: 0.8rem; padding: 0.25rem 0.6rem; cursor: pointer; background-image: none;">
+                            <span id="selectedCustomerLabel" class="text-truncate">{{ request('customer_name') ?: 'Semua Customer' }}</span>
+                            <i class="bi bi-chevron-down ms-1 text-muted" style="font-size: 0.7rem; flex-shrink: 0;"></i>
+                        </button>
 
-                    <div class="dropdown-menu p-0 shadow-sm border rounded-3 customer-filter-menu" 
-                         aria-labelledby="btnCustomerFilterDropdown"
-                         style="min-width: 220px; max-width: 260px; z-index: 1050; border-color: #e5e7eb; overflow: hidden;">
-                        
-                        <!-- Header Sticky Minimalis -->
-                        <div class="px-2.5 py-1.5 bg-light border-bottom d-flex justify-content-between align-items-center">
-                            <span class="text-muted fw-bold font-mono" style="font-size: 0.68rem; letter-spacing: 0.04em;">
-                                DAFTAR PELANGGAN
-                            </span>
-                            <span class="badge bg-white text-dark border font-mono" style="font-size: 0.65rem;">{{ $customers->count() }} tetap</span>
-                        </div>
-
-                        <!-- Sticky In-Menu Search Box -->
-                        <div class="p-1.5 border-bottom bg-white">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-light border-end-0 text-muted ps-2 pe-1" style="font-size: 0.72rem;">
-                                    <i class="bi bi-search"></i>
+                        <div class="dropdown-menu p-0 shadow-sm border rounded-3 customer-filter-menu" 
+                             aria-labelledby="btnCustomerFilterDropdown"
+                             style="min-width: 220px; max-width: 260px; z-index: 1050; border-color: #e5e7eb; overflow: hidden;">
+                            
+                            <!-- Header Sticky Minimalis -->
+                            <div class="px-2.5 py-1.5 bg-light border-bottom d-flex justify-content-between align-items-center">
+                                <span class="text-muted fw-bold font-mono" style="font-size: 0.68rem; letter-spacing: 0.04em;">
+                                    DAFTAR PELANGGAN
                                 </span>
+                                <span class="badge bg-white text-dark border font-mono" style="font-size: 0.65rem;">{{ $customers->count() }} tetap</span>
+                            </div>
+
+                            <!-- Sticky In-Menu Search Box -->
+                            <div class="p-2 border-bottom bg-white position-relative">
+                                <i class="bi bi-search text-muted position-absolute ms-2" style="top: 50%; transform: translateY(-50%); font-size: 0.75rem; pointer-events: none; z-index: 5;"></i>
                                 <input type="text" 
                                        id="filterCustomerSearchInput" 
-                                       class="form-control border-start-0 ps-1 py-1" 
+                                       class="form-control form-control-sm py-1" 
                                        placeholder="Cari nama pelanggan..." 
-                                       style="font-size: 0.75rem;" 
+                                       style="font-size: 0.75rem; padding-left: 2rem;" 
                                        autocomplete="off">
                             </div>
-                        </div>
 
-                        <!-- Scrollable List Container (Tinggi 3 Baris User ~105px) -->
-                        <div class="overflow-y-auto" style="max-height: 105px;" id="filterCustomerList">
-                            <!-- Opsi: Semua Customer (Reset) -->
-                            <button type="button" 
-                                    class="dropdown-item py-1.5 px-2.5 d-flex align-items-center justify-content-between customer-filter-item {{ empty(request('customer_name')) ? 'active bg-success text-white fw-semibold' : '' }}" 
-                                    data-value="" 
-                                    style="font-size: 0.78rem;"
-                                    onclick="selectCustomerFilter('')">
-                                <span class="text-truncate">Semua Customer</span>
-                                @if(empty(request('customer_name')))
-                                    <i class="bi bi-check2 text-white" style="font-size: 0.8rem;"></i>
-                                @endif
-                            </button>
+                            <!-- Scrollable List Container (Tinggi 3 Baris User ~105px) -->
+                            <div class="overflow-y-auto" style="max-height: 105px;" id="filterCustomerList">
+                                <!-- Opsi: Semua Customer (Reset) -->
+                                <button type="button" 
+                                        class="dropdown-item py-1.5 px-2.5 d-flex align-items-center justify-content-between customer-filter-item {{ empty(request('customer_name')) ? 'active bg-success text-white fw-semibold' : '' }}" 
+                                        data-value="" 
+                                        style="font-size: 0.78rem;"
+                                        onclick="selectCustomerFilter('')">
+                                    <span class="text-truncate">Semua Customer</span>
+                                    @if(empty(request('customer_name')))
+                                        <i class="bi bi-check2 text-white" style="font-size: 0.8rem;"></i>
+                                    @endif
+                                </button>
 
-                            @foreach($customers as $c)
-                            @php $isSelected = (request('customer_name') === $c->name); @endphp
-                            <button type="button" 
-                                    class="dropdown-item py-1.5 px-2.5 d-flex align-items-center justify-content-between customer-filter-item {{ $isSelected ? 'active bg-success text-white fw-semibold' : '' }}" 
-                                    data-value="{{ $c->name }}" 
-                                    style="font-size: 0.78rem;"
-                                    onclick="selectCustomerFilter('{{ addslashes($c->name) }}')">
-                                <span class="customer-item-name text-truncate">{{ $c->name }}</span>
-                                @if($isSelected)
-                                    <i class="bi bi-check2 text-white" style="font-size: 0.8rem;"></i>
-                                @endif
-                            </button>
-                            @endforeach
+                                @foreach($customers as $c)
+                                @php $isSelected = (request('customer_name') === $c->name); @endphp
+                                <button type="button" 
+                                        class="dropdown-item py-1.5 px-2.5 d-flex align-items-center justify-content-between customer-filter-item {{ $isSelected ? 'active bg-success text-white fw-semibold' : '' }}" 
+                                        data-value="{{ $c->name }}" 
+                                        style="font-size: 0.78rem;"
+                                        onclick="selectCustomerFilter('{{ addslashes($c->name) }}')">
+                                    <span class="customer-item-name text-truncate">{{ $c->name }}</span>
+                                    @if($isSelected)
+                                        <i class="bi bi-check2 text-white" style="font-size: 0.8rem;"></i>
+                                    @endif
+                                </button>
+                                @endforeach
 
-                            <!-- State Ketika Pencarian Tidak Ditemukan -->
-                            <div id="filterCustomerEmptyMsg" class="p-2 text-center text-muted small d-none" style="font-size: 0.72rem;">
-                                Tidak ada nama yang cocok
+                                <!-- State Ketika Pencarian Tidak Ditemukan -->
+                                <div id="filterCustomerEmptyMsg" class="p-2 text-center text-muted small d-none" style="font-size: 0.72rem;">
+                                    Tidak ada nama yang cocok
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Fitur Search Invoice (Digeser ke Paling Kanan dengan ms-auto) -->
-                <div class="ms-auto" style="width: 170px; max-width: 190px; flex-shrink: 0;">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-white border-end-0 text-muted ps-2 pe-1"><i class="bi bi-search"></i></span>
-                        <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari invoice..." value="{{ request('search') }}" style="font-size: 0.8rem;">
-                        <button type="submit" class="btn btn-sm btn-scent px-2" title="Cari">
-                            <i class="bi bi-arrow-right"></i>
-                        </button>
                     </div>
                 </div>
             </div>
+
+            @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'customer_name', 'year', 'month', 'search']))
+            <div class="d-flex justify-content-end mt-2">
+                <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary py-1 px-3" style="font-size: 0.78rem;" title="Reset Semua Filter">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
+                </a>
+            </div>
+            @endif
+        </form>
 
             @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'customer_name', 'year', 'month', 'search']))
             <div class="d-flex justify-content-end mt-2">
@@ -261,7 +300,7 @@
                         <th class="py-2 px-2 text-muted small fw-semibold text-center" style="width: 80px;">Stok Asal</th>
                         <th class="py-2 px-2 text-muted small fw-semibold text-end" style="width: 95px;">Total Harga</th>
                         <th class="py-2 px-2 text-muted small fw-semibold text-center" style="width: 85px;">Status</th>
-                        <th class="py-2 px-2 text-muted small fw-semibold text-end" style="width: 95px;">Aksi</th>
+                        <th class="py-2 px-2 text-muted small fw-semibold text-center" style="width: 110px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -333,8 +372,8 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="py-2 px-2 text-end text-nowrap">
-                            <div class="d-inline-flex gap-1 align-items-center justify-content-end">
+                        <td class="py-2 px-2 text-center text-nowrap">
+                            <div class="d-inline-flex gap-1 align-items-center justify-content-center">
                                 @if($inv->isPoPending())
                                 <form action="{{ route('invoices.completePo', $inv) }}" method="POST" class="d-inline" onsubmit="return confirm('Selesaikan pesanan PO {{ $inv->invoice_no }} ini?\n\nStok fisik sebanyak {{ $inv->qty }} pcs akan otomatis dipotong dari lokasi {{ $inv->location->name ?? '' }} dan status berubah menjadi PO SELESAI.');">
                                     @csrf
