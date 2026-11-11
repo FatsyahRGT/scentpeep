@@ -73,38 +73,20 @@
         <form method="GET" action="{{ route('invoices.index') }}" class="m-0" id="filterInvoicesForm">
             <input type="hidden" name="tab" value="{{ $tab }}">
 
-            <!-- Baris Kedua: 4 Tombol Tab Status (Kiri) + Search Bar (Kanan) -->
+            <!-- Baris Kedua: 2 Tombol Tab Status PO (Kiri) + Search Bar & Reset Filter (Kanan) -->
             <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 mb-3">
-                <!-- Sisi Kiri: 4 Tombol Tab dalam Wadah Segmented Track -->
-                <div class="invoice-status-track" style="background-color: #f3f4f6; border: 1px solid #e5e7eb; padding: 5px; border-radius: 999px; display: inline-flex; flex-wrap: wrap; gap: 4px;">
-                    <!-- 1. Semua Invoice -->
-                    <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all'])) }}" 
+                <!-- Sisi Kiri: 2 Tombol Tab PO dalam Wadah Segmented Track (Ramping & Flex-Nowrap) -->
+                <div class="invoice-status-track d-inline-flex flex-nowrap align-items-center gap-1" style="background-color: #f3f4f6; border: 1px solid #e5e7eb; padding: 4px; border-radius: 999px;">
+                    <!-- 1. PO Menunggu (Pending) -->
+                    @php
+                        $poPendingUrl = ($tab === 'po_pending') 
+                            ? route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all'])) 
+                            : route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_pending']));
+                    @endphp
+                    <a href="{{ $poPendingUrl }}" 
                        class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill text-nowrap text-decoration-none shadow-xs" 
-                       style="{{ ($tab === 'all') ? 'background-color: #2b7b5b; color: #ffffff; font-weight: 600;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;">
-                        <i class="bi bi-collection {{ ($tab === 'all') ? 'text-white' : 'text-muted' }}"></i>
-                        <span>Semua Invoice</span>
-                        <span class="badge rounded-pill font-mono px-2 py-0.5" 
-                              style="{{ ($tab === 'all') ? 'background-color: #ffffff; color: #2b7b5b;' : 'background-color: #e5e7eb; color: #374151;' }} font-size: 0.7rem;">
-                            {{ $countAll }}
-                        </span>
-                    </a>
-
-                    <!-- 2. Penjualan Langsung -->
-                    <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'regular'])) }}" 
-                       class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill text-nowrap text-decoration-none shadow-xs" 
-                       style="{{ ($tab === 'regular') ? 'background-color: #2b7b5b; color: #ffffff; font-weight: 600;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;">
-                        <i class="bi bi-box-seam {{ ($tab === 'regular') ? 'text-white' : 'text-success' }}"></i>
-                        <span>Penjualan Langsung</span>
-                        <span class="badge rounded-pill font-mono px-2 py-0.5" 
-                              style="{{ ($tab === 'regular') ? 'background-color: #ffffff; color: #2b7b5b;' : 'background-color: #e5e7eb; color: #374151;' }} font-size: 0.7rem;">
-                            {{ $countRegular }}
-                        </span>
-                    </a>
-
-                    <!-- 3. PO Menunggu (Pending) -->
-                    <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_pending'])) }}" 
-                       class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill text-nowrap text-decoration-none shadow-xs" 
-                       style="{{ ($tab === 'po_pending') ? 'background-color: #f59e0b; color: #111827; font-weight: 700;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;">
+                       style="{{ ($tab === 'po_pending') ? 'background-color: #f59e0b; color: #111827; font-weight: 700;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;"
+                       title="{{ ($tab === 'po_pending') ? 'Klik untuk kembali ke semua invoice' : 'Filter pesanan PO Menunggu' }}">
                         <i class="bi bi-hourglass-split {{ ($tab === 'po_pending') ? 'text-dark' : 'text-warning-emphasis' }}"></i>
                         <span>PO Menunggu (Pending)</span>
                         <span class="badge rounded-pill font-mono px-2 py-0.5" 
@@ -113,10 +95,16 @@
                         </span>
                     </a>
 
-                    <!-- 4. PO Selesai -->
-                    <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_completed'])) }}" 
+                    <!-- 2. PO Selesai -->
+                    @php
+                        $poCompletedUrl = ($tab === 'po_completed') 
+                            ? route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all'])) 
+                            : route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_completed']));
+                    @endphp
+                    <a href="{{ $poCompletedUrl }}" 
                        class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill text-nowrap text-decoration-none shadow-xs" 
-                       style="{{ ($tab === 'po_completed') ? 'background-color: #0d9488; color: #ffffff; font-weight: 600;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;">
+                       style="{{ ($tab === 'po_completed') ? 'background-color: #0d9488; color: #ffffff; font-weight: 600;' : 'background-color: transparent; border: none; color: #4b5563; font-weight: 500;' }} font-size: 0.78rem; transition: all 0.15s ease;"
+                       title="{{ ($tab === 'po_completed') ? 'Klik untuk kembali ke semua invoice' : 'Filter pesanan PO Selesai' }}">
                         <i class="bi bi-check2-all {{ ($tab === 'po_completed') ? 'text-white' : 'text-teal' }}" style="{{ ($tab !== 'po_completed') ? 'color: #0d9488;' : '' }}"></i>
                         <span>PO Selesai</span>
                         <span class="badge rounded-pill font-mono px-2 py-0.5" 
@@ -126,15 +114,25 @@
                     </a>
                 </div>
 
-                <!-- Sisi Kanan: Search Bar ("Cari no. invoice / customer...") -->
-                <div class="w-100 w-xl-auto" style="min-width: 290px;">
-                    <div class="input-group input-group-sm w-100">
+                <!-- Sisi Kanan: Search Bar ("Cari no. invoice / customer...") & Tombol Reset Filter Tunggal -->
+                <div class="d-flex align-items-center gap-2 w-100 w-xl-auto">
+                    <div class="input-group input-group-sm" style="min-width: 280px; max-width: 320px;">
                         <span class="input-group-text bg-white border-end-0 text-muted ps-2.5 pe-1"><i class="bi bi-search"></i></span>
                         <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari no. invoice / customer..." value="{{ request('search') }}" style="font-size: 0.8rem;">
                         <button type="submit" class="btn btn-sm btn-scent px-2.5" title="Cari">
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
+
+                    @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'customer_name', 'year', 'month', 'search']) || in_array($tab, ['po_pending', 'po_completed', 'regular']))
+                    <a href="{{ route('invoices.index') }}" 
+                       class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-1 text-nowrap flex-shrink-0" 
+                       style="font-size: 0.8rem; height: 31px;"
+                       title="Reset Semua Filter">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>Reset Filter</span>
+                    </a>
+                    @endif
                 </div>
             </div>
 
@@ -201,7 +199,7 @@
                                 data-bs-toggle="dropdown" 
                                 data-bs-auto-close="outside"
                                 aria-expanded="false"
-                                style="font-size: 0.8rem; padding: 0.25rem 0.6rem; cursor: pointer; background-image: none;">
+                                style="font-size: 0.84rem; padding-left: 0.65rem; padding-right: 1.75rem; padding-top: 0.25rem; padding-bottom: 0.25rem; cursor: pointer; background-image: none;">
                             <span id="selectedCustomerLabel" class="text-truncate">{{ request('customer_name') ?: 'Semua Customer' }}</span>
                             <i class="bi bi-chevron-down ms-1 text-muted" style="font-size: 0.7rem; flex-shrink: 0;"></i>
                         </button>
@@ -211,22 +209,24 @@
                              style="min-width: 220px; max-width: 260px; z-index: 1050; border-color: #e5e7eb; overflow: hidden;">
                             
                             <!-- Header Sticky Minimalis -->
-                            <div class="px-2.5 py-1.5 bg-light border-bottom d-flex justify-content-between align-items-center">
+                            <div class="px-3 py-2 bg-light border-bottom d-flex justify-content-between align-items-center">
                                 <span class="text-muted fw-bold font-mono" style="font-size: 0.68rem; letter-spacing: 0.04em;">
                                     DAFTAR PELANGGAN
                                 </span>
                                 <span class="badge bg-white text-dark border font-mono" style="font-size: 0.65rem;">{{ $customers->count() }} tetap</span>
                             </div>
 
-                            <!-- Sticky In-Menu Search Box -->
-                            <div class="p-2 border-bottom bg-white position-relative">
-                                <i class="bi bi-search text-muted position-absolute ms-2" style="top: 50%; transform: translateY(-50%); font-size: 0.75rem; pointer-events: none; z-index: 5;"></i>
-                                <input type="text" 
-                                       id="filterCustomerSearchInput" 
-                                       class="form-control form-control-sm py-1" 
-                                       placeholder="Cari nama pelanggan..." 
-                                       style="font-size: 0.75rem; padding-left: 2rem;" 
-                                       autocomplete="off">
+                            <!-- Sticky In-Menu Search Box (Flexbox Bersih & Anti-Menimpa) -->
+                            <div class="p-2 border-bottom bg-white">
+                                <div class="d-flex align-items-center gap-2 border rounded-3 px-2 py-1 bg-white" style="border-color: #2b7b5b !important;">
+                                    <i class="bi bi-search text-muted flex-shrink-0" style="position: static !important; font-size: 0.75rem;"></i>
+                                    <input type="text" 
+                                           id="filterCustomerSearchInput" 
+                                           class="form-control form-control-sm border-0 shadow-none p-0 bg-transparent" 
+                                           placeholder="Cari nama pelanggan..." 
+                                           style="font-size: 0.75rem;" 
+                                           autocomplete="off">
+                                </div>
                             </div>
 
                             <!-- Scrollable List Container (Tinggi 3 Baris User ~105px) -->
@@ -266,23 +266,6 @@
                     </div>
                 </div>
             </div>
-
-            @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'customer_name', 'year', 'month', 'search']))
-            <div class="d-flex justify-content-end mt-2">
-                <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary py-1 px-3" style="font-size: 0.78rem;" title="Reset Semua Filter">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
-                </a>
-            </div>
-            @endif
-        </form>
-
-            @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'customer_name', 'year', 'month', 'search']))
-            <div class="d-flex justify-content-end mt-2">
-                <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary py-1 px-3" style="font-size: 0.78rem;" title="Reset Semua Filter">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Semua Filter
-                </a>
-            </div>
-            @endif
         </form>
     </div>
 
