@@ -13,6 +13,13 @@ class Invoice extends Model
     public const STATUS_UNPAID = 'BELUM LUNAS';
     public const STATUS_PAID = 'LUNAS';
 
+    public const ORDER_TYPE_REGULAR = 'REGULAR';
+    public const ORDER_TYPE_PREORDER = 'PREORDER';
+
+    public const PO_STATUS_NONE = 'NONE';
+    public const PO_STATUS_PENDING = 'PENDING';
+    public const PO_STATUS_COMPLETED = 'COMPLETED';
+
     /**
      * Dapatkan daftar nama sales dinamis dari pengguna (User) yang aktif.
      * Mengambil staf & reseller lapangan aktif (mengecualikan akun admin dan akun placeholder generik).
@@ -43,6 +50,9 @@ class Invoice extends Model
         'location_id',
         'total_price',
         'payment_status',
+        'order_type',
+        'po_status',
+        'po_completed_at',
         'notes',
         'created_by',
     ];
@@ -51,7 +61,23 @@ class Invoice extends Model
         'tanggal' => 'date',
         'qty' => 'integer',
         'total_price' => 'decimal:2',
+        'po_completed_at' => 'datetime',
     ];
+
+    public function isPreOrder(): bool
+    {
+        return $this->order_type === self::ORDER_TYPE_PREORDER;
+    }
+
+    public function isPoPending(): bool
+    {
+        return $this->isPreOrder() && $this->po_status === self::PO_STATUS_PENDING;
+    }
+
+    public function isPoCompleted(): bool
+    {
+        return $this->isPreOrder() && $this->po_status === self::PO_STATUS_COMPLETED;
+    }
 
     public function product(): BelongsTo
     {

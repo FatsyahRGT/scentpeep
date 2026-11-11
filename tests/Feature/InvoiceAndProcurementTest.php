@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Invoice;
 use App\Models\Location;
-use App\Models\PreOrder;
 use App\Models\Product;
 use App\Models\RawMaterial;
 use App\Models\Stock;
@@ -153,33 +152,199 @@ class InvoiceAndProcurementTest extends TestCase
         ]);
     }
 
-    public function test_pre_order_remains_pending_until_completed_then_adds_to_stock(): void
+    public function test_pre_order_locks_allocation_and_only_deducts_physical_stock_when_completed(): void
     {
-        // 1. Create Pre-Order
-        $response = $this->actingAs($this->admin)->post(route('pre-orders.store'), [
-            'po_number' => 'PO-BATCH-01',
+        $iwanStock = Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first();
+        $this->assertEquals(10, $iwanStock->qty);
+
+        // 1. Buat Invoice Pre-Order (PO) sebanyak 4 pcs
+        $response = $this->actingAs($this->admin)->post(route('invoices.store'), [
+            'invoice_no' => 'INV-PO-BUDI',
+            'order_type' => Invoice::ORDER_TYPE_PREORDER,
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Pak Budi PO',
             'product_id' => $this->product->id,
+            'qty' => 4,
             'location_id' => $this->iwan->id,
-            'qty' => 15,
-            'customer_name' => 'Pre Order Grosir',
+            'total_price' => 720000,
+            'payment_status' => 'BELUM LUNAS',
         ]);
 
-        $response->assertRedirect(route('pre-orders.index'));
+        $response->assertRedirect(route('invoices.index', ['tab' => 'po_pending']));
 
-        $po = PreOrder::where('po_number', 'PO-BATCH-01')->first();
+        $poInvoice = Invoice::where('invoice_no', 'INV-PO-BUDI')->first();
+        $this->assertNotNull($poInvoice);
+        $this->assertTrue($poInvoice->isPreOrder());
+        $this->assertTrue($poInvoice->isPoPending());
+
+        // Tahap 1: Stok fisik di IWAN TIDAK terpotong (masih 10 pcs), tapi jatah PO terkunci 4 pcs, siap jual 6 pcs
+        $iwanStock->refresh();
+        $this->assertEquals(10, $iwanStock->qty);
+        $this->assertEquals(4, $iwanStock->getReservedPoQty());
+        $this->assertEquals(6, $iwanStock->getAvailableQty());
+
+        // 2. Coba jual langsung melebihi sisa siap jual (misal minta 7 pcs, padahal siap jual hanya 6) -> Harus DITOLAK
+        $failResponse = $this->actingAs($this->admin)->post(route('invoices.store'), [
+            'invoice_no' => 'INV-OVER-SALE',
+            'order_type' => Invoice::ORDER_TYPE_REGULAR,
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Pelanggan Umum',
+            'product_id' => $this->product->id,
+            'qty' => 7,
+            'location_id' => $this->iwan->id,
+            'total_price' => 1260000,
+            'payment_status' => 'LUNAS',
+        ]);
+        $failResponse->assertSessionHasErrors('qty');
+
+        // 3. Jual langsung sesuai jatah siap jual (6 pcs) -> BERHASIL memotong fisik
+        $successResponse = $this->actingAs($this->admin)->post(route('invoices.store'), [
+            'invoice_no' => 'INV-REGULAR-OK',
+            'order_type' => Invoice::ORDER_TYPE_REGULAR,
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Pelanggan Umum',
+            'product_id' => $this->product->id,
+            'qty' => 6,
+            'location_id' => $this->iwan->id,
+            'total_price' => 1080000,
+            'payment_status' => 'LUNAS',
+        ]);
+        $successResponse->assertRedirect(route('invoices.index'));
+
+        // Fisik sekarang 10 - 6 = 4 pcs (pas untuk jatah PO Pak Budi)
+        $iwanStock->refresh();
+        $this->assertEquals(4, $iwanStock->qty);
+        $this->assertEquals(4, $iwanStock->getReservedPoQty());
+        $this->assertEquals(0, $iwanStock->getAvailableQty());
+
+        // 4. Tahap 3: Barang diserahkan ke Pak Budi (Klik "Selesaikan PO")
+        $completeResponse = $this->actingAs($this->admin)->post(route('invoices.completePo', $poInvoice));
+        $completeResponse->assertRedirect();
+
+        $poInvoice->refresh();
+        $this->assertTrue($poInvoice->isPoCompleted());
+        $this->assertNotNull($poInvoice->po_completed_at);
+
+        // Stok fisik resmi terpotong 4 pcs (sekarang 0 pcs), kuota PO kembali 0
+        $iwanStock->refresh();
+        $this->assertEquals(0, $iwanStock->qty);
+        $this->assertEquals(0, $iwanStock->getReservedPoQty());
+        $this->assertEquals(0, $iwanStock->getAvailableQty());
+    }
+
+    public function test_cannot_complete_po_if_physical_stock_is_insufficient(): void
+    {
+        $stock = Stock::where('product_id', $this->product->id)->where('location_id', $this->rizky->id)->first();
+        $this->assertEquals(5, $stock->qty);
+
+        // Buat PO 8 pcs (stok fisik hanya 5)
+        $this->actingAs($this->admin)->post(route('invoices.store'), [
+            'invoice_no' => 'INV-PO-SHORTAGE',
+            'order_type' => Invoice::ORDER_TYPE_PREORDER,
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Pelanggan PO Kurang',
+            'product_id' => $this->product->id,
+            'qty' => 8,
+            'location_id' => $this->rizky->id,
+            'total_price' => 1440000,
+            'payment_status' => 'BELUM LUNAS',
+        ]);
+
+        $po = Invoice::where('invoice_no', 'INV-PO-SHORTAGE')->first();
         $this->assertNotNull($po);
-        $this->assertEquals('PENDING', $po->status);
 
-        // Stock at IWAN should NOT change yet (still 10)
-        $this->assertEquals(10, Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first()->qty);
+        // Coba selesaikan saat fisik belum restock (fisik 5 < diminta 8) -> Harus gagal validasi
+        $response = $this->actingAs($this->admin)->post(route('invoices.completePo', $po));
+        $response->assertSessionHasErrors('stock');
+        $this->assertTrue($po->fresh()->isPoPending());
+        $this->assertEquals(5, $stock->fresh()->qty);
+    }
 
-        // 2. Complete PO
-        $completeResponse = $this->actingAs($this->admin)->post(route('pre-orders.complete', $po));
-        $completeResponse->assertRedirect(route('pre-orders.index'));
+    public function test_destroy_pending_po_does_not_increment_physical_stock_while_destroy_completed_po_does(): void
+    {
+        $stock = Stock::where('product_id', $this->product->id)->where('location_id', $this->rizky->id)->first();
+        $this->assertEquals(5, $stock->qty);
 
-        $this->assertEquals('SELESAI', $po->fresh()->status);
-        // Stock at IWAN should now be 10 + 15 = 25
-        $this->assertEquals(25, Stock::where('product_id', $this->product->id)->where('location_id', $this->iwan->id)->first()->qty);
+        // 1. Pending PO dihapus -> Stok fisik tetap 5
+        $pendingPo = Invoice::create([
+            'invoice_no' => 'INV-PO-PENDING-DEL',
+            'tanggal' => now()->toDateString(),
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Customer Batal',
+            'product_id' => $this->product->id,
+            'qty' => 3,
+            'location_id' => $this->rizky->id,
+            'total_price' => 540000,
+            'payment_status' => 'BELUM LUNAS',
+            'order_type' => Invoice::ORDER_TYPE_PREORDER,
+            'po_status' => Invoice::PO_STATUS_PENDING,
+            'created_by' => $this->admin->id,
+        ]);
+
+        $this->actingAs($this->admin)->delete(route('invoices.destroy', $pendingPo));
+        $this->assertEquals(5, $stock->fresh()->qty);
+
+        // 2. Completed PO dihapus -> Stok fisik dikembalikan +3 (menjadi 8)
+        $completedPo = Invoice::create([
+            'invoice_no' => 'INV-PO-DONE-DEL',
+            'tanggal' => now()->toDateString(),
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Customer Retur Selesai',
+            'product_id' => $this->product->id,
+            'qty' => 3,
+            'location_id' => $this->rizky->id,
+            'total_price' => 540000,
+            'payment_status' => 'LUNAS',
+            'order_type' => Invoice::ORDER_TYPE_PREORDER,
+            'po_status' => Invoice::PO_STATUS_COMPLETED,
+            'po_completed_at' => now(),
+            'created_by' => $this->admin->id,
+        ]);
+
+        $this->actingAs($this->admin)->delete(route('invoices.destroy', $completedPo));
+        $this->assertEquals(8, $stock->fresh()->qty);
+    }
+
+    public function test_can_create_po_even_when_physical_stock_is_zero(): void
+    {
+        $zeroProduct = Product::create([
+            'name' => 'Parfum Langka 0 Pcs',
+            'code' => 'SP-ZERO-01',
+            'cost_price' => 150000,
+            'sell_price' => 250000,
+            'is_active' => true,
+        ]);
+
+        Stock::create([
+            'product_id' => $zeroProduct->id,
+            'location_id' => $this->iwan->id,
+            'qty' => 0,
+        ]);
+
+        $response = $this->actingAs($this->admin)->post(route('invoices.store'), [
+            'invoice_no' => 'INV-PO-ZERO-STK',
+            'order_type' => Invoice::ORDER_TYPE_PREORDER,
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Customer PO Inden',
+            'product_id' => $zeroProduct->id,
+            'qty' => 10,
+            'location_id' => $this->iwan->id,
+            'total_price' => 2500000,
+            'payment_status' => 'BELUM LUNAS',
+        ]);
+
+        $response->assertRedirect(route('invoices.index', ['tab' => 'po_pending']));
+        $this->assertDatabaseHas('invoices', [
+            'invoice_no' => 'INV-PO-ZERO-STK',
+            'order_type' => Invoice::ORDER_TYPE_PREORDER,
+            'po_status' => Invoice::PO_STATUS_PENDING,
+            'qty' => 10,
+        ]);
+
+        $stock = Stock::where('product_id', $zeroProduct->id)->where('location_id', $this->iwan->id)->first();
+        $this->assertEquals(0, $stock->qty);
+        $this->assertEquals(10, $stock->getReservedPoQty());
+        $this->assertEquals(0, $stock->getAvailableQty());
     }
 
     public function test_raw_material_procurement_and_consumption(): void

@@ -69,8 +69,33 @@
         <!-- Pemisah Visual -->
         <hr class="my-3 opacity-25">
 
+        <!-- Tab Filter Cepat (Semua, Penjualan Langsung, PO Menunggu, PO Selesai) -->
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all'])) }}" 
+               class="btn btn-sm {{ ($tab === 'all') ? 'btn-dark text-white fw-bold shadow-sm' : 'btn-outline-secondary' }} rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                <i class="bi bi-collection"></i> Semua Invoice
+                <span class="badge {{ ($tab === 'all') ? 'bg-light text-dark' : 'bg-secondary text-white' }} rounded-pill font-mono" style="font-size: 0.68rem;">{{ $countAll }}</span>
+            </a>
+            <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'regular'])) }}" 
+               class="btn btn-sm {{ ($tab === 'regular') ? 'btn-dark text-white fw-bold shadow-sm' : 'btn-outline-secondary' }} rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                <i class="bi bi-box-seam text-success"></i> Penjualan Langsung
+                <span class="badge {{ ($tab === 'regular') ? 'bg-light text-dark' : 'bg-secondary text-white' }} rounded-pill font-mono" style="font-size: 0.68rem;">{{ $countRegular }}</span>
+            </a>
+            <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_pending'])) }}" 
+               class="btn btn-sm {{ ($tab === 'po_pending') ? 'btn-warning text-dark fw-bold shadow-sm' : 'btn-outline-warning text-dark' }} rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                <i class="bi bi-hourglass-split text-warning-emphasis"></i> PO Menunggu (Pending)
+                <span class="badge {{ ($tab === 'po_pending') ? 'bg-dark text-white' : 'bg-warning-subtle text-warning-emphasis border' }} rounded-pill font-mono" style="font-size: 0.68rem;">{{ $countPoPending }}</span>
+            </a>
+            <a href="{{ route('invoices.index', array_merge(request()->except('tab', 'page'), ['tab' => 'po_completed'])) }}" 
+               class="btn btn-sm {{ ($tab === 'po_completed') ? 'btn-dark text-white fw-bold shadow-sm' : 'btn-outline-secondary' }} rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                <i class="bi bi-check2-all text-info"></i> PO Selesai
+                <span class="badge {{ ($tab === 'po_completed') ? 'bg-light text-dark' : 'bg-secondary text-white' }} rounded-pill font-mono" style="font-size: 0.68rem;">{{ $countPoCompleted }}</span>
+            </a>
+        </div>
+
         <!-- Baris Kedua: Horizontal Filter & Search Toolbar (Anti-Squish & Rapi) -->
         <form method="GET" action="{{ route('invoices.index') }}" class="m-0" id="filterInvoicesForm">
+            <input type="hidden" name="tab" value="{{ $tab }}">
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <!-- Filter Tahun -->
                 <div style="min-width: 108px; flex: 1 1 auto; max-width: 125px;">
@@ -283,17 +308,41 @@
                         </td>
                         <td class="py-2 px-2 text-center text-nowrap">
                             @if($inv->payment_status === 'LUNAS')
-                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle d-block mb-1" style="font-size: 0.68rem; padding: 0.18rem 0.4rem;">
                                 <i class="bi bi-check-circle-fill me-1"></i>LUNAS
                             </span>
                             @else
-                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;">
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle d-block mb-1" style="font-size: 0.68rem; padding: 0.18rem 0.4rem;">
                                 <i class="bi bi-clock-history me-1"></i>BELUM LUNAS
                             </span>
+                            @endif
+
+                            @if($inv->isPreOrder())
+                                @if($inv->isPoPending())
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-block font-mono" style="font-size: 0.65rem; padding: 0.15rem 0.35rem;" title="Menunggu Serah Terima / Selesai PO">
+                                    <i class="bi bi-hourglass-split me-0.5"></i>PO PENDING
+                                </span>
+                                @else
+                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle d-block font-mono" style="font-size: 0.65rem; padding: 0.15rem 0.35rem;" title="PO Selesai diserahkan {{ $inv->po_completed_at ? $inv->po_completed_at->format('d/m/Y') : '' }}">
+                                    <i class="bi bi-check2-all me-0.5"></i>PO SELESAI
+                                </span>
+                                @endif
+                            @else
+                                <span class="badge bg-light text-muted border d-block font-mono" style="font-size: 0.65rem; padding: 0.15rem 0.35rem;">
+                                    READY STOCK
+                                </span>
                             @endif
                         </td>
                         <td class="py-2 px-2 text-end text-nowrap">
                             <div class="d-inline-flex gap-1 align-items-center justify-content-end">
+                                @if($inv->isPoPending())
+                                <form action="{{ route('invoices.completePo', $inv) }}" method="POST" class="d-inline" onsubmit="return confirm('Selesaikan pesanan PO {{ $inv->invoice_no }} ini?\n\nStok fisik sebanyak {{ $inv->qty }} pcs akan otomatis dipotong dari lokasi {{ $inv->location->name ?? '' }} dan status berubah menjadi PO SELESAI.');">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-circle" data-bs-toggle="tooltip" title="Selesaikan PO (Potong Stok Fisik & Serahkan Barang)" aria-label="Selesaikan PO" style="width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-box-arrow-right text-warning-emphasis" style="font-size: 0.8rem;"></i>
+                                    </button>
+                                </form>
+                                @endif
                                 <a href="{{ route('invoices.print', $inv) }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="tooltip" title="Cetak Faktur Satuan (A4)" aria-label="Cetak Faktur Satuan" style="width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
                                     <i class="bi bi-printer" style="font-size: 0.75rem;"></i>
                                 </a>
@@ -308,10 +357,10 @@
                                     </button>
                                 </form>
                                 @endif
-                                <form action="{{ route('invoices.destroy', $inv) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus invoice ini? Stok akan otomatis dikembalikan ke lokasi {{ $inv->location->name ?? '' }}.');">
+                                <form action="{{ route('invoices.destroy', $inv) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ $inv->isPoPending() ? 'Batalkan pesanan Pre-Order ini? Kuota PO akan dilepaskan.' : 'Hapus invoice ini? Stok akan otomatis dikembalikan ke lokasi ' . ($inv->location->name ?? '') . '.' }}');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" data-bs-toggle="tooltip" title="Hapus Invoice" aria-label="Hapus Invoice" style="width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" data-bs-toggle="tooltip" title="{{ $inv->isPoPending() ? 'Batalkan PO' : 'Hapus Invoice' }}" aria-label="Hapus Invoice" style="width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
                                         <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
                                     </button>
                                 </form>

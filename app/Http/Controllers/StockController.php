@@ -433,16 +433,28 @@ class StockController extends Controller
 
         $allProducts = $query->get();
 
-        // 1. Data stok per produk di setiap pemegang stok
-        $productStockData = $allProducts->map(function ($product) {
-            $totalStock = (int) $product->stocks->sum('qty');
+        // Ambil data PO pending per produk untuk menghitung alokasi stok terpesan
+        $pendingPoPerProduct = \App\Models\Invoice::where('order_type', \App\Models\Invoice::ORDER_TYPE_PREORDER)
+            ->where('po_status', \App\Models\Invoice::PO_STATUS_PENDING)
+            ->groupBy('product_id')
+            ->select('product_id', DB::raw('SUM(qty) as total_po'))
+            ->pluck('total_po', 'product_id');
+
+        // 1. Data stok per produk di setiap pemegang stok (Fisik, Terkunci PO, Ready Jual)
+        $productStockData = $allProducts->map(function ($product) use ($pendingPoPerProduct) {
+            $physicalStock = (int) $product->stocks->sum('qty');
+            $poStock = (int) ($pendingPoPerProduct[$product->id] ?? 0);
+            $readyStock = max(0, $physicalStock - $poStock);
 
             return [
                 'product' => $product,
-                'total_stock' => $totalStock,
-                'is_ready' => $totalStock > 0,
-                'is_low_stock' => $totalStock > 0 && $totalStock <= 2,
-                'is_out_of_stock' => $totalStock === 0,
+                'total_stock' => $physicalStock,
+                'physical_stock' => $physicalStock,
+                'po_stock' => $poStock,
+                'ready_stock' => $readyStock,
+                'is_ready' => $readyStock > 0,
+                'is_low_stock' => $readyStock > 0 && $readyStock <= 2,
+                'is_out_of_stock' => $readyStock === 0,
             ];
         });
 
@@ -541,16 +553,28 @@ class StockController extends Controller
 
         $allProducts = $query->get();
 
-        // 1. Data Stok Parfum & Ketersediaan Ready
-        $productStockData = $allProducts->map(function ($product) {
-            $totalStock = (int) $product->stocks->sum('qty');
+        // Ambil data antrean PO pending per produk untuk alokasi stok terpesan
+        $pendingPoPerProduct = \App\Models\Invoice::where('order_type', \App\Models\Invoice::ORDER_TYPE_PREORDER)
+            ->where('po_status', \App\Models\Invoice::PO_STATUS_PENDING)
+            ->groupBy('product_id')
+            ->select('product_id', DB::raw('SUM(qty) as total_po'))
+            ->pluck('total_po', 'product_id');
+
+        // 1. Data Stok Parfum & Ketersediaan Ready (Fisik, Terkunci PO, Ready Jual)
+        $productStockData = $allProducts->map(function ($product) use ($pendingPoPerProduct) {
+            $physicalStock = (int) $product->stocks->sum('qty');
+            $poStock = (int) ($pendingPoPerProduct[$product->id] ?? 0);
+            $readyStock = max(0, $physicalStock - $poStock);
 
             return [
                 'product' => $product,
-                'total_stock' => $totalStock,
-                'is_ready' => $totalStock > 0,
-                'is_low_stock' => $totalStock > 0 && $totalStock <= 2,
-                'is_out_of_stock' => $totalStock === 0,
+                'total_stock' => $physicalStock,
+                'physical_stock' => $physicalStock,
+                'po_stock' => $poStock,
+                'ready_stock' => $readyStock,
+                'is_ready' => $readyStock > 0,
+                'is_low_stock' => $readyStock > 0 && $readyStock <= 2,
+                'is_out_of_stock' => $readyStock === 0,
             ];
         });
 
@@ -618,10 +642,12 @@ class StockController extends Controller
             ->take(5)
             ->get();
 
-        // 5. Antrean Produk PO (Stok Pending yang sedang diproduksi)
-        $pendingPreOrders = \App\Models\PreOrder::with(['product', 'location'])
-            ->where('status', \App\Models\PreOrder::STATUS_PENDING)
-            ->latest()
+        // 5. Antrean Produk PO (Stok Pending yang sedang dipesan) ditarik dari Invoice PO
+        $pendingPreOrders = \App\Models\Invoice::with(['product', 'location', 'creator'])
+            ->where('order_type', \App\Models\Invoice::ORDER_TYPE_PREORDER)
+            ->where('po_status', \App\Models\Invoice::PO_STATUS_PENDING)
+            ->orderByDesc(DB::raw('COALESCE(tanggal, DATE(created_at))'))
+            ->orderByDesc('id')
             ->get();
 
         // 6. Waktu Aktivitas / Mutasi Stok Terakhir Riil di Sistem
@@ -638,10 +664,16 @@ class StockController extends Controller
             'total_iwan_stock' => $iwan ? (int) Stock::where('location_id', $iwan->id)->sum('qty') : 0,
             'total_rizky_stock' => $rizky ? (int) Stock::where('location_id', $rizky->id)->sum('qty') : 0,
             'total_combined_stock' => Stock::sum('qty'),
-            'ready_variants_count' => $allProducts->filter(fn ($p) => (int) $p->stocks->sum('qty') > 0)->count(),
-            'low_stock_count' => $allProducts->filter(function ($p) {
-                $qty = (int) $p->stocks->sum('qty');
-                return $qty > 0 && $qty <= 2;
+            'ready_variants_count' => $allProducts->filter(function ($p) use ($pendingPoPerProduct) {
+                $physical = (int) $p->stocks->sum('qty');
+                $po = (int) ($pendingPoPerProduct[$p->id] ?? 0);
+                return max(0, $physical - $po) > 0;
+            })->count(),
+            'low_stock_count' => $allProducts->filter(function ($p) use ($pendingPoPerProduct) {
+                $physical = (int) $p->stocks->sum('qty');
+                $po = (int) ($pendingPoPerProduct[$p->id] ?? 0);
+                $ready = max(0, $physical - $po);
+                return $ready > 0 && $ready <= 2;
             })->count(),
             'critical_count' => $criticalStocks->count(),
             'total_po_pending_qty' => (int) $pendingPreOrders->sum('qty'),

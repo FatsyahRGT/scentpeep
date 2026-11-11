@@ -4,7 +4,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LocationController;
-use App\Http\Controllers\PreOrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RawMaterialCategoryController;
 use App\Http\Controllers\RawMaterialController;
@@ -42,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoices/evaluation', [InvoiceController::class, 'evaluation'])->name('invoices.evaluation');
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::post('/invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.markPaid');
+    Route::post('/invoices/{invoice}/complete-po', [InvoiceController::class, 'completePo'])->name('invoices.completePo');
     Route::resource('invoices', InvoiceController::class);
 
     // Customer Master (Pelanggan Tetap - AJAX Endpoints)
@@ -60,10 +60,6 @@ Route::middleware('auth')->group(function () {
     // Internal Only Routes (Admin & Staff Only, Non-Reseller)
     // ==========================================
     Route::middleware('internal')->group(function () {
-        // Pre-Orders (Stok Pending PO)
-        Route::post('/pre-orders/{preOrder}/complete', [PreOrderController::class, 'complete'])->name('pre-orders.complete');
-        Route::resource('pre-orders', PreOrderController::class);
-
         // Raw Materials (Pengadaan Barang Mentah & Manajemen Kategori)
         Route::post('/raw-materials/categories', [RawMaterialCategoryController::class, 'store'])->name('raw-materials.categories.store');
         Route::put('/raw-materials/categories/{rawMaterialCategory}', [RawMaterialCategoryController::class, 'update'])->name('raw-materials.categories.update');

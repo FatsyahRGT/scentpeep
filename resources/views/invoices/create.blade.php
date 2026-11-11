@@ -116,6 +116,31 @@
                             @enderror
                         </div>
 
+                        <!-- Tipe Transaksi / Pesanan (Ready Stock vs Pre-Order PO) -->
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Tipe Transaksi <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-3 mt-1">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="order_type" id="orderTypeRegular" value="REGULAR" {{ old('order_type', request('order_type', 'REGULAR')) === 'REGULAR' ? 'checked' : '' }} onchange="handleOrderTypeChange('REGULAR')">
+                                    <label class="form-check-label fw-semibold text-dark" for="orderTypeRegular">
+                                        <i class="bi bi-box-seam text-success me-1"></i> Penjualan Langsung (Ready)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="order_type" id="orderTypePreOrder" value="PREORDER" {{ old('order_type', request('order_type')) === 'PREORDER' ? 'checked' : '' }} onchange="handleOrderTypeChange('PREORDER')">
+                                    <label class="form-check-label fw-semibold text-warning-emphasis" for="orderTypePreOrder">
+                                        <i class="bi bi-hourglass-split text-warning me-1"></i> Pre-Order (PO)
+                                    </label>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted" id="orderTypeNotice">
+                                Penjualan langsung: stok fisik rak terpotong detik ini juga.
+                            </small>
+                            @error('order_type')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <!-- Status Pembayaran -->
                         <div class="col-md-6">
                             <label class="form-label small fw-semibold text-muted">Status Pembayaran <span class="text-danger">*</span></label>
@@ -140,16 +165,16 @@
                         </div>
 
                         <!-- Catatan -->
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <label for="notes" class="form-label small fw-semibold text-muted">Catatan Tambahan (Opsional)</label>
-                            <input type="text" name="notes" id="notes" class="form-control" placeholder="Keterangan pengiriman, kontak, dll." value="{{ old('notes') }}">
+                            <input type="text" name="notes" id="notes" class="form-control" placeholder="Keterangan PO, kontak pelanggan, estimasi tiba, dll." value="{{ old('notes') }}">
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                         <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-secondary px-3">Batal</a>
-                        <button type="submit" class="btn btn-sm btn-scent px-4 fw-semibold">
-                            <i class="bi bi-check2-circle me-1"></i> Terbitkan Invoice
+                        <button type="submit" class="btn btn-sm btn-scent px-4 fw-semibold" id="btnSubmitInvoice">
+                            <i class="bi bi-check2-circle me-1"></i> <span id="btnSubmitText">Terbitkan Invoice</span>
                         </button>
                     </div>
                 </form>
@@ -176,6 +201,32 @@ function calculateSuggestedPrice() {
 
 document.getElementById('total_price').addEventListener('input', function() {
     this.dataset.autoFilled = "false";
+});
+function handleOrderTypeChange(type) {
+    const noticeEl = document.getElementById('orderTypeNotice');
+    const submitTextEl = document.getElementById('btnSubmitText');
+    if (type === 'PREORDER') {
+        if (noticeEl) {
+            noticeEl.innerHTML = '<span class="text-warning-emphasis fw-semibold"><i class="bi bi-info-circle me-1"></i>Pre-Order (PO):</span> Stok fisik rak <strong>belum berkurang</strong>. Sistem otomatis mengunci jatah alokasi PO sampai diserahkan ke pembeli.';
+        }
+        if (submitTextEl) {
+            submitTextEl.textContent = 'Catat Pesanan Pre-Order';
+        }
+    } else {
+        if (noticeEl) {
+            noticeEl.innerHTML = 'Penjualan langsung: stok fisik rak terpotong detik ini juga.';
+        }
+        if (submitTextEl) {
+            submitTextEl.textContent = 'Terbitkan Invoice';
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const checkedOrderType = document.querySelector('input[name="order_type"]:checked');
+    if (checkedOrderType) {
+        handleOrderTypeChange(checkedOrderType.value);
+    }
 });
 </script>
 @endsection

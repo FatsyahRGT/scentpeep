@@ -32,4 +32,24 @@ class Stock extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    /**
+     * Total stok yang sedang terkunci / dialokasikan untuk pesanan PO yang pending.
+     */
+    public function getReservedPoQty(): int
+    {
+        return (int) Invoice::where('product_id', $this->product_id)
+            ->where('location_id', $this->location_id)
+            ->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+            ->where('po_status', Invoice::PO_STATUS_PENDING)
+            ->sum('qty');
+    }
+
+    /**
+     * Stok siap jual bebas di toko (Stok Fisik - Stok Terkunci PO).
+     */
+    public function getAvailableQty(): int
+    {
+        return max(0, (int) $this->qty - $this->getReservedPoQty());
+    }
 }

@@ -497,7 +497,7 @@
                                 <tr>
                                     <td class="py-2 px-3">
                                         <div class="fw-semibold text-dark">{{ $po->product->name ?? '-' }}</div>
-                                        <small class="text-muted font-mono">{{ $po->po_number }} &middot; {{ $po->created_at->format('d/m/Y') }}</small>
+                                        <small class="text-muted font-mono">{{ $po->invoice_no }} &middot; {{ ($po->tanggal ?? $po->created_at)->format('d/m/Y') }}</small>
                                     </td>
                                     <td class="py-2 px-3 text-center font-mono fw-bold">
                                         {{ $po->qty }} pcs
@@ -514,7 +514,7 @@
                                     </td>
                                     <td class="py-2 px-3 text-end">
                                         <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">
-                                            PRODUKSI
+                                            PO PENDING
                                         </span>
                                     </td>
                                 </tr>
@@ -631,9 +631,19 @@
                                     @endif
                                 </div>
                             </td>
-                            <!-- Total Ready Stok -->
-                            <td class="py-2 px-3 text-center font-mono fw-bold text-dark fs-6">
-                                {{ $item['total_stock'] }} pcs
+                            <!-- Total Ready Stok & Alokasi PO -->
+                            <td class="py-2 px-3 text-center">
+                                <div class="font-mono fw-bold text-dark fs-6">
+                                    {{ $item['ready_stock'] }} pcs
+                                </div>
+                                @if($item['po_stock'] > 0)
+                                <div class="small font-mono text-muted mt-0.5" style="font-size: 0.7rem;" title="Stok Fisik di Rak: {{ $item['physical_stock'] }} pcs | Terkunci PO: {{ $item['po_stock'] }} pcs">
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle" style="font-size: 0.65rem; padding: 0.12rem 0.35rem;">
+                                        PO: {{ $item['po_stock'] }}
+                                    </span>
+                                    <span class="text-muted ms-1">Fisik: {{ $item['physical_stock'] }}</span>
+                                </div>
+                                @endif
                             </td>
                             <!-- Status Ready / Habis -->
                             <td class="py-2 px-3 text-center">
@@ -641,7 +651,7 @@
                                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
                                     <i class="bi bi-x-circle me-1"></i> HABIS
                                 </span>
-                                @elseif($item['total_stock'] <= 2)
+                                @elseif($item['ready_stock'] <= 2)
                                 <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">
                                     MENIPIS
                                 </span>

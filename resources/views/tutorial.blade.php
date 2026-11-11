@@ -1404,15 +1404,15 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         po: {
             title: "2B. Pre-Order (PO Inden)",
-            badge: "ANTREAN INDEN",
+            badge: "ANTREAN PO INVOICE",
             badgeClass: "bg-warning text-dark",
             targetTab: "#stock-tab",
-            tabLabel: "Stok, Restock & PO",
-            pageUrl: "{{ route('pre-orders.index') }}",
-            desc: "Antrean pesanan inden khusus pelanggan. Dipisahkan dari stok ready agar tidak mengacaukan perhitungan gudang.",
-            inputs: "Pesanan inden pelanggan dengan DP / tanda jadi.",
-            outputs: "Saat status PO diubah menjadi 'SELESAI', parfum otomatis disuntikkan ke stok gudang tujuan.",
-            rule: "Selama status PO masih 'PENDING', kuantitas fisik di gudang tidak bertambah."
+            tabLabel: "Invoice & PO",
+            pageUrl: "{{ route('invoices.index', ['tab' => 'po_pending']) }}",
+            desc: "Pesanan pre-order terintegrasi di Invoice. Sistem otomatis mengamankan jatah stok agar tidak terjual bebas.",
+            inputs: "Invoice tipe Pre-Order (PO) berstatus PENDING.",
+            outputs: "Saat tombol 'Selesaikan PO' diklik, stok fisik resmi terpotong dan barang diserahkan ke pelanggan.",
+            rule: "Stok fisik di rak belum berkurang selama status PO masih PENDING."
         },
         stock: {
             title: "3. Stok Fisik (Gudang Iwan & Rizky)",

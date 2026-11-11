@@ -41,6 +41,23 @@ class InvoiceController extends Controller
             $query->where('sales_name', $request->sales_name);
         }
 
+        // Tab Filter Cepat (Semua, Penjualan Langsung, PO Menunggu, PO Selesai)
+        $tab = $request->get('tab', 'all');
+        if ($tab === 'regular') {
+            $query->where('order_type', Invoice::ORDER_TYPE_REGULAR);
+        } elseif ($tab === 'po_pending') {
+            $query->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                  ->where('po_status', Invoice::PO_STATUS_PENDING);
+        } elseif ($tab === 'po_completed') {
+            $query->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                  ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+        } elseif ($request->filled('order_type')) {
+            $query->where('order_type', $request->order_type);
+            if ($request->filled('po_status')) {
+                $query->where('po_status', $request->po_status);
+            }
+        }
+
         if ($request->filled('payment_status')) {
             $query->where('payment_status', $request->payment_status);
         }
@@ -69,6 +86,38 @@ class InvoiceController extends Controller
                   ->orWhere('invoice_no', 'like', "%{$search}%");
             });
         }
+
+        // Hitung Counter Badge untuk Tab Filter
+        $countQuery = Invoice::query();
+        if ($isReseller) {
+            $userLocId = $user->location?->id;
+            $countQuery->where(function ($q) use ($user, $userLocId) {
+                $q->where('sales_name', $user->name)
+                  ->orWhere('created_by', $user->id);
+                if ($userLocId) {
+                    $q->orWhere('location_id', $userLocId);
+                }
+            });
+        } elseif ($request->filled('sales_name')) {
+            $countQuery->where('sales_name', $request->sales_name);
+        }
+        if ($request->filled('year')) {
+            $countQuery->whereYear($dateCol, $request->year);
+        }
+        if ($request->filled('month')) {
+            $countQuery->whereMonth($dateCol, $request->month);
+        }
+        if ($request->filled('customer_name')) {
+            $countQuery->where('customer_name', $request->customer_name);
+        }
+        if ($request->filled('location_id')) {
+            $countQuery->where('location_id', $request->location_id);
+        }
+
+        $countAll = (clone $countQuery)->count();
+        $countRegular = (clone $countQuery)->where('order_type', Invoice::ORDER_TYPE_REGULAR)->count();
+        $countPoPending = (clone $countQuery)->where('order_type', Invoice::ORDER_TYPE_PREORDER)->where('po_status', Invoice::PO_STATUS_PENDING)->count();
+        $countPoCompleted = (clone $countQuery)->where('order_type', Invoice::ORDER_TYPE_PREORDER)->where('po_status', Invoice::PO_STATUS_COMPLETED)->count();
 
         $yearExtractSql = DB::connection()->getDriverName() === 'sqlite' 
             ? "strftime('%Y', COALESCE(tanggal, created_at)) as y" 
@@ -109,7 +158,12 @@ class InvoiceController extends Controller
             'salesOptions',
             'availableYears',
             'months',
-            'customers'
+            'customers',
+            'tab',
+            'countAll',
+            'countRegular',
+            'countPoPending',
+            'countPoCompleted'
         ));
     }
 
@@ -317,6 +371,7 @@ class InvoiceController extends Controller
         $validated = $request->validate([
             'invoice_no' => 'nullable|string|max:100',
             'tanggal' => 'nullable|date',
+            'order_type' => 'nullable|in:REGULAR,PREORDER',
             'sales_name' => 'required|string|max:100',
             'customer_name' => 'required|string|max:255',
             'customer_id' => 'nullable|integer',
@@ -336,38 +391,70 @@ class InvoiceController extends Controller
             }
         }
 
-        DB::transaction(function () use ($validated, $request) {
+        $orderType = $validated['order_type'] ?? Invoice::ORDER_TYPE_REGULAR;
+        $isPreOrder = ($orderType === Invoice::ORDER_TYPE_PREORDER);
+
+        DB::transaction(function () use ($validated, $isPreOrder, $orderType) {
             $stock = Stock::firstOrCreate(
                 ['product_id' => $validated['product_id'], 'location_id' => $validated['location_id']],
                 ['qty' => 0]
             );
 
-            if ($stock->qty < $validated['qty']) {
-                $productName = Product::find($validated['product_id'])->name ?? 'Produk';
-                $locName = Location::find($validated['location_id'])->name ?? 'Lokasi';
-                throw ValidationException::withMessages([
-                    'qty' => "Stok '{$productName}' di lokasi {$locName} tidak mencukupi! Tersedia: {$stock->qty} pcs, diminta: {$validated['qty']} pcs.",
+            if ($isPreOrder) {
+                // Pre-Order (PO): Mengunci alokasi pesanan tanpa memotong stok fisik saat ini
+                Invoice::create([
+                    'invoice_no' => $validated['invoice_no'] ?: 'INV-PO-' . strtoupper(uniqid()),
+                    'tanggal' => $validated['tanggal'] ?? now()->toDateString(),
+                    'sales_name' => $validated['sales_name'],
+                    'customer_name' => $validated['customer_name'],
+                    'product_id' => $validated['product_id'],
+                    'qty' => $validated['qty'],
+                    'location_id' => $validated['location_id'],
+                    'total_price' => $validated['total_price'],
+                    'payment_status' => $validated['payment_status'],
+                    'order_type' => Invoice::ORDER_TYPE_PREORDER,
+                    'po_status' => Invoice::PO_STATUS_PENDING,
+                    'notes' => $validated['notes'] ?? null,
+                    'created_by' => Auth::id(),
+                ]);
+            } else {
+                // Penjualan Langsung (Ready Stock): Validasi terhadap stok siap jual bebas
+                $reservedPo = $stock->getReservedPoQty();
+                $available = max(0, (int) $stock->qty - $reservedPo);
+
+                if ($available < $validated['qty']) {
+                    $productName = Product::find($validated['product_id'])->name ?? 'Produk';
+                    $locName = Location::find($validated['location_id'])->name ?? 'Lokasi';
+                    throw ValidationException::withMessages([
+                        'qty' => "Stok siap jual untuk '{$productName}' di {$locName} tidak mencukupi! Fisik di rak: {$stock->qty} pcs, Terkunci jatah PO: {$reservedPo} pcs, Siap jual: {$available} pcs, Diminta: {$validated['qty']} pcs.",
+                    ]);
+                }
+
+                $stock->decrement('qty', $validated['qty']);
+
+                Invoice::create([
+                    'invoice_no' => $validated['invoice_no'] ?: 'INV-' . strtoupper(uniqid()),
+                    'tanggal' => $validated['tanggal'] ?? now()->toDateString(),
+                    'sales_name' => $validated['sales_name'],
+                    'customer_name' => $validated['customer_name'],
+                    'product_id' => $validated['product_id'],
+                    'qty' => $validated['qty'],
+                    'location_id' => $validated['location_id'],
+                    'total_price' => $validated['total_price'],
+                    'payment_status' => $validated['payment_status'],
+                    'order_type' => Invoice::ORDER_TYPE_REGULAR,
+                    'po_status' => Invoice::PO_STATUS_NONE,
+                    'notes' => $validated['notes'] ?? null,
+                    'created_by' => Auth::id(),
                 ]);
             }
-
-            $stock->decrement('qty', $validated['qty']);
-
-            Invoice::create([
-                'invoice_no' => $validated['invoice_no'] ?: 'INV-' . strtoupper(uniqid()),
-                'tanggal' => $validated['tanggal'] ?? now()->toDateString(),
-                'sales_name' => $validated['sales_name'],
-                'customer_name' => $validated['customer_name'],
-                'product_id' => $validated['product_id'],
-                'qty' => $validated['qty'],
-                'location_id' => $validated['location_id'],
-                'total_price' => $validated['total_price'],
-                'payment_status' => $validated['payment_status'],
-                'notes' => $validated['notes'] ?? null,
-                'created_by' => Auth::id(),
-            ]);
         });
 
-        return redirect()->route('invoices.index')->with('success', 'Invoice berhasil diterbitkan dan stok telah terpotong otomatis.');
+        $message = $isPreOrder
+            ? 'Pesanan Pre-Order (PO) berhasil dicatat dan masuk antrean PO. Stok fisik belum terpotong.'
+            : 'Invoice berhasil diterbitkan dan stok telah terpotong otomatis.';
+
+        return redirect()->route('invoices.index', $isPreOrder ? ['tab' => 'po_pending'] : [])->with('success', $message);
     }
 
     public function edit(Invoice $invoice): View
@@ -402,6 +489,7 @@ class InvoiceController extends Controller
         $validated = $request->validate([
             'invoice_no' => 'nullable|string|max:100',
             'tanggal' => 'nullable|date',
+            'order_type' => 'nullable|in:REGULAR,PREORDER',
             'sales_name' => 'required|string|max:100',
             'customer_name' => 'required|string|max:255',
             'customer_id' => 'nullable|integer',
@@ -421,42 +509,108 @@ class InvoiceController extends Controller
         }
 
         DB::transaction(function () use ($validated, $invoice) {
-            $oldProductId = $invoice->product_id;
-            $oldLocationId = $invoice->location_id;
-            $oldQty = $invoice->qty;
+            $oldDeducted = ($invoice->order_type === Invoice::ORDER_TYPE_REGULAR)
+                || ($invoice->order_type === Invoice::ORDER_TYPE_PREORDER && $invoice->po_status === Invoice::PO_STATUS_COMPLETED);
 
-            // 1. Kembalikan stok lama sebelum memeriksa stok baru
-            $oldStock = Stock::where('product_id', $oldProductId)
-                ->where('location_id', $oldLocationId)
-                ->first();
-            if ($oldStock) {
-                $oldStock->increment('qty', $oldQty);
+            // 1. Kembalikan stok fisik lama jika sebelumnya pernah dipotong
+            if ($oldDeducted) {
+                $oldStock = Stock::where('product_id', $invoice->product_id)
+                    ->where('location_id', $invoice->location_id)
+                    ->first();
+                if ($oldStock) {
+                    $oldStock->increment('qty', $invoice->qty);
+                }
             }
 
-            // 2. Kunci dan potong stok baru
-            $newStock = Stock::where('product_id', $validated['product_id'])
-                ->where('location_id', $validated['location_id'])
-                ->lockForUpdate()
-                ->first();
+            $newOrderType = $validated['order_type'] ?? $invoice->order_type ?? Invoice::ORDER_TYPE_REGULAR;
 
-            if (! $newStock || $newStock->qty < $validated['qty']) {
-                $available = $newStock ? $newStock->qty : 0;
-                throw ValidationException::withMessages([
-                    'qty' => "Stok di lokasi terpilih tidak mencukupi. Sisa stok tersedia: {$available} pcs.",
-                ]);
+            if ($newOrderType === Invoice::ORDER_TYPE_PREORDER) {
+                // Pre-Order: Jika sebelumnya sudah COMPLETED, tetap potong fisik. Jika PENDING, jangan potong fisik.
+                $newPoStatus = $invoice->isPoCompleted() ? Invoice::PO_STATUS_COMPLETED : Invoice::PO_STATUS_PENDING;
+                if ($newPoStatus === Invoice::PO_STATUS_COMPLETED) {
+                    $newStock = Stock::where('product_id', $validated['product_id'])
+                        ->where('location_id', $validated['location_id'])
+                        ->lockForUpdate()
+                        ->first();
+                    if (! $newStock || $newStock->qty < $validated['qty']) {
+                        $available = $newStock ? $newStock->qty : 0;
+                        throw ValidationException::withMessages([
+                            'qty' => "Stok di lokasi terpilih tidak mencukupi untuk menyelesaikan PO. Sisa stok fisik: {$available} pcs.",
+                        ]);
+                    }
+                    $newStock->decrement('qty', $validated['qty']);
+                }
+                $validated['order_type'] = Invoice::ORDER_TYPE_PREORDER;
+                $validated['po_status'] = $newPoStatus;
+            } else {
+                // Penjualan Langsung (REGULAR): Kunci dan potong stok baru
+                $newStock = Stock::where('product_id', $validated['product_id'])
+                    ->where('location_id', $validated['location_id'])
+                    ->lockForUpdate()
+                    ->first();
+
+                $available = $newStock ? max(0, (int)$newStock->qty - $newStock->getReservedPoQty()) : 0;
+                if ($available < $validated['qty']) {
+                    throw ValidationException::withMessages([
+                        'qty' => "Stok siap jual di lokasi terpilih tidak mencukupi. Sisa stok siap jual: {$available} pcs.",
+                    ]);
+                }
+
+                $newStock->decrement('qty', $validated['qty']);
+                $validated['order_type'] = Invoice::ORDER_TYPE_REGULAR;
+                $validated['po_status'] = Invoice::PO_STATUS_NONE;
             }
-
-            $newStock->decrement('qty', $validated['qty']);
 
             if (empty($validated['tanggal'])) {
                 $validated['tanggal'] = $invoice->tanggal ? $invoice->tanggal->toDateString() : now()->toDateString();
             }
 
-            // 3. Update data invoice
             $invoice->update($validated);
         });
 
         return redirect()->route('invoices.index')->with('success', "Invoice {$invoice->invoice_no} berhasil diperbarui.");
+    }
+
+    /**
+     * Selesaikan pesanan Pre-Order (PO): Potong stok fisik dan serahkan barang ke pelanggan.
+     */
+    public function completePo(Invoice $invoice): RedirectResponse
+    {
+        $user = Auth::user();
+        if ($user->isReseller()) {
+            if ($invoice->created_by !== $user->id && $invoice->sales_name !== $user->name && $invoice->location_id !== $user->location?->id) {
+                abort(403, 'Akses ditolak. Anda hanya dapat memproses invoice Anda sendiri.');
+            }
+        }
+
+        if (! $invoice->isPoPending()) {
+            return redirect()->back()->with('error', 'Hanya invoice Pre-Order berstatus PENDING yang dapat diselesaikan.');
+        }
+
+        DB::transaction(function () use ($invoice) {
+            $stock = Stock::where('product_id', $invoice->product_id)
+                ->where('location_id', $invoice->location_id)
+                ->lockForUpdate()
+                ->first();
+
+            $currentQty = $stock ? (int) $stock->qty : 0;
+            if ($currentQty < $invoice->qty) {
+                $productName = $invoice->product?->name ?? 'Produk';
+                $locName = $invoice->location?->name ?? 'Lokasi';
+                throw ValidationException::withMessages([
+                    'stock' => "Stok fisik '{$productName}' di {$locName} belum mencukupi untuk serah terima barang PO ini! Stok fisik saat ini: {$currentQty} pcs, dibutuhkan: {$invoice->qty} pcs. Silakan lakukan Restock terlebih dahulu.",
+                ]);
+            }
+
+            $stock->decrement('qty', $invoice->qty);
+
+            $invoice->update([
+                'po_status' => Invoice::PO_STATUS_COMPLETED,
+                'po_completed_at' => now(),
+            ]);
+        });
+
+        return redirect()->back()->with('success', "Pesanan Pre-Order {$invoice->invoice_no} berhasil diselesaikan. Stok fisik telah terpotong {$invoice->qty} pcs dan barang resmi diserahkan ke pelanggan.");
     }
 
     public function markPaid(Invoice $invoice): RedirectResponse
@@ -500,18 +654,28 @@ class InvoiceController extends Controller
             }
         }
 
-        DB::transaction(function () use ($invoice) {
-            $stock = Stock::where('product_id', $invoice->product_id)
-                ->where('location_id', $invoice->location_id)
-                ->first();
+        // Stok fisik hanya dikembalikan jika sebelumnya pernah dipotong (REGULAR atau PO COMPLETED)
+        $shouldRestorePhysicalStock = ($invoice->order_type === Invoice::ORDER_TYPE_REGULAR)
+            || ($invoice->order_type === Invoice::ORDER_TYPE_PREORDER && $invoice->po_status === Invoice::PO_STATUS_COMPLETED);
 
-            if ($stock) {
-                $stock->increment('qty', $invoice->qty);
+        DB::transaction(function () use ($invoice, $shouldRestorePhysicalStock) {
+            if ($shouldRestorePhysicalStock) {
+                $stock = Stock::where('product_id', $invoice->product_id)
+                    ->where('location_id', $invoice->location_id)
+                    ->first();
+
+                if ($stock) {
+                    $stock->increment('qty', $invoice->qty);
+                }
             }
 
             $invoice->delete();
         });
 
-        return redirect()->route('invoices.index')->with('success', 'Invoice berhasil dihapus dan stok telah dikembalikan ke lokasi asal.');
+        $message = $shouldRestorePhysicalStock
+            ? 'Invoice berhasil dihapus dan stok telah dikembalikan ke lokasi asal.'
+            : 'Pesanan Pre-Order berhasil dibatalkan dan kuota antrean PO telah dilepaskan.';
+
+        return redirect()->route('invoices.index')->with('success', $message);
     }
 }

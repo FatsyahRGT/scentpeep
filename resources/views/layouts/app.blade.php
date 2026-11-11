@@ -662,9 +662,13 @@
                                 <i class="bi bi-receipt-cutoff"></i>
                                 <span>Buat Invoice Penjualan</span>
                             </a>
-                            <a class="nav-side-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
+                            <a class="nav-side-link {{ request()->routeIs('invoices.index') && request('tab') !== 'po_pending' ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-file-earmark-text"></i>
                                 <span>Daftar Invoice</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('invoices.index') && request('tab') === 'po_pending' ? 'active' : '' }}" href="{{ route('invoices.index', ['tab' => 'po_pending']) }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-hourglass-split"></i>
+                                <span>Pesanan Pre-Order (PO)</span>
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('invoices.evaluation') ? 'active' : '' }}" href="{{ route('invoices.evaluation') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-graph-up-arrow"></i>
@@ -733,15 +737,19 @@
                                 <i class="bi bi-plus-circle"></i>
                                 <span>Buat Invoice Baru</span>
                             </a>
-                            <a class="nav-side-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
+                            <a class="nav-side-link {{ request()->routeIs('invoices.index') && request('tab') !== 'po_pending' ? 'active' : '' }}" href="{{ route('invoices.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-file-earmark-text"></i>
-                                <span>Daftar Invoice</span>
+                                <span>Semua Invoice</span>
+                            </a>
+                            <a class="nav-side-link {{ request()->routeIs('invoices.index') && request('tab') === 'po_pending' ? 'active' : '' }}" href="{{ route('invoices.index', ['tab' => 'po_pending']) }}" onclick="closeMobileSidebarIfOpen()">
+                                <i class="bi bi-hourglass-split"></i>
+                                <span>Pesanan Pre-Order (PO)</span>
                             </a>
                         </div>
                     </div>
 
-                    <!-- 2. Dropdown Stok Parfum & PO -->
-                    @php $isStockActive = request()->routeIs('stocks.*') || request()->routeIs('pre-orders.*'); @endphp
+                    <!-- 2. Dropdown Stok Parfum -->
+                    @php $isStockActive = request()->routeIs('stocks.*'); @endphp
                     <div>
                         <a class="nav-side-link d-flex justify-content-between align-items-center {{ $isStockActive ? 'active' : '' }} {{ $isStockActive ? '' : 'collapsed' }}" 
                            data-bs-toggle="collapse" 
@@ -750,7 +758,7 @@
                            aria-expanded="{{ $isStockActive ? 'true' : 'false' }}">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-box-seam-fill"></i>
-                                <span class="nav-link-title">Stok Parfum & PO</span>
+                                <span class="nav-link-title">Stok Parfum</span>
                             </div>
                             <i class="bi bi-chevron-down nav-chevron"></i>
                         </a>
@@ -762,10 +770,6 @@
                             <a class="nav-side-link {{ request()->routeIs('stocks.index') ? 'active' : '' }}" href="{{ route('stocks.index') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-grid-3x3"></i>
                                 <span>Ringkasan Stok</span>
-                            </a>
-                            <a class="nav-side-link {{ request()->routeIs('pre-orders.*') ? 'active' : '' }}" href="{{ route('pre-orders.index') }}" onclick="closeMobileSidebarIfOpen()">
-                                <i class="bi bi-hourglass-split"></i>
-                                <span>Stok Pending (PO)</span>
                             </a>
                             <a class="nav-side-link {{ request()->routeIs('stocks.transfers') || request()->routeIs('stocks.transfer.*') ? 'active' : '' }}" href="{{ route('stocks.transfers') }}" onclick="closeMobileSidebarIfOpen()">
                                 <i class="bi bi-arrow-left-right"></i>

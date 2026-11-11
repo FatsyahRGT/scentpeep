@@ -120,6 +120,35 @@
                             @enderror
                         </div>
 
+                        <!-- Tipe Transaksi / Pesanan (Ready Stock vs Pre-Order PO) -->
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Tipe Transaksi <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-3 mt-1">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="order_type" id="orderTypeRegular" value="REGULAR" {{ old('order_type', $invoice->order_type) === 'REGULAR' ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold text-dark" for="orderTypeRegular">
+                                        <i class="bi bi-box-seam text-success me-1"></i> Penjualan Langsung (Ready)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="order_type" id="orderTypePreOrder" value="PREORDER" {{ old('order_type', $invoice->order_type) === 'PREORDER' ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold text-warning-emphasis" for="orderTypePreOrder">
+                                        <i class="bi bi-hourglass-split text-warning me-1"></i> Pre-Order (PO)
+                                    </label>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">
+                                @if($invoice->isPreOrder())
+                                    Status PO saat ini: <strong>{{ $invoice->po_status }}</strong>.
+                                @else
+                                    Penjualan langsung memotong stok fisik di lokasi.
+                                @endif
+                            </small>
+                            @error('order_type')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <!-- Status Pembayaran -->
                         <div class="col-md-6">
                             <label class="form-label small fw-semibold text-muted">Status Pembayaran <span class="text-danger">*</span></label>
@@ -144,7 +173,7 @@
                         </div>
 
                         <!-- Catatan -->
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <label for="notes" class="form-label small fw-semibold text-muted">Catatan Tambahan (Opsional)</label>
                             <input type="text" name="notes" id="notes" class="form-control" placeholder="Keterangan pengiriman, kontak, dll." value="{{ old('notes', $invoice->notes) }}">
                         </div>

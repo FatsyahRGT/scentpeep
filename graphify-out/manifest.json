@@ -30,9 +30,9 @@
     "semantic_hash": "f24a5a18af93e5af038a957a3f3e809e"
   },
   "app/Http/Controllers/StockController.php": {
-    "mtime": 1794030485.177204,
-    "seen": 1794030789.4114637,
-    "ast_hash": "04be0e98ac3cdf8ed4a7a1c807eb43be",
+    "mtime": 1794405654.924053,
+    "seen": 1794406310.8144965,
+    "ast_hash": "fb9aa7eebe21ef9137865949072fc849",
     "semantic_hash": ""
   },
   "app/Http/Requests/StoreLocationRequest.php": {
@@ -84,10 +84,10 @@
     "semantic_hash": "60d871931c2c3360922ab4fcd701e0e9"
   },
   "app/Models/Stock.php": {
-    "mtime": 1791366781.625027,
-    "seen": 1792247707.2631664,
-    "ast_hash": "f57fcaca9f96ea8d41107a3d51b96fba",
-    "semantic_hash": "f57fcaca9f96ea8d41107a3d51b96fba"
+    "mtime": 1794404649.959445,
+    "seen": 1794406310.8144965,
+    "ast_hash": "d6bd301a85c995691ea4bb1fde06f7f9",
+    "semantic_hash": ""
   },
   "app/Models/User.php": {
     "mtime": 1792244818.883424,
@@ -288,9 +288,9 @@
     "semantic_hash": ""
   },
   "resources/views/layouts/app.blade.php": {
-    "mtime": 1794037176.1577635,
-    "seen": 1794037400.9964685,
-    "ast_hash": "6ac5b879d33ed9db047ee4ed24baba6e",
+    "mtime": 1794405962.2888217,
+    "seen": 1794406310.8154943,
+    "ast_hash": "4a6ca3fba3c74cd6d2af3cc075a6159a",
     "semantic_hash": ""
   },
   "resources/views/locations/create.blade.php": {
@@ -342,9 +342,9 @@
     "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
   },
   "routes/web.php": {
-    "mtime": 1794061827.8806138,
-    "seen": 1794062017.4277678,
-    "ast_hash": "dcdeabba9b293dfed2679e6811daf110",
+    "mtime": 1794405528.452108,
+    "seen": 1794406310.8154943,
+    "ast_hash": "e19c208f371e961b0937588877a28ed2",
     "semantic_hash": ""
   },
   "tests/Feature/ExampleTest.php": {
@@ -576,9 +576,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/WebRoutesRenderingTest.php": {
-    "mtime": 1793719142.8801966,
-    "seen": 1793719219.747823,
-    "ast_hash": "28c5896ff29396871e3527a2bfe3060d",
+    "mtime": 1794406043.9750195,
+    "seen": 1794406310.8154943,
+    "ast_hash": "1102d429d912d87b59d7f56e1b4f8bf4",
     "semantic_hash": ""
   },
   "app/Http/Middleware/SecurityHeadersMiddleware.php": {
@@ -600,15 +600,9 @@
     "semantic_hash": "59e361a5d8c1edb14a8047365b46c8b4"
   },
   "app/Http/Controllers/InvoiceController.php": {
-    "mtime": 1794061819.0816367,
-    "seen": 1794062017.4277678,
-    "ast_hash": "bd836bce2d4c2278bcebe8a3ae5ada15",
-    "semantic_hash": ""
-  },
-  "app/Http/Controllers/PreOrderController.php": {
-    "mtime": 1793345237.66379,
-    "seen": 1793361746.6687133,
-    "ast_hash": "02214cfe22084d17a1cca6ca25395c4d",
+    "mtime": 1794405444.518756,
+    "seen": 1794406310.8144965,
+    "ast_hash": "5659e9d0d75f598ec2981eb42877641c",
     "semantic_hash": ""
   },
   "app/Http/Controllers/RawMaterialController.php": {
@@ -618,15 +612,9 @@
     "semantic_hash": ""
   },
   "app/Models/Invoice.php": {
-    "mtime": 1793716975.1048658,
-    "seen": 1793717734.6782916,
-    "ast_hash": "32258f100e80042c04f3120beff82189",
-    "semantic_hash": ""
-  },
-  "app/Models/PreOrder.php": {
-    "mtime": 1793345136.4301362,
-    "seen": 1793361746.6687133,
-    "ast_hash": "ff43c37405a36956aa7bdeda5e094b7a",
+    "mtime": 1794404590.6767037,
+    "seen": 1794406310.8144965,
+    "ast_hash": "b8ef17bcc37d593b9808e6aaf36bae60",
     "semantic_hash": ""
   },
   "app/Models/RawMaterial.php": {
@@ -678,33 +666,21 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/create.blade.php": {
-    "mtime": 1794036633.4693573,
-    "seen": 1794036697.3899763,
-    "ast_hash": "f7742942af68bf6aa2887591d58af9f3",
+    "mtime": 1794405798.3204715,
+    "seen": 1794406310.8154943,
+    "ast_hash": "be6512c6bdf5d1924e6dd5ef66a91173",
     "semantic_hash": ""
   },
   "resources/views/invoices/edit.blade.php": {
-    "mtime": 1794036621.714855,
-    "seen": 1794036697.3899763,
-    "ast_hash": "458c7b9e418e05f3eff2c69926c5dd0b",
+    "mtime": 1794405822.8348525,
+    "seen": 1794406310.8154943,
+    "ast_hash": "26eddea491f4a8656b616b3e47cf4da1",
     "semantic_hash": ""
   },
   "resources/views/invoices/index.blade.php": {
-    "mtime": 1794070901.6612644,
-    "seen": 1794071168.8271124,
-    "ast_hash": "2a3e76466bbf48185133524869cf6953",
-    "semantic_hash": ""
-  },
-  "resources/views/pre_orders/create.blade.php": {
-    "mtime": 1793957880.8589036,
-    "seen": 1793958891.8937833,
-    "ast_hash": "60476a9e9a6339b6a9dbea588cca6bec",
-    "semantic_hash": ""
-  },
-  "resources/views/pre_orders/index.blade.php": {
-    "mtime": 1793537478.4549127,
-    "seen": 1793537516.7298565,
-    "ast_hash": "e5fc29d11a752ba0188e7f3cf794b678",
+    "mtime": 1794405917.070725,
+    "seen": 1794406310.8154943,
+    "ast_hash": "778b964535af8fb35eb5e65919efd309",
     "semantic_hash": ""
   },
   "resources/views/raw_materials/index.blade.php": {
@@ -714,9 +690,9 @@
     "semantic_hash": ""
   },
   "resources/views/stocks/public_reseller_dashboard.blade.php": {
-    "mtime": 1794037306.8769681,
-    "seen": 1794037400.9964685,
-    "ast_hash": "f690132a3d6820d3aa0d7bd7ff4805d8",
+    "mtime": 1794405717.9823005,
+    "seen": 1794406310.8154943,
+    "ast_hash": "99d1578c1a11cc6a7866b80369e11dd9",
     "semantic_hash": ""
   },
   "resources/views/stocks/reseller_dashboard.blade.php": {
@@ -786,9 +762,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/InvoiceAndProcurementTest.php": {
-    "mtime": 1794037825.7093153,
-    "seen": 1794037896.0790088,
-    "ast_hash": "f0328ba614c6ceb29a5bc9be93808709",
+    "mtime": 1794406200.1110308,
+    "seen": 1794406310.8154943,
+    "ast_hash": "0d281d62577984a731e39d4770506fe2",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -966,9 +942,9 @@
     "semantic_hash": ""
   },
   "resources/views/tutorial.blade.php": {
-    "mtime": 1794068814.6435394,
-    "seen": 1794069080.5634475,
-    "ast_hash": "591345b6eb5bd51e526d5dd5f062b643",
+    "mtime": 1794406129.184157,
+    "seen": 1794406310.8154943,
+    "ast_hash": "63673242f0707097f89a8c5628abeaec",
     "semantic_hash": ""
   },
   "app/Http/Controllers/CustomerController.php": {
@@ -1053,6 +1029,12 @@
     "mtime": 1794065457.8858647,
     "seen": 1794065612.6399028,
     "ast_hash": "bdb0057ec3e26cc43932e7268dbeef57",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_11_11_132144_add_po_fields_to_invoices_table.php": {
+    "mtime": 1794403337.9105828,
+    "seen": 1794406310.8154943,
+    "ast_hash": "78d87bba47b1f26f85afe48ffca12c8b",
     "semantic_hash": ""
   }
 }
