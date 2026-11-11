@@ -942,9 +942,9 @@
     "semantic_hash": ""
   },
   "resources/views/tutorial.blade.php": {
-    "mtime": 1794408043.751138,
-    "seen": 1794408093.1519775,
-    "ast_hash": "eb87c503da5956d57d85c3a2e9c7b4f5",
+    "mtime": 1794412145.622666,
+    "seen": 1794412180.1774654,
+    "ast_hash": "a0cc42cdfd6ea385d0b241ab06655d8e",
     "semantic_hash": ""
   },
   "app/Http/Controllers/CustomerController.php": {

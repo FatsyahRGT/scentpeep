@@ -976,17 +976,18 @@
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge text-white px-2 py-1 font-mono fw-bold" style="background-color: var(--scent-green, #2b7b5b); font-size: 0.8rem;">v3.2</span>
-                                <h6 class="fw-bold text-dark m-0">Penyatuan Pre-Order (PO) ke Invoice, Smart Reserved Stock, &amp; Koreksi Stok Cepat</h6>
+                                <h6 class="fw-bold text-dark m-0">Integrasi Pre-Order ke Invoice, Smart Reserved Stock, Koreksi Stok Cepat, &amp; Redesain Toolbar 3-Tier</h6>
                             </div>
                             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill font-mono" style="font-size: 0.72rem;">
                                 <i class="bi bi-check-circle me-1"></i> Versi Aktif
                             </span>
                         </div>
                         <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
-                            <li><strong class="text-dark">Integrasi Pre-Order (PO) ke Modul Invoice Terpadu</strong>: Modul PO disatukan langsung ke dalam formulir Invoice (<code class="font-mono">REGULAR</code> vs <code class="font-mono">PREORDER</code>), menghapus duplikasi menu terpisah. PO kini fleksibel dapat dicatat meskipun stok fisik rak sedang kosong (0 pcs).</li>
-                            <li><strong class="text-dark">Sistem Alokasi Stok Cerdas (Smart Reserved Stock)</strong>: Saat restock tiba, sistem otomatis mengamankan jatah kuota PO pemesan (<code class="font-mono">Reserved Stock</code>) agar tidak sengaja terjual bebas ke pelanggan umum. Stok fisik rak baru resmi terpotong saat pesanan diserahkan via tombol <code class="font-mono">[ Selesaikan PO ]</code>.</li>
-                            <li><strong class="text-dark">Fitur Edit &amp; Koreksi Stok Fisik Cepat Multi-Lokasi</strong>: Penambahan menu aksi <code class="font-mono">Edit / Koreksi Stok</code> pada Ringkasan Stok (List View &amp; Matriks Kolom) dilengkapi pop-up modal interaktif berpalet warna lokasi untuk memudahkan koreksi cepat jika terjadi selisih opname fisik atau salah input stok.</li>
-                            <li><strong class="text-dark">Tab Filter Cepat Riwayat Invoice &amp; Live Stock Reseller Terintegrasi</strong>: Filter instan (*Semua*, *Penjualan Langsung*, *PO Menunggu*, *PO Selesai*) dengan counter badge, validasi pencegahan penjualan melebihi stok siap jual bebas, serta dashboard stok publik reseller yang menampilkan transparansi jatah PO dan sisa ready.</li>
+                            <li><strong class="text-dark">Integrasi Pre-Order (PO) ke Modul Invoice Terpadu</strong>: Modul PO disatukan langsung ke formulir Invoice (<code class="font-mono">REGULAR</code> vs <code class="font-mono">PREORDER</code>), menghapus menu terpisah. PO fleksibel dapat dicatat kapan saja meski stok fisik toko sedang kosong (0 pcs).</li>
+                            <li><strong class="text-dark">Sistem Alokasi Stok Cerdas (Smart Reserved Stock)</strong>: Saat restock tiba, sistem otomatis mengamankan jatah pesanan PO pemesan (<code class="font-mono">Reserved Stock</code>) agar tidak sengaja terjual bebas ke pelanggan umum (<code class="font-mono">Siap Jual = Fisik - PO</code>). Stok fisik rak resmi terpotong saat pesanan diserahkan via tombol <code class="font-mono">[ Selesaikan PO ]</code>.</li>
+                            <li><strong class="text-dark">Fitur Edit &amp; Koreksi Stok Fisik Cepat Multi-Lokasi</strong>: Penambahan menu aksi <code class="font-mono">Edit / Koreksi Stok</code> pada Ringkasan Stok (List View &amp; Matriks Kolom) dengan pop-up modal interaktif berpalet warna lokasi untuk koreksi instan salah input atau selisih opname fisik.</li>
+                            <li><strong class="text-dark">Tata Letak Toolbar Invoice 3-Tier &amp; Bebas Geser (Zero Layout-Shift)</strong>: Penataan 3 baris proporsional: Tab PO Menunggu &amp; PO Selesai dalam kapsul ramping (<code class="font-mono">flex-nowrap</code>) dengan aksi klik *toggle off*, search bar terkunci stabil di pojok paling kanan, tombol <code class="font-mono">[ ↺ Reset ]</code> dinamis di samping kirinya, serta 6 dropdown sejajar (<code class="font-mono">col-xl-2</code>) bebas teks terpotong.</li>
+                            <li><strong class="text-dark">Pembersihan Sidebar &amp; Optimalisasi Popup Pelanggan</strong>: Menghapus sub-menu PO yang redundan dari sidebar Admin dan Reseller, memposisikan kolom tabel Aksi simetris di tengah (<code class="font-mono">text-center</code>), serta menata ulang kotak pencarian popup pelanggan dengan Flexbox bersih bebas tabrakan ikon.</li>
                         </ul>
                     </div>
 
@@ -1206,7 +1207,7 @@
             </div>
             <div class="modal-footer py-2 px-4 bg-light border-top d-flex justify-content-between align-items-center">
                 <span class="text-muted small font-mono" style="font-size: 0.75rem;">
-                    <i class="bi bi-cpu me-1"></i> Laravel 13.35.0 &bull; PHP 8.3+ &bull; MySQL &bull; Bootstrap 5.3.3
+                    <i class="bi bi-cpu me-1"></i> Laravel 13.35.0 &bull; PHP 8.5.12 &bull; MySQL &bull; Bootstrap 5.3.3
                 </span>
                 <button type="button" class="btn btn-sm btn-dark px-3 py-1 rounded-2" data-bs-dismiss="modal">Tutup</button>
             </div>
