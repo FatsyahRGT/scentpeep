@@ -30,9 +30,9 @@
     "semantic_hash": "f24a5a18af93e5af038a957a3f3e809e"
   },
   "app/Http/Controllers/StockController.php": {
-    "mtime": 1794405654.924053,
-    "seen": 1794406310.8144965,
-    "ast_hash": "fb9aa7eebe21ef9137865949072fc849",
+    "mtime": 1794407207.9946718,
+    "seen": 1794407482.0638144,
+    "ast_hash": "eb1ae4b97e5cf90ac6a20e6a86bde9c0",
     "semantic_hash": ""
   },
   "app/Http/Requests/StoreLocationRequest.php": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "resources/views/stocks/index.blade.php": {
-    "mtime": 1794034709.647321,
-    "seen": 1794034843.045311,
-    "ast_hash": "ff5c540072d0185f74b4017502ec73ab",
+    "mtime": 1794407353.4822032,
+    "seen": 1794407482.0638144,
+    "ast_hash": "f92f5aa27beec0221d7b5b66afb5dae8",
     "semantic_hash": ""
   },
   "routes/console.php": {
@@ -342,9 +342,9 @@
     "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
   },
   "routes/web.php": {
-    "mtime": 1794405528.452108,
-    "seen": 1794406310.8154943,
-    "ast_hash": "e19c208f371e961b0937588877a28ed2",
+    "mtime": 1794407236.3856342,
+    "seen": 1794407482.0638144,
+    "ast_hash": "480c101223766ee7740700bd5dada8ba",
     "semantic_hash": ""
   },
   "tests/Feature/ExampleTest.php": {
@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/StockRestockTest.php": {
-    "mtime": 1793543560.4839861,
-    "seen": 1793543637.1048129,
-    "ast_hash": "689ad176abc11c2fb32c60ef1e2e01dd",
+    "mtime": 1794407396.9472587,
+    "seen": 1794407482.0638144,
+    "ast_hash": "ff1f3ab296d85f5c79f8e64c1a11781c",
     "semantic_hash": ""
   },
   "database/migrations/2026_11_03_000001_add_tanggal_to_invoices_table.php": {

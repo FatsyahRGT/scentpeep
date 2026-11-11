@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('stocks')->name('stocks.')->group(function () {
             Route::get('/restock', [StockController::class, 'restockIndex'])->name('restock');
             Route::post('/manual-restock', [StockController::class, 'manualRestock'])->name('manualRestock');
+            Route::post('/adjust', [StockController::class, 'adjustStock'])->name('adjust');
             Route::get('/transfers', [StockController::class, 'transfers'])->name('transfers');
             Route::get('/transfer', [StockController::class, 'createTransfer'])->name('transfer.create');
             Route::post('/transfer', [StockController::class, 'storeTransfer'])->name('transfer.store');

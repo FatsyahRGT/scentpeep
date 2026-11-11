@@ -251,6 +251,29 @@
                                             <i class="bi bi-arrow-left-right me-2 text-dark"></i> Transfer Stok
                                         </a>
                                     </li>
+                                    @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        @php
+                                            $prodStockMap = [];
+                                            foreach($locations as $loc) {
+                                                $prodStockMap[$loc->id] = (int) ($stockMatrix[$prod->id][$loc->id] ?? 0);
+                                            }
+                                        @endphp
+                                        <button type="button" 
+                                                class="dropdown-item fw-semibold text-dark" 
+                                                onclick='openAdjustStockModal({{ $prod->id }}, @json($prod->name), @json($prod->code ?? "-"), @json($prodStockMap))'>
+                                            <i class="bi bi-pencil-square me-2 text-warning"></i> Edit / Koreksi Stok
+                                        </button>
+                                    </li>
+                                    @endif
+                                    @if(Auth::user()->isAdmin())
+                                    <li>
+                                        <a class="dropdown-item text-muted" href="{{ route('products.edit', $prod) }}" style="font-size: 0.8rem;">
+                                            <i class="bi bi-gear me-2"></i> Edit Master Produk
+                                        </a>
+                                    </li>
+                                    @endif
                                 </ul>
                             </div>
                         </td>
@@ -361,6 +384,29 @@
                                             <i class="bi bi-arrow-left-right me-2 text-dark"></i> Transfer Stok
                                         </a>
                                     </li>
+                                    @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        @php
+                                            $prodStockMap = [];
+                                            foreach($locations as $loc) {
+                                                $prodStockMap[$loc->id] = (int) ($stockMatrix[$prod->id][$loc->id] ?? 0);
+                                            }
+                                        @endphp
+                                        <button type="button" 
+                                                class="dropdown-item fw-semibold text-dark" 
+                                                onclick='openAdjustStockModal({{ $prod->id }}, @json($prod->name), @json($prod->code ?? "-"), @json($prodStockMap))'>
+                                            <i class="bi bi-pencil-square me-2 text-warning"></i> Edit / Koreksi Stok
+                                        </button>
+                                    </li>
+                                    @endif
+                                    @if(Auth::user()->isAdmin())
+                                    <li>
+                                        <a class="dropdown-item text-muted" href="{{ route('products.edit', $prod) }}" style="font-size: 0.8rem;">
+                                            <i class="bi bi-gear me-2"></i> Edit Master Produk
+                                        </a>
+                                    </li>
+                                    @endif
                                 </ul>
                             </div>
                         </td>
@@ -404,10 +450,108 @@
         </div>
     </div>
 </div>
+
+@if(Auth::user()->isAdmin() || Auth::user()->isStaff())
+<!-- Modal Edit / Koreksi Stok Fisik -->
+<div class="modal fade" id="modalAdjustStock" tabindex="-1" aria-labelledby="modalAdjustStockLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="border-radius: 12px; border: 1px solid var(--color-border, #e8e6e1) !important;">
+            <div class="modal-header bg-white py-3 border-bottom">
+                <div>
+                    <h5 class="modal-title font-serif fw-bold text-dark fs-5" id="modalAdjustStockLabel">
+                        <i class="bi bi-pencil-square text-warning me-1.5"></i> Edit / Koreksi Stok Fisik
+                    </h5>
+                    <small class="text-muted d-block mt-0.5">Koreksi jumlah stok riil jika terjadi salah input atau hasil stock opname.</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <form action="{{ route('stocks.adjust') }}" method="POST">
+                @csrf
+                <input type="hidden" name="product_id" id="adjustProductId">
+
+                <div class="modal-body p-4">
+                    <!-- Informasi Varian Produk -->
+                    <div class="p-3 rounded-3 mb-3" style="background-color: var(--color-surface-hover, #f4f3f0); border: 1px solid var(--color-border, #e8e6e1);">
+                        <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Varian Produk Parfum</div>
+                        <div class="font-serif fw-bold fs-6 text-dark mt-0.5" id="adjustProductName">-</div>
+                        <small class="text-muted font-mono" id="adjustProductCode">-</small>
+                    </div>
+
+                    <label class="form-label small fw-semibold text-muted mb-2">Kuantitas Stok Fisik per Titik Lokasi:</label>
+                    <div class="d-flex flex-column gap-2 mb-3">
+                        @foreach($locations as $loc)
+                            @php $palette = $loc->getColorPalette(); @endphp
+                            <div class="p-2.5 rounded-3 border d-flex align-items-center justify-content-between gap-3" style="background-color: #ffffff;">
+                                <div style="min-width: 130px;">
+                                    <span class="badge d-inline-flex align-items-center gap-1 font-mono fw-bold" style="background-color: {{ $palette['badge_bg'] }}; color: {{ $palette['badge_text'] }}; border: 1px solid {{ $palette['border'] }}; font-size: 0.8rem; padding: 0.25rem 0.5rem;">
+                                        <i class="bi bi-geo-alt-fill" style="font-size: 0.7rem;"></i> {{ $loc->name }}
+                                    </span>
+                                    <div class="text-muted small mt-1" style="font-size: 0.72rem;">
+                                        Stok saat ini: <strong id="adjust_stock_current_{{ $loc->id }}" class="font-mono text-dark">0</strong> pcs
+                                    </div>
+                                </div>
+                                <div class="input-group input-group-sm" style="max-width: 140px;">
+                                    <input type="number" 
+                                           name="stocks[{{ $loc->id }}]" 
+                                           id="adjust_stock_input_{{ $loc->id }}" 
+                                           min="0" 
+                                           class="form-control font-mono text-center fw-bold" 
+                                           value="0" 
+                                           required>
+                                    <span class="input-group-text bg-light text-muted small">pcs</span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Alasan Koreksi -->
+                    <div>
+                        <label for="adjustReason" class="form-label small fw-semibold text-muted">Alasan / Catatan Koreksi (Opsional)</label>
+                        <input type="text" name="reason" id="adjustReason" class="form-control form-control-sm" placeholder="Contoh: Koreksi salah ketik restock / Hasil opname toko">
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light py-2 px-3 border-top d-flex justify-content-between">
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-dark px-4 fw-semibold">
+                        <i class="bi bi-check2-circle me-1"></i> Simpan Koreksi Stok
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 @endsection
 
 @push('scripts')
 <script>
+    function openAdjustStockModal(productId, productName, productCode, stocksMap) {
+        const modalEl = document.getElementById('modalAdjustStock');
+        if (!modalEl) return;
+
+        document.getElementById('adjustProductId').value = productId;
+        document.getElementById('adjustProductName').textContent = productName;
+        document.getElementById('adjustProductCode').textContent = productCode || '-';
+        const reasonEl = document.getElementById('adjustReason');
+        if (reasonEl) reasonEl.value = '';
+
+        const stocks = typeof stocksMap === 'string' ? JSON.parse(stocksMap) : stocksMap;
+
+        for (const [locId, qty] of Object.entries(stocks)) {
+            const inputEl = document.getElementById('adjust_stock_input_' + locId);
+            const curEl = document.getElementById('adjust_stock_current_' + locId);
+            if (inputEl) {
+                inputEl.value = qty;
+            }
+            if (curEl) {
+                curEl.textContent = qty;
+            }
+        }
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    }
     function toggleStockView(mode) {
         const listView = document.getElementById('stockTableViewList');
         const matrixView = document.getElementById('stockTableViewMatrix');

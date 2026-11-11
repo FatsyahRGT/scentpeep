@@ -414,6 +414,59 @@ class StockController extends Controller
     }
 
     /**
+     * Edit / Koreksi stok fisik produk di masing-masing lokasi (stock opname / penyesuaian salah input).
+     */
+    public function adjustStock(Request $request): RedirectResponse
+    {
+        if (Auth::user()->isReseller()) {
+            return redirect()->back()->with('error', 'Akses ditolak. Fitur koreksi stok hanya untuk Administrator dan Staf.');
+        }
+
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'stocks' => 'required|array',
+            'stocks.*' => 'required|integer|min:0',
+            'reason' => 'nullable|string|max:255',
+        ]);
+
+        $product = Product::findOrFail($validated['product_id']);
+        $locations = Location::whereIn('id', array_keys($validated['stocks']))->get()->keyBy('id');
+
+        $changes = [];
+
+        DB::transaction(function () use ($validated, $locations, &$changes) {
+            foreach ($validated['stocks'] as $locationId => $newQty) {
+                if (! isset($locations[$locationId])) {
+                    continue;
+                }
+
+                $stock = Stock::firstOrCreate(
+                    ['product_id' => $validated['product_id'], 'location_id' => $locationId],
+                    ['qty' => 0]
+                );
+
+                $oldQty = (int) $stock->qty;
+                $newQty = (int) $newQty;
+
+                if ($oldQty !== $newQty) {
+                    $stock->update(['qty' => $newQty]);
+                    $locName = $locations[$locationId]->name ?? "Lokasi #{$locationId}";
+                    $changes[] = "{$locName}: {$oldQty} \u{2192} {$newQty} pcs";
+                }
+            }
+        });
+
+        if (empty($changes)) {
+            return redirect()->back()->with('info', "Tidak ada perubahan kuantitas stok untuk varian {$product->name}.");
+        }
+
+        $changeSummary = implode(', ', $changes);
+        $reasonText = !empty($validated['reason']) ? " (Alasan: {$validated['reason']})" : "";
+
+        return redirect()->back()->with('success', "Stok varian '{$product->name}' berhasil dikoreksi! [{$changeSummary}]{$reasonText}.");
+    }
+
+    /**
      * Dashboard terpisah untuk reseller / monitoring visual sebaran stok IWAN & RIZKY, produk terlaris, dan varian ready.
      */
     public function resellerStocks(Request $request): View

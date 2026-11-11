@@ -120,4 +120,74 @@ class StockRestockTest extends TestCase
         // Tabel katalog utama tidak boleh ada lagi di reseller_dashboard
         $response->assertDontSee('Main Table: Katalog Sebaran Stok & Filter Ready');
     }
+
+    public function test_admin_and_staff_can_adjust_stock_quantities_per_location(): void
+    {
+        $product = Product::create([
+            'name' => 'Parfum Koreksi Stok',
+            'code' => 'SP-ADJ-01',
+            'cost_price' => 50000,
+            'sell_price' => 85000,
+            'is_active' => true,
+        ]);
+
+        Stock::create(['product_id' => $product->id, 'location_id' => $this->location1->id, 'qty' => 10]);
+        Stock::create(['product_id' => $product->id, 'location_id' => $this->location2->id, 'qty' => 5]);
+
+        $response = $this->actingAs($this->admin)->post(route('stocks.adjust'), [
+            'product_id' => $product->id,
+            'stocks' => [
+                $this->location1->id => 18, // Ubah dari 10 menjadi 18
+                $this->location2->id => 2,  // Ubah dari 5 menjadi 2
+            ],
+            'reason' => 'Koreksi salah input saat restock',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertEquals(18, Stock::where('product_id', $product->id)->where('location_id', $this->location1->id)->first()->qty);
+        $this->assertEquals(2, Stock::where('product_id', $product->id)->where('location_id', $this->location2->id)->first()->qty);
+    }
+
+    public function test_reseller_cannot_adjust_stock(): void
+    {
+        $product = Product::create([
+            'name' => 'Parfum Terlarang Reseller',
+            'code' => 'SP-BLOCK-01',
+            'cost_price' => 50000,
+            'sell_price' => 85000,
+            'is_active' => true,
+        ]);
+
+        Stock::create(['product_id' => $product->id, 'location_id' => $this->location1->id, 'qty' => 10]);
+
+        $response = $this->actingAs($this->reseller)->post(route('stocks.adjust'), [
+            'product_id' => $product->id,
+            'stocks' => [
+                $this->location1->id => 999,
+            ],
+        ]);
+
+        // Reseller dialihkan oleh middleware internal atau controller check
+        $this->assertEquals(10, Stock::where('product_id', $product->id)->where('location_id', $this->location1->id)->first()->qty);
+    }
+
+    public function test_ringkasan_stok_view_renders_adjust_stock_modal_and_action(): void
+    {
+        $product = Product::create([
+            'name' => 'Parfum Tampil Modal',
+            'code' => 'SP-MODAL-01',
+            'cost_price' => 50000,
+            'sell_price' => 85000,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('stocks.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Edit / Koreksi Stok');
+        $response->assertSee('id="modalAdjustStock"', false);
+        $response->assertSee('openAdjustStockModal', false);
+    }
 }
