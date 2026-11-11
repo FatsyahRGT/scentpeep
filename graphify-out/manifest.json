@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/index.blade.php": {
-    "mtime": 1794411507.4048913,
-    "seen": 1794411616.6502523,
-    "ast_hash": "284b19ec1cb9c5232c92179becf0106e",
+    "mtime": 1794411983.942289,
+    "seen": 1794412025.5952892,
+    "ast_hash": "cd0f63c4afd9c9997c1549ae218d6bfc",
     "semantic_hash": ""
   },
   "resources/views/raw_materials/index.blade.php": {

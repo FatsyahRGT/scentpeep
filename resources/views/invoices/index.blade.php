@@ -114,8 +114,18 @@
                     </a>
                 </div>
 
-                <!-- Sisi Kanan: Search Bar ("Cari no. invoice / customer...") & Tombol Reset Filter Tunggal -->
-                <div class="d-flex align-items-center gap-2 w-100 w-xl-auto">
+                <!-- Sisi Kanan: Tombol Reset (Kiri) & Search Bar Pojok Kanan (Kanan) -->
+                <div class="d-flex align-items-center justify-content-end gap-2 w-100 w-xl-auto ms-xl-auto">
+                    @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'customer_name', 'year', 'month', 'search']) || in_array($tab, ['po_pending', 'po_completed', 'regular']))
+                    <a href="{{ route('invoices.index') }}" 
+                       class="btn btn-outline-secondary btn-sm rounded-3 px-2.5 py-1.5 d-inline-flex align-items-center gap-1 text-nowrap flex-shrink-0 shadow-xs" 
+                       style="font-size: 0.78rem; height: 31px;"
+                       title="Reset Semua Filter">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>Reset</span>
+                    </a>
+                    @endif
+
                     <div class="input-group input-group-sm" style="min-width: 280px; max-width: 320px;">
                         <span class="input-group-text bg-white border-end-0 text-muted ps-2.5 pe-1"><i class="bi bi-search"></i></span>
                         <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari no. invoice / customer..." value="{{ request('search') }}" style="font-size: 0.8rem;">
@@ -123,16 +133,6 @@
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
-
-                    @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'customer_name', 'year', 'month', 'search']) || in_array($tab, ['po_pending', 'po_completed', 'regular']))
-                    <a href="{{ route('invoices.index') }}" 
-                       class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-1 text-nowrap flex-shrink-0" 
-                       style="font-size: 0.8rem; height: 31px;"
-                       title="Reset Semua Filter">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                        <span>Reset Filter</span>
-                    </a>
-                    @endif
                 </div>
             </div>
 
