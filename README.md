@@ -35,12 +35,13 @@ Sistem manajemen inventori parfum multi-lokasi, penjualan (invoice), pre-order, 
 ## 📚 Dokumentasi Rekayasa Perangkat Lunak (Docs)
 
 Dokumentasi teknis lengkap tersedia pada direktori [`docs/`](file:///c:/laragon/www/scentpeep-management-system/docs/README.md):
+- **[Kesimpulan Projek (Spesifikasi & Logika Bisnis)](file:///c:/laragon/www/scentpeep-management-system/docs/KESIMPULAN_PROJEK.md)**: Ringkasan arsitektur, ERD, dan logika bisnis v3.2.
 - **[PRD (Product Requirements Document)](file:///c:/laragon/www/scentpeep-management-system/docs/PRD.md)**: Spesifikasi fungsional dan kebutuhan sistem lengkap.
 - **[ERD (Entity-Relationship Diagram)](file:///c:/laragon/www/scentpeep-management-system/docs/ERD.md)**: Diagram Mermaid 11 tabel basis data dan kamus data komprehensif.
 - **[DFD (Data Flow Diagram)](file:///c:/laragon/www/scentpeep-management-system/docs/DFD.md)**: Diagram aliran data Level 0, Level 1, Level 2, dan kamus aliran data.
-- **[Use Case Diagram & Spesifikasi](file:///c:/laragon/www/scentpeep-management-system/docs/USE_CASE.md)**: Diagram use case, definisi aktor, matriks 14 use case, dan skenario detail.
+- **[Use Case Diagram & Spesifikasi](file:///c:/laragon/www/scentpeep-management-system/docs/USE_CASE.md)**: Diagram use case, definisi aktor, matriks 16 use case, dan skenario detail.
 - **[Activity Diagram & Sequence Diagram](file:///c:/laragon/www/scentpeep-management-system/docs/ACTIVITY_DIAGRAM.md)**: Diagram alur aktivitas swimlane dan sequence diagram interaksi sistem.
-- **[Laporan Kriteria Lulus & Pengujian](file:///c:/laragon/www/scentpeep-management-system/docs/KRITERIA_LULUS.md)**: Matriks verifikasi dan bukti eksekusi pengujian otomatis PHPUnit (69 tests passed).
+- **[Laporan Kriteria Lulus & Pengujian](file:///c:/laragon/www/scentpeep-management-system/docs/KRITERIA_LULUS.md)**: Matriks verifikasi dan bukti eksekusi pengujian otomatis PHPUnit (102 tests passed, 596 assertions).
 
 ---
 
@@ -98,4 +99,4 @@ docker compose exec app php artisan db:seed
 php artisan test
 ```
 
-Status pengujian: **73 tests passed, 430 assertions (100% Green)**.
+Status pengujian: **102 tests passed, 596 assertions (100% Green)**.

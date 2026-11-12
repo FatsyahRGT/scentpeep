@@ -4,7 +4,7 @@
 Repository ini telah memiliki Knowledge Graph arsitektur yang ter-generate di folder `graphify-out/`:
 - `graphify-out/GRAPH_REPORT.md` — Ringkasan arsitektur modul, god nodes, dan relasi antarkomponen.
 - `graphify-out/graph.json` — Data graph komprehensif.
-- `KESIMPULAN_PROJEK.md` — Dokumentasi lengkap spesifikasi, ERD sederhana, logika bisnis, dan panduan teknis.
+- `docs/KESIMPULAN_PROJEK.md` — Dokumentasi lengkap spesifikasi, ERD sederhana, logika bisnis, dan panduan teknis.
 
 ## Default Skills & Mindset (Wajib Aktif di Awal Setiap Sesi)
 Setiap sesi pengerjaan AI wajib mematuhi standar skill berikut secara default tanpa perlu dipanggil manual:

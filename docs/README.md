@@ -14,6 +14,7 @@ Folder ini berisi dokumentasi lengkap perancangan dan spesifikasi sistem untuk t
 | **Use Case** | [`USE_CASE.md`](file:///c:/laragon/www/scentpeep-management-system/docs/USE_CASE.md) | **Use Case Diagram & Spesifikasi**: Diagram use case visual (*Mermaid*), definisi 4 aktor sistem, matriks 16 use case (termasuk Penerbitan Invoice Reguler & PO, Selesaikan PO, Koreksi Stok Cepat, dan Restock Produksi), serta skenario interaksi mendalam. |
 | **Activity Diagram** | [`ACTIVITY_DIAGRAM.md`](file:///c:/laragon/www/scentpeep-management-system/docs/ACTIVITY_DIAGRAM.md) | **Activity & Sequence Diagram**: Diagram aktivitas dengan *swimlane* antar aktor dan diagram sekuensial interaksi sistem untuk alur registrasi reseller, penerbitan invoice penjualan atomik (Reguler vs PO), penyelesaian PO (Complete PO), koreksi stok fisik multi-lokasi, transfer stok, pengadaan bahan baku, dan restock produksi. |
 | **Kriteria Lulus** | [`KRITERIA_LULUS.md`](file:///c:/laragon/www/scentpeep-management-system/docs/KRITERIA_LULUS.md) | **Laporan Kepatuhan & Verifikasi Pengujian**: Matriks kepatuhan 17 kriteria utama sistem, integritas data, dan bukti eksekusi pengujian otomatis berbasis PHPUnit & Laravel TestSuite (102 passed, 596 assertions, 100% green). |
+| **Kesimpulan Projek** | [`KESIMPULAN_PROJEK.md`](file:///c:/laragon/www/scentpeep-management-system/docs/KESIMPULAN_PROJEK.md) | **Spesifikasi & Logika Bisnis Komprehensif**: Rangkuman arsitektur, ERD 11 tabel domain, decoupled cash flow, smart reserved stock, palet HSL, dan panduan teknis. |
 
 ---
 

@@ -768,21 +768,15 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1794068825.418211,
-    "seen": 1794069080.5634475,
-    "ast_hash": "6846666286a1614020d1b7d7604814e1",
-    "semantic_hash": ""
-  },
-  "KESIMPULAN_PROJEK.md": {
-    "mtime": 1794495756.7157257,
-    "seen": 1794495864.8624508,
-    "ast_hash": "6eec5fa9ede62551daf50664d2664059",
+    "mtime": 1794496949.1516488,
+    "seen": 1794497074.3017366,
+    "ast_hash": "d7c903bc14de67f51ad4e6e83b5f249d",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1794068866.4008918,
-    "seen": 1794069080.5634475,
-    "ast_hash": "b189f53ac77e8499671c94deda5b4f15",
+    "mtime": 1794497041.1108434,
+    "seen": 1794497074.3017366,
+    "ast_hash": "1930eb2744eb969936005011d2b9293f",
     "semantic_hash": ""
   },
   "docker-compose.yml": {
@@ -888,9 +882,9 @@
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1794495681.3485568,
-    "seen": 1794495864.8624508,
-    "ast_hash": "060b38a99d0cac88c2522c6bfce4c00e",
+    "mtime": 1794496982.0780547,
+    "seen": 1794497074.3017366,
+    "ast_hash": "8dd38065e5627e35663008d4794dfefe",
     "semantic_hash": ""
   },
   "docs/USE_CASE.md": {
@@ -1017,6 +1011,12 @@
     "mtime": 1794403337.9105828,
     "seen": 1794406310.8154943,
     "ast_hash": "78d87bba47b1f26f85afe48ffca12c8b",
+    "semantic_hash": ""
+  },
+  "docs/KESIMPULAN_PROJEK.md": {
+    "mtime": 1794496687.2158525,
+    "seen": 1794497074.3017366,
+    "ast_hash": "6eec5fa9ede62551daf50664d2664059",
     "semantic_hash": ""
   }
 }
