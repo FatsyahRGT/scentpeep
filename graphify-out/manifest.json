@@ -773,22 +773,10 @@
     "ast_hash": "6846666286a1614020d1b7d7604814e1",
     "semantic_hash": ""
   },
-  "CLAUDE.md": {
-    "mtime": 1791356938.59719,
-    "seen": 1793361746.6697118,
-    "ast_hash": "233b5f3a9da96d92425375462ad3bec5",
-    "semantic_hash": ""
-  },
   "KESIMPULAN_PROJEK.md": {
     "mtime": 1794495756.7157257,
     "seen": 1794495864.8624508,
     "ast_hash": "6eec5fa9ede62551daf50664d2664059",
-    "semantic_hash": ""
-  },
-  "PANDUAN_SESI_BARU_GRAPHIFY.md": {
-    "mtime": 1793345863.2602408,
-    "seen": 1793361746.6697118,
-    "ast_hash": "1b4e8968cf53a097f1fd595187cf74f1",
     "semantic_hash": ""
   },
   "README.md": {
@@ -837,12 +825,6 @@
     "mtime": 1793361734.8164961,
     "seen": 1793361746.6697118,
     "ast_hash": "ad5b4d3d6da8a4787748a4898c2bd8dc",
-    "semantic_hash": ""
-  },
-  "prompt.md": {
-    "mtime": 1792243718.9528382,
-    "seen": 1793361746.6697118,
-    "ast_hash": "e15413b9dff9157096bd8f54417bd991",
     "semantic_hash": ""
   },
   "public/robots.txt": {
