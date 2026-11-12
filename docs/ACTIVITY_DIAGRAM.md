@@ -1,6 +1,6 @@
 # Activity Diagram & Alur Proses Bisnis — Scentpeep Management System
 
-Dokumentasi diagram aktivitas (*Activity Diagram* dengan swimlane per aktor) dan diagram sekuensial (*Sequence Diagram* interaksi sistem) yang mencerminkan alur operasional aktual pada sistem.
+Dokumentasi diagram aktivitas (*Activity Diagram* dengan swimlane per aktor) dan diagram sekuensial (*Sequence Diagram* interaksi sistem) yang mencerminkan alur operasional aktual pada sistem per rilis **v3.2**.
 
 ---
 
@@ -79,7 +79,7 @@ sequenceDiagram
 
 ---
 
-## 2. Alur Penerbitan Invoice & Pemotongan Stok Atomik
+## 2. Alur Penerbitan Invoice Penjualan (Reguler vs Pre-Order)
 
 ### 2.1 Activity Diagram (Swimlane per Aktor)
 
@@ -87,27 +87,34 @@ sequenceDiagram
 flowchart TD
     subgraph Lane_User ["Pengguna (Admin / Staff)"]
         U_Start([Mulai]) --> U_Form[Buka Form Buat Invoice /invoices/create]
-        U_Form --> U_Fill[Pilih Tanggal Transaksi, Sales: RIZKY/IWAN/VANNY, Pelanggan, Varian Parfum, Lokasi Asal, Qty, Total Harga, Status Pembayaran]
+        U_Form --> U_Fill[Pilih Tipe Pesanan: REGULAR / PREORDER, Tanggal Transaksi, Sales, Pelanggan, Varian Parfum, Lokasi Stok, Qty, Total Harga, Status Pembayaran]
         U_Fill --> U_Submit[Klik Simpan & Terbitkan Invoice]
         U_Submit -.-> U_Wait[Menunggu Proses Transaksional]
-        U_Success([Invoice Terbit & Stok Berkurang])
-        U_Failed([Gagal: Stok Fisik Tidak Mencukupi])
+        U_Success([Invoice Terbit & Siap Dikirim])
+        U_Failed([Gagal: Stok Fisik Kurang untuk Pesanan Reguler])
     end
 
     subgraph Lane_Sistem ["Sistem (InvoiceController & Database)"]
         U_Submit --> S_TxBegin[Mulai DB::transaction]
-        S_TxBegin --> S_Lock[Query Stok di Lokasi dengan lockForUpdate]
-        S_Lock --> S_Check{Stok Tersedia >= Qty?}
+        S_TxBegin --> S_BranchType{Tipe Pesanan?}
         
+        %% Cabang REGULAR
+        S_BranchType -->|REGULAR (Penjualan Langsung)| S_Lock[Lock Baris Stok Lokasi via lockForUpdate]
+        S_Lock --> S_Check{Stok Fisik >= Qty?}
         S_Check -->|Ya| S_Dec[Kurangi Stok: stocks.decrement 'qty']
-        S_Dec --> S_SaveInv[Simpan Baris Invoice & Tanggal di tabel invoices]
-        S_SaveInv --> S_Commit[DB::commit (Stok terpotong, status piutang tercatat tanpa campur kas)]
-        S_Commit --> S_SuccNotif[Redirect ke Daftar Invoice & Notifikasi Sukses]
+        S_Dec --> S_SaveReg[Simpan Invoice: order_type=REGULAR, po_status=NONE]
+        S_SaveReg --> S_Commit[DB::commit]
+        S_Commit --> S_SuccNotif[Redirect ke Daftar Invoice & Flash Sukses]
         S_SuccNotif --> U_Success
 
         S_Check -->|Tidak| S_Rollback[DB::rollBack]
         S_Rollback --> S_ErrNotif[Kembalikan Validasi: Stok Tidak Cukup]
         S_ErrNotif --> U_Failed
+
+        %% Cabang PREORDER
+        S_BranchType -->|PREORDER (Pesanan Inden)| S_SavePO[Simpan Invoice: order_type=PREORDER, po_status=PENDING tanpa potong fisik]
+        S_SavePO --> S_Reserve[Kuantitas terhitung otomatis sebagai Reserved PO]
+        S_Reserve --> S_Commit
     end
 ```
 
@@ -122,64 +129,76 @@ sequenceDiagram
     actor C as Pelanggan
 
     U->>S: Akses Form Buat Invoice (/invoices/create)
-    S-->>U: Tampilkan formulir (Tanggal Kustom, Sales, Customer, Produk, Lokasi, Qty, Harga, Status)
-    U->>S: Submit Form Invoice
+    S-->>U: Tampilkan formulir (Pilihan Tipe Pesanan, Tanggal Kustom, Sales, Customer, Produk, Lokasi, Qty, Harga, Status)
+    U->>S: Submit Form Invoice (order_type = REGULAR atau PREORDER)
     
     S->>DB: Mulai DB::transaction
-    S->>DB: Query stocks di lokasi terpilih dengan lockForUpdate()
-    alt Sisa Stok < Qty Diminta
-        S->>DB: DB::rollBack()
-        S-->>U: Validasi Gagal "Stok varian pada lokasi tersebut tidak mencukupi"
-    else Stok Tersedia
-        S->>DB: stocks.decrement('qty', request_qty)
-        S->>DB: Simpan data ke tabel invoices (invoice_no, tanggal, sales_name, qty, total_price, payment_status)
-        Note over S,DB: Status LUNAS / BELUM LUNAS tersimpan sebagai penanda piutang, kas dicatat manual saat uang diterima
+    alt order_type == REGULAR
+        S->>DB: Query stocks di lokasi terpilih dengan lockForUpdate()
+        alt Sisa Stok Fisik < Qty Diminta
+            S->>DB: DB::rollBack()
+            S-->>U: Validasi Gagal "Stok varian pada lokasi tersebut tidak mencukupi"
+        else Stok Fisik Mencukupi
+            S->>DB: stocks.decrement('qty', request_qty)
+            S->>DB: Simpan data ke tabel invoices (order_type = REGULAR, po_status = NONE)
+            S->>DB: DB::commit()
+            S-->>U: Redirect ke /invoices dengan Flash Notifikasi Sukses
+            U-->>C: Kirimkan Bukti Faktur Penjualan
+        end
+    else order_type == PREORDER
+        S->>DB: Simpan data ke tabel invoices (order_type = PREORDER, po_status = PENDING)
+        Note over S,DB: Stok fisik tidak dipotong, kuantitas masuk hitungan Reserved PO
         S->>DB: DB::commit()
-        S-->>U: Redirect ke /invoices dengan Flash Notifikasi Sukses
-        U-->>C: Kirimkan Bukti Faktur Invoice
+        S-->>U: Redirect ke /invoices dengan Flash Notifikasi "Pesanan Pre-Order Berhasil Dicatat"
+        U-->>C: Kirimkan Tanda Terima Pesanan Inden (PO)
     end
 ```
 
 ---
 
-## 3. Alur Pre-Order (PO) & Penyelesaian ke Stok Utama
+## 3. Alur Penyelesaian Pre-Order (Complete PO) & Serah Terima Barang
 
 ### 3.1 Activity Diagram
 
 ```mermaid
 flowchart TD
     subgraph Lane_Staff ["Staff / Admin"]
-        P_Start([Mulai]) --> P_Open[Akses Menu Pre-Order /pre-orders]
-        P_Open --> P_New[Klik + Tambah Pre-Order]
-        P_New --> P_Input[Input Varian, Lokasi Target, Qty, Nama Pemesan]
-        P_Input --> P_Save[Simpan Data PO]
-        P_Save -.-> P_WaitProd[Menunggu Proses Produksi Selesai]
-        P_WaitProd --> P_Finish[Klik Tombol 'Selesaikan PO']
-        P_Done([Stok Utama Bertambah & PO Selesai])
+        PO_Start([Mulai]) --> PO_Open[Buka Daftar Invoice /invoices]
+        PO_Open --> PO_Tab[Klik Tab Filter 'PO Menunggu']
+        PO_Tab --> PO_CheckBarang{Barang Fisik Ready?}
+        PO_CheckBarang -->|Belum| PO_RestockFirst[Lakukan Restock Produksi Terlebih Dahulu]
+        PO_CheckBarang -->|Sudah| PO_ClickFinish[Klik Tombol 'Selesaikan PO']
+        PO_ClickFinish -.-> PO_Wait[Menunggu Pemrosesan Database]
+        PO_Done([PO Berstatus COMPLETED & Stok Fisik Terpotong])
+        PO_Fail([Gagal: Stok Fisik Gudang Belum Mencukupi])
     end
 
-    subgraph Lane_Sistem ["Sistem (PreOrderController & Database)"]
-        P_Save --> S_POStore[Simpan ke tabel pre_orders: status=PENDING]
-        S_POStore --> S_POList[Tampilkan di Antrean Stok Pending]
+    subgraph Lane_Sistem ["Sistem (InvoiceController@completePo & Database)"]
+        PO_ClickFinish --> S_PoTx[Mulai DB::transaction]
+        S_PoTx --> S_PoLock[Query stok lokasi target dengan lockForUpdate]
+        S_PoLock --> S_PoCheck{Stok Fisik >= Qty PO?}
         
-        P_Finish --> S_POBegin[Mulai DB::transaction]
-        S_POBegin --> S_POAddStock[Tambah Stok Utama: stocks.increment 'qty' di Lokasi Target]
-        S_POAddStock --> S_POUpdate[Update pre_orders: status=SELESAI, completed_at=now]
-        S_POUpdate --> S_POCommit[DB::commit]
-        S_POCommit --> S_POSucc[Flash Message: Stok Berhasil Ditambahkan ke Stok Utama]
-        S_POSucc --> P_Done
+        S_PoCheck -->|Ya| S_PoDec[Kurangi Stok Fisik: stocks.decrement 'qty']
+        S_PoDec --> S_PoUpdate[Update Invoice: po_status=COMPLETED, po_completed_at=now]
+        S_PoUpdate --> S_PoCommit[DB::commit]
+        S_PoCommit --> S_PoSucc[Flash Message: Pesanan PO Berhasil Diselesaikan]
+        S_PoSucc --> PO_Done
+
+        S_PoCheck -->|Tidak| S_PoRollback[DB::rollBack]
+        S_PoRollback --> S_PoWarn[Flash Error: Stok fisik belum cukup, lakukan restock dulu]
+        S_PoWarn --> PO_Fail
     end
 ```
 
 ---
 
-## 4. Alur Transfer Stok Multi-Lokasi (Full CRUD Atomik)
+## 4. Alur Transfer Stok Multi-Lokasi & Koreksi Stok Cepat
 
-### 4.1 Activity Diagram
+### 4.1 Activity Diagram Transfer Stok
 
 ```mermaid
 flowchart TD
-    subgraph Lane_Admin ["Administrator"]
+    subgraph Lane_Admin ["Administrator / Staff"]
         A_Start([Mulai]) --> A_OpenTrf[Akses Menu /stocks/transfers]
         A_OpenTrf --> A_Pick[Pilih Gudang Asal, Tujuan, Produk, Qty, Catatan]
         A_Pick --> A_Send[Klik Proses Transfer Stok]
@@ -203,6 +222,30 @@ flowchart TD
         S_StockOk -->|Tidak| S_TxFail[DB::rollBack]
         S_TxFail --> S_TrfErr[Tampilkan Validasi: Stok Asal Tidak Mencukupi]
         S_TrfErr --> A_Fail
+    end
+```
+
+### 4.2 Activity Diagram Koreksi Stok Fisik Multi-Lokasi (`/stocks/adjust`)
+
+```mermaid
+flowchart TD
+    subgraph Lane_Admin ["Administrator"]
+        AD_Start([Mulai]) --> AD_Open[Akses Menu Ringkasan Stok /stocks]
+        AD_Open --> AD_Click[Klik Tombol 'Koreksi Stok' pada Varian]
+        AD_Click --> AD_Modal[Buka Modal Koreksi Multi-Lokasi]
+        AD_Modal --> AD_Input[Input Nilai Stok Opname Fisik Iwan & Rizky]
+        AD_Input --> AD_Save[Klik Simpan Koreksi]
+        AD_Save -.-> AD_Wait[Menunggu Transaksi DB]
+        AD_Done([Saldo Fisik Langsung Tersinkronisasi])
+    end
+
+    subgraph Lane_Sistem ["Sistem (StockController@adjust & Database)"]
+        AD_Save --> S_AdjTx[Mulai DB::transaction]
+        S_AdjTx --> S_AdjVal[Validasi Qty non-negatif >= 0]
+        S_AdjVal --> S_AdjUpdate[Update stocks.qty Iwan & Rizky via firstOrCreate + update]
+        S_AdjUpdate --> S_AdjCommit[DB::commit]
+        S_AdjCommit --> S_AdjFlash[Flash Message Sukses & Reload Tampilan]
+        S_AdjFlash --> AD_Done
     end
 ```
 

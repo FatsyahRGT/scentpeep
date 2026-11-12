@@ -1,6 +1,6 @@
 # Entity-Relationship Diagram (ERD) — Scentpeep Management System
 
-Dokumentasi rancangan basis data relasional Scentpeep Management System yang diturunkan langsung dari skema migrasi database aktual (Laravel 13 / MariaDB / MySQL).
+Dokumentasi rancangan basis data relasional Scentpeep Management System yang diturunkan langsung dari skema migrasi database aktual (Laravel 13 / MariaDB / MySQL) per rilis **v3.2**.
 
 ---
 
@@ -10,21 +10,18 @@ Dokumentasi rancangan basis data relasional Scentpeep Management System yang dit
 erDiagram
     users ||--o{ locations : "memiliki toko reseller (user_id)"
     users ||--o{ invoices : "menerbitkan invoice (created_by)"
-    users ||--o{ pre_orders : "mencatat pesanan PO (created_by)"
     users ||--o{ transactions : "mencatat transaksi kas (created_by)"
     users ||--o{ stock_transfers : "memproses transfer (created_by)"
     users ||--o{ raw_material_mutations : "mencatat mutasi bahan (created_by)"
 
     locations ||--o{ stocks : "menyimpan persediaan unit"
-    locations ||--o{ invoices : "lokasi pemotongan stok"
-    locations ||--o{ pre_orders : "lokasi target PO"
+    locations ||--o{ invoices : "lokasi pemotongan / peruntukan stok"
     locations ||--o{ stock_transfers : "sebagai lokasi asal"
     locations ||--o{ stock_transfers : "sebagai lokasi tujuan"
     locations ||--o{ transactions : "lokasi referensi transaksi"
 
     products ||--o{ stocks : "terdaftar sebagai unit fisik"
-    products ||--o{ invoices : "dijual dalam invoice"
-    products ||--o{ pre_orders : "dipesan dalam PO"
+    products ||--o{ invoices : "dijual / dipesan dalam invoice"
     products ||--o{ stock_transfers : "ditransfer antar lokasi"
     products ||--o{ transactions : "referensi produk pada kas"
 
@@ -74,6 +71,13 @@ erDiagram
         timestamp updated_at
     }
 
+    customers {
+        bigint id PK
+        string name UK "nama pelanggan tetap terindeks"
+        timestamp created_at
+        timestamp updated_at
+    }
+
     invoices {
         bigint id PK
         string invoice_no "nomor invoice unik / custom"
@@ -81,27 +85,15 @@ erDiagram
         string sales_name "RIZKY | IWAN | VANNY"
         string customer_name
         bigint product_id FK
-        integer qty "jumlah unit dijual"
-        bigint location_id FK "lokasi asal stok"
+        integer qty "jumlah unit terjual / dipesan"
+        bigint location_id FK "lokasi asal / peruntukan stok"
         decimal total_price "15,2 total nominal bayar"
         string payment_status "BELUM LUNAS | LUNAS"
+        string order_type "REGULAR | PREORDER"
+        string po_status "NONE | PENDING | COMPLETED"
+        timestamp po_completed_at "nullable (waktu serah terima PO)"
         text notes "nullable"
         bigint created_by FK "nullable"
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    pre_orders {
-        bigint id PK
-        string po_number "PO/YYYYMMDD/XXXX"
-        bigint product_id FK
-        bigint location_id FK "lokasi target stok"
-        integer qty "jumlah unit dipesan"
-        string status "PENDING | SELESAI"
-        string customer_name "nullable"
-        text notes "nullable"
-        bigint created_by FK "nullable"
-        timestamp completed_at "nullable"
         timestamp created_at
         timestamp updated_at
     }
@@ -212,34 +204,37 @@ Menyimpan saldo inventori aktual per varian di setiap lokasi fisik.
 - `qty` (Integer): Jumlah unit botol parfum fisik ready (dilindungi validasi `qty >= 0`).
 - *Index Unique*: Komposit `(location_id, product_id)`.
 
-### 2.5 Entitas Penjualan Parfum (`invoices`)
-Menyimpan transaksi resmi penjualan parfum per varian ke pelanggan.
+> **Catatan Smart Reserved Stock (v3.2)**:
+> Saldo fisik pada `stocks.qty` mencerminkan botol yang nyata berada di rak gudang. Untuk mencegah *overselling*, ketersediaan barang siap jual dihitung dinamis:
+> $$\text{Stok Siap Jual} = \max(0, \text{stocks.qty} - \text{Reserved PO})$$
+> di mana $\text{Reserved PO} = \sum(\text{invoices.qty})$ untuk baris dengan `order_type = 'PREORDER'` dan `po_status = 'PENDING'`.
+
+### 2.5 Entitas Penjualan Parfum & Pre-Order (`invoices`)
+Menyimpan transaksi resmi penjualan parfum per varian ke pelanggan, mencakup Penjualan Langsung dan Pre-Order (PO).
 - `id` (BigInt, PK, Auto Increment)
 - `invoice_no` (VarChar 100, Indexed): Nomor faktur invoice penjualan (custom/otomatis).
 - `tanggal` (Date, Indexed): Tanggal transaksi penjualan (dapat di-custom/backdate oleh staf/admin).
 - `sales_name` (VarChar 100, Indexed): Nama sales yang memproses (`RIZKY`, `IWAN`, `VANNY`, dsb.).
 - `customer_name` (VarChar 255, Indexed): Nama pembeli/pelanggan.
 - `product_id` (BigInt, FK ke `products.id`): Varian parfum yang dibeli.
-- `qty` (Integer): Jumlah unit botol yang dipotong langsung dari stok lokasi.
-- `location_id` (BigInt, FK ke `locations.id`): Lokasi asal pemotongan stok.
+- `qty` (Integer): Jumlah unit botol yang dipesan/dijual.
+- `location_id` (BigInt, FK ke `locations.id`): Lokasi asal pemotongan stok fisik atau target peruntukan PO.
 - `total_price` (Decimal 15,2): Nilai total transaksi setelah penyesuaian harga/diskon.
 - `payment_status` (VarChar 20, Indexed): Status piutang (`BELUM LUNAS` / `LUNAS`).
+- `order_type` (VarChar 20, Indexed): Jenis pesanan (`REGULAR` untuk Penjualan Langsung, `PREORDER` untuk Inden).
+- `po_status` (VarChar 20, Indexed): Status siklus PO (`NONE`, `PENDING`, `COMPLETED`).
+- `po_completed_at` (Timestamp, Nullable): Waktu serah terima barang PO saat stok fisik dipotong.
 - `notes` (Text, Nullable): Catatan pesanan.
 - `created_by` (BigInt, FK ke `users.id`, Nullable): Pengguna pencatat transaksi.
 
-> **Catatan Pemisahan Kas & Invoice**: Penerbitan atau pelunasan invoice memotong persediaan stok fisik secara atomik, namun status `LUNAS` dan `BELUM LUNAS` murni berfungsi sebagai penanda operasional piutang penjualan. Nominal kas fisik tidak otomatis dimasukkan ke buku kas (`transactions`), melainkan diinput secara manual oleh kasir/admin saat uang benar-benar diterima di rekening/kas utama.
+> **Catatan Pemisahan Kas & Invoice**: Penerbitan atau pelunasan invoice beroperasi terpisah dari kas fisik. Status `LUNAS` dan `BELUM LUNAS` murni berfungsi sebagai penanda operasional piutang penjualan. Nominal uang fisik dicatat manual oleh kasir/admin di modul Buku Kas (`transactions`) saat dana benar-benar masuk.
 
-### 2.6 Entitas Pre-Order & Stok Pending (`pre_orders`)
-Menyimpan antrean pesanan inden yang belum tersedia secara fisik.
+### 2.6 Entitas Master Pelanggan Tetap (`customers`)
+Menyimpan basis data nama pelanggan tetap untuk mempercepat input form invoice via combobox AJAX.
 - `id` (BigInt, PK, Auto Increment)
-- `po_number` (VarChar 100, Indexed): Nomor referensi PO (`PO/YYYYMMDD/XXXX`).
-- `product_id` (BigInt, FK ke `products.id`): Varian parfum yang diproduksi.
-- `location_id` (BigInt, FK ke `locations.id`): Lokasi target penambahan stok setelah selesai.
-- `qty` (Integer): Jumlah unit yang sedang dalam proses produksi.
-- `status` (VarChar 20, Indexed): Status pengerjaan (`PENDING` atau `SELESAI`).
-- `customer_name` (VarChar 255, Nullable): Nama pemesan.
-- `completed_at` (Timestamp, Nullable): Waktu penyelesaian PO dan penggabungan ke stok utama.
-- `created_by` (BigInt, FK ke `users.id`, Nullable): Pembuat baris PO.
+- `name` (VarChar 255, Unique, Indexed): Nama lengkap pelanggan terdaftar.
+- `created_at` (Timestamp): Tanggal pendaftaran nama pelanggan.
+- `updated_at` (Timestamp): Tanggal pembaruan profil pelanggan.
 
 ### 2.7 Entitas Kategori Bahan Mentah (`raw_material_categories`)
 Menyimpan taksonomi dinamis untuk bahan penunjang packaging.
