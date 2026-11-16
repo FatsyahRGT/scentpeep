@@ -12,9 +12,9 @@
     "semantic_hash": "25a307335c0719bc9a91b3f7babd186d"
   },
   "app/Http/Controllers/DashboardController.php": {
-    "mtime": 1794815358.0823116,
-    "seen": 1794815443.5622578,
-    "ast_hash": "12b0a269a49349e984d16abd031173cb",
+    "mtime": 1794820198.9752066,
+    "seen": 1794820369.1478965,
+    "ast_hash": "b06f59152309298318a24375595473d2",
     "semantic_hash": ""
   },
   "app/Http/Controllers/LocationController.php": {
@@ -540,9 +540,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/DashboardTest.php": {
-    "mtime": 1794815375.543814,
-    "seen": 1794815443.5632553,
-    "ast_hash": "4739fa383618047cf29b8d54c89b5884",
+    "mtime": 1794820321.8986642,
+    "seen": 1794820369.148898,
+    "ast_hash": "0de65503758cb5edc33c70669c3debda",
     "semantic_hash": ""
   },
   "tests/Feature/ExportReportsTest.php": {
@@ -600,9 +600,9 @@
     "semantic_hash": "59e361a5d8c1edb14a8047365b46c8b4"
   },
   "app/Http/Controllers/InvoiceController.php": {
-    "mtime": 1794819155.2207952,
-    "seen": 1794819328.2027256,
-    "ast_hash": "3098884961234fac8c82d49125767f1b",
+    "mtime": 1794820251.513749,
+    "seen": 1794820369.1478965,
+    "ast_hash": "ae14f2eddc3f7c854a66eee08958c530",
     "semantic_hash": ""
   },
   "app/Http/Controllers/RawMaterialController.php": {
@@ -1020,9 +1020,9 @@
     "semantic_hash": ""
   },
   "resources/views/dashboards/sales_show.blade.php": {
-    "mtime": 1794817734.272544,
-    "seen": 1794817802.0885808,
-    "ast_hash": "4672d7a38c9fd01fca8e78b1deec569e",
+    "mtime": 1794820294.0924282,
+    "seen": 1794820369.148898,
+    "ast_hash": "3d1cb7a4fc1cfe0de95fa563d36b64eb",
     "semantic_hash": ""
   }
 }

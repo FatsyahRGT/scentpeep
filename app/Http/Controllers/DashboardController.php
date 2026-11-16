@@ -130,13 +130,20 @@ class DashboardController extends Controller
 
         $criticalStocks = $criticalStocksList->sortBy('qty')->take(10)->values();
 
-        // 4. Best Selling Products (Varian Parfum Terlaris berdasarkan data Invoice Penjualan, dengan fallback ke Transaksi jika belum ada invoice)
+        // 4. Best Selling Products (Varian Parfum Terlaris berdasarkan data Invoice Penjualan riil, dengan fallback ke Transaksi jika belum ada invoice)
         $bestSellersQuery = Invoice::whereNotNull('product_id')
+            ->where(function ($q) {
+                $q->where('order_type', Invoice::ORDER_TYPE_REGULAR)
+                  ->orWhere(function ($sub) {
+                      $sub->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                          ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+                  });
+            })
             ->select(
                 'product_id',
                 DB::raw('SUM(qty) as total_sold'),
-                DB::raw('SUM(total_price) as total_revenue'),
-                DB::raw('SUM(total_price) as total_omset')
+                DB::raw('SUM(CASE WHEN payment_status = \'' . Invoice::STATUS_PAID . '\' THEN total_price ELSE 0 END) as total_revenue'),
+                DB::raw('SUM(CASE WHEN payment_status = \'' . Invoice::STATUS_PAID . '\' THEN total_price ELSE 0 END) as total_omset')
             )
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
@@ -299,11 +306,18 @@ class DashboardController extends Controller
             return response()->json($sellerTrendData);
         }
 
-        // 3. Best Sellers Products (Rank 10 Besar Varian Terlaris Tim Sales)
-        $bestSellers = Invoice::select(
+        // 3. Best Sellers Products (Rank 10 Besar Varian Terlaris Tim Sales - Transaksi Riil & Omset Lunas)
+        $bestSellers = Invoice::where(function ($q) {
+                $q->where('order_type', Invoice::ORDER_TYPE_REGULAR)
+                  ->orWhere(function ($sub) {
+                      $sub->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                          ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+                  });
+            })
+            ->select(
                 'product_id',
                 DB::raw('SUM(qty) as total_sold'),
-                DB::raw('SUM(total_price) as total_revenue')
+                DB::raw('SUM(CASE WHEN payment_status = \'' . Invoice::STATUS_PAID . '\' THEN total_price ELSE 0 END) as total_revenue')
             )
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
@@ -357,45 +371,60 @@ class DashboardController extends Controller
         $salesUser = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($exactSalesName)])->first();
         $palette = Location::paletteForName($exactSalesName);
 
-        // All-Time Summary Stats
+        // All-Time Summary Stats (Opsi 1: Kas Murni / Cash Basis)
+        // Penjualan Riil: REGULAR atau (PREORDER dan COMPLETED)
         $summaryStats = Invoice::where('sales_name', $exactSalesName)
             ->selectRaw('
-                COUNT(*) as total_count,
-                COALESCE(SUM(qty), 0) as total_qty,
-                COALESCE(SUM(total_price), 0) as total_omset,
-                COALESCE(SUM(CASE WHEN payment_status = ? THEN 1 ELSE 0 END), 0) as paid_count,
-                COALESCE(SUM(CASE WHEN payment_status = ? THEN total_price ELSE 0 END), 0) as paid_omset,
-                COALESCE(SUM(CASE WHEN payment_status = ? THEN 1 ELSE 0 END), 0) as unpaid_count,
-                COALESCE(SUM(CASE WHEN payment_status = ? THEN total_price ELSE 0 END), 0) as unpaid_omset,
+                COUNT(*) as all_count,
+                COALESCE(SUM(CASE WHEN (order_type = ? OR (order_type = ? AND po_status = ?)) THEN 1 ELSE 0 END), 0) as realized_count,
+                COALESCE(SUM(CASE WHEN (order_type = ? OR (order_type = ? AND po_status = ?)) THEN qty ELSE 0 END), 0) as realized_qty,
+                COALESCE(SUM(CASE WHEN payment_status = ? AND (order_type = ? OR (order_type = ? AND po_status = ?)) THEN 1 ELSE 0 END), 0) as paid_count,
+                COALESCE(SUM(CASE WHEN payment_status = ? AND (order_type = ? OR (order_type = ? AND po_status = ?)) THEN total_price ELSE 0 END), 0) as paid_omset,
+                COALESCE(SUM(CASE WHEN payment_status = ? AND (order_type = ? OR (order_type = ? AND po_status = ?)) THEN 1 ELSE 0 END), 0) as unpaid_count,
+                COALESCE(SUM(CASE WHEN payment_status = ? AND (order_type = ? OR (order_type = ? AND po_status = ?)) THEN total_price ELSE 0 END), 0) as unpaid_omset,
                 COALESCE(SUM(CASE WHEN order_type = ? AND po_status = ? THEN 1 ELSE 0 END), 0) as po_pending_count,
+                COALESCE(SUM(CASE WHEN order_type = ? AND po_status = ? THEN qty ELSE 0 END), 0) as po_pending_qty,
+                COALESCE(SUM(CASE WHEN order_type = ? AND po_status = ? THEN total_price ELSE 0 END), 0) as po_pending_omset,
                 COALESCE(SUM(CASE WHEN order_type = ? AND po_status = ? THEN 1 ELSE 0 END), 0) as po_completed_count
             ', [
-                Invoice::STATUS_PAID,
-                Invoice::STATUS_PAID,
-                Invoice::STATUS_UNPAID,
-                Invoice::STATUS_UNPAID,
-                Invoice::ORDER_TYPE_PREORDER,
-                Invoice::PO_STATUS_PENDING,
-                Invoice::ORDER_TYPE_PREORDER,
-                Invoice::PO_STATUS_COMPLETED,
+                Invoice::ORDER_TYPE_REGULAR, Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
+                Invoice::ORDER_TYPE_REGULAR, Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
+                Invoice::STATUS_PAID, Invoice::ORDER_TYPE_REGULAR, Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
+                Invoice::STATUS_PAID, Invoice::ORDER_TYPE_REGULAR, Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
+                Invoice::STATUS_UNPAID, Invoice::ORDER_TYPE_REGULAR, Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
+                Invoice::STATUS_UNPAID, Invoice::ORDER_TYPE_REGULAR, Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
+                Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_PENDING,
+                Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_PENDING,
+                Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_PENDING,
+                Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
             ])
             ->first();
 
         $summary = [
-            'total_count' => (int) ($summaryStats->total_count ?? 0),
-            'total_qty' => (int) ($summaryStats->total_qty ?? 0),
-            'total_omset' => (float) ($summaryStats->total_omset ?? 0),
+            'total_count' => (int) ($summaryStats->all_count ?? 0),
+            'realized_count' => (int) ($summaryStats->realized_count ?? 0),
+            'total_qty' => (int) ($summaryStats->realized_qty ?? 0),
+            'total_omset' => (float) ($summaryStats->paid_omset ?? 0),
             'paid_count' => (int) ($summaryStats->paid_count ?? 0),
             'paid_omset' => (float) ($summaryStats->paid_omset ?? 0),
             'unpaid_count' => (int) ($summaryStats->unpaid_count ?? 0),
             'unpaid_omset' => (float) ($summaryStats->unpaid_omset ?? 0),
             'po_pending_count' => (int) ($summaryStats->po_pending_count ?? 0),
+            'po_pending_qty' => (int) ($summaryStats->po_pending_qty ?? 0),
+            'po_pending_omset' => (float) ($summaryStats->po_pending_omset ?? 0),
             'po_completed_count' => (int) ($summaryStats->po_completed_count ?? 0),
         ];
 
-        // Top 5 Varian Terlaris Sales Ini
+        // Top 5 Varian Terlaris Sales Ini (Hanya Transaksi Riil Terealisasi)
         $topVariants = Invoice::where('sales_name', $exactSalesName)
-            ->select('product_id', DB::raw('SUM(qty) as sold_qty'), DB::raw('SUM(total_price) as revenue'))
+            ->where(function ($q) {
+                $q->where('order_type', Invoice::ORDER_TYPE_REGULAR)
+                  ->orWhere(function ($sub) {
+                      $sub->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                          ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+                  });
+            })
+            ->select('product_id', DB::raw('SUM(qty) as sold_qty'), DB::raw('SUM(CASE WHEN payment_status = \'' . Invoice::STATUS_PAID . '\' THEN total_price ELSE 0 END) as revenue'))
             ->groupBy('product_id')
             ->orderByDesc('sold_qty')
             ->with('product')
@@ -552,7 +581,14 @@ class DashboardController extends Controller
 
             $invoicesData = Invoice::whereYear(DB::raw('COALESCE(tanggal, created_at)'), $selectedYear)
                 ->whereMonth(DB::raw('COALESCE(tanggal, created_at)'), $selectedMonth)
-                ->selectRaw("{$dateColFormat} as dt_key, sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset")
+                ->where(function ($q) {
+                    $q->where('order_type', Invoice::ORDER_TYPE_REGULAR)
+                      ->orWhere(function ($sub) {
+                          $sub->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                              ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+                      });
+                })
+                ->selectRaw("{$dateColFormat} as dt_key, sales_name, SUM(qty) as total_qty, SUM(CASE WHEN payment_status = ? THEN total_price ELSE 0 END) as total_omset", [Invoice::STATUS_PAID])
                 ->groupBy('dt_key', 'sales_name')
                 ->get();
 
@@ -571,7 +607,14 @@ class DashboardController extends Controller
                 : "DATE_FORMAT(COALESCE(tanggal, created_at), '%Y-%m')";
 
             $invoicesData = Invoice::whereYear(DB::raw('COALESCE(tanggal, created_at)'), $selectedYear)
-                ->selectRaw("{$dateColFormat} as dt_key, sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset")
+                ->where(function ($q) {
+                    $q->where('order_type', Invoice::ORDER_TYPE_REGULAR)
+                      ->orWhere(function ($sub) {
+                          $sub->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                              ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+                      });
+                })
+                ->selectRaw("{$dateColFormat} as dt_key, sales_name, SUM(qty) as total_qty, SUM(CASE WHEN payment_status = ? THEN total_price ELSE 0 END) as total_omset", [Invoice::STATUS_PAID])
                 ->groupBy('dt_key', 'sales_name')
                 ->get();
 
@@ -641,7 +684,16 @@ class DashboardController extends Controller
      */
     private function getSalesDistribution(): \Illuminate\Support\Collection
     {
-        $salesStats = Invoice::selectRaw('sales_name, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as invoice_count')
+        $salesStats = Invoice::selectRaw('
+                sales_name,
+                COALESCE(SUM(CASE WHEN (order_type = ? OR (order_type = ? AND po_status = ?)) THEN qty ELSE 0 END), 0) as total_qty,
+                COALESCE(SUM(CASE WHEN payment_status = ? AND (order_type = ? OR (order_type = ? AND po_status = ?)) THEN total_price ELSE 0 END), 0) as total_omset,
+                COALESCE(SUM(CASE WHEN (order_type = ? OR (order_type = ? AND po_status = ?)) THEN 1 ELSE 0 END), 0) as invoice_count
+            ', [
+                Invoice::ORDER_TYPE_REGULAR, Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
+                Invoice::STATUS_PAID, Invoice::ORDER_TYPE_REGULAR, Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
+                Invoice::ORDER_TYPE_REGULAR, Invoice::ORDER_TYPE_PREORDER, Invoice::PO_STATUS_COMPLETED,
+            ])
             ->groupBy('sales_name')
             ->get()
             ->keyBy('sales_name');

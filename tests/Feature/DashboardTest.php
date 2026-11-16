@@ -411,6 +411,76 @@ class DashboardTest extends TestCase
         $paidResponse->assertDontSee('INV-IWAN-02');
     }
 
+    public function test_cash_basis_and_po_pending_excluded_from_total_sold_and_omset(): void
+    {
+        // 1. Transaksi Regular Lunas: 5 pcs, Rp 500.000 -> Masuk Terjual & Omset
+        \App\Models\Invoice::create([
+            'invoice_no' => 'INV-REG-PAID',
+            'sales_name' => 'VANNY',
+            'customer_name' => 'Pelanggan Lunas',
+            'product_id' => $this->product->id,
+            'qty' => 5,
+            'location_id' => $this->gudang->id,
+            'total_price' => 500000,
+            'payment_status' => 'LUNAS',
+            'order_type' => 'REGULAR',
+            'tanggal' => now()->toDateString(),
+        ]);
+
+        // 2. Transaksi Regular Belum Lunas: 3 pcs, Rp 300.000 -> Masuk Terjual & Piutang, BUKAN Omset Lunas
+        \App\Models\Invoice::create([
+            'invoice_no' => 'INV-REG-UNPAID',
+            'sales_name' => 'VANNY',
+            'customer_name' => 'Pelanggan Piutang',
+            'product_id' => $this->product->id,
+            'qty' => 3,
+            'location_id' => $this->gudang->id,
+            'total_price' => 300000,
+            'payment_status' => 'BELUM LUNAS',
+            'order_type' => 'REGULAR',
+            'tanggal' => now()->toDateString(),
+        ]);
+
+        // 3. Transaksi PO Pending Belum Lunas: 10 pcs, Rp 1.000.000 -> TIDAK Masuk Terjual, TIDAK Masuk Omset/Piutang Riil (Hanya Masuk Potensi PO)
+        \App\Models\Invoice::create([
+            'invoice_no' => 'INV-PO-PENDING',
+            'sales_name' => 'VANNY',
+            'customer_name' => 'Pelanggan PO',
+            'product_id' => $this->product->id,
+            'qty' => 10,
+            'location_id' => $this->gudang->id,
+            'total_price' => 1000000,
+            'payment_status' => 'BELUM LUNAS',
+            'order_type' => 'PREORDER',
+            'po_status' => 'PENDING',
+            'tanggal' => now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('dashboard.sales.show', 'VANNY'));
+        $response->assertOk();
+
+        // Verifikasi Summary Metrics:
+        // total_qty = 5 + 3 = 8 pcs (PO Pending 10 pcs TIDAK dihitung)
+        // total_omset = 500.000 (Hanya Lunas, Belum Lunas 300.000 masuk unpaid_omset, PO Pending TIDAK dihitung)
+        // unpaid_omset = 300.000 (Piutang riil)
+        // po_pending_omset = 1.000.000
+        // po_pending_qty = 10
+        $response->assertViewHas('summary', function ($s) {
+            return $s['total_qty'] === 8
+                && $s['total_omset'] == 500000
+                && $s['unpaid_omset'] == 300000
+                && $s['po_pending_omset'] == 1000000
+                && $s['po_pending_qty'] === 10
+                && $s['po_pending_count'] === 1;
+        });
+
+        // Verifikasi pada Tampilan UI
+        $response->assertSee('8 pcs');
+        $response->assertSee('Total Omset (Kas)');
+        $response->assertSee('Piutang Berjalan');
+        $response->assertSee('Potensi PO / Inden');
+    }
+
     public function test_reseller_cannot_view_other_sales_show_page(): void
     {
         // Reseller attempts to access sales detail page (redirected by internal middleware)

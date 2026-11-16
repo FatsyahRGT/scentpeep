@@ -219,7 +219,17 @@ class InvoiceController extends Controller
             }
         };
 
-        // Query Utama untuk KPI Ringkasan
+        // Query Utama untuk KPI Ringkasan (Hanya Transaksi Riil Terealisasi & Omset Kas Murni)
+        $applyRealizedScope = function ($query) {
+            $query->where(function ($q) {
+                $q->where('order_type', Invoice::ORDER_TYPE_REGULAR)
+                  ->orWhere(function ($sub) {
+                      $sub->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                          ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+                  });
+            });
+        };
+
         $dateCol = DB::raw('COALESCE(tanggal, DATE(created_at))');
         $targetQuery = Invoice::whereYear($dateCol, $targetYear);
         $compareQuery = Invoice::whereYear($dateCol, $compareYear);
@@ -229,15 +239,17 @@ class InvoiceController extends Controller
             $compareQuery->whereMonth($dateCol, $selectedMonth);
         }
 
+        $applyRealizedScope($targetQuery);
+        $applyRealizedScope($compareQuery);
         $applySalesScope($targetQuery);
         $applySalesScope($compareQuery);
 
         $targetQty = (int) (clone $targetQuery)->sum('qty');
-        $targetOmset = (float) (clone $targetQuery)->sum('total_price');
+        $targetOmset = (float) (clone $targetQuery)->where('payment_status', Invoice::STATUS_PAID)->sum('total_price');
         $targetInvoices = (int) (clone $targetQuery)->count();
 
         $compareQty = (int) (clone $compareQuery)->sum('qty');
-        $compareOmset = (float) (clone $compareQuery)->sum('total_price');
+        $compareOmset = (float) (clone $compareQuery)->where('payment_status', Invoice::STATUS_PAID)->sum('total_price');
         $compareInvoices = (int) (clone $compareQuery)->count();
 
         $qtyDiff = $targetQty - $compareQty;
@@ -273,13 +285,27 @@ class InvoiceController extends Controller
             : "MONTH(COALESCE(tanggal, created_at)) as m";
 
         $targetMonthlyDataQuery = Invoice::whereYear($dateCol, $targetYear)
-            ->selectRaw("{$monthExtractSql}, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as inv_count")
+            ->where(function ($q) {
+                $q->where('order_type', Invoice::ORDER_TYPE_REGULAR)
+                  ->orWhere(function ($sub) {
+                      $sub->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                          ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+                  });
+            })
+            ->selectRaw("{$monthExtractSql}, SUM(qty) as total_qty, SUM(CASE WHEN payment_status = ? THEN total_price ELSE 0 END) as total_omset, COUNT(*) as inv_count", [Invoice::STATUS_PAID])
             ->groupBy('m');
         $applySalesScope($targetMonthlyDataQuery);
         $targetMonthly = $targetMonthlyDataQuery->get()->keyBy('m');
 
         $compareMonthlyDataQuery = Invoice::whereYear($dateCol, $compareYear)
-            ->selectRaw("{$monthExtractSql}, SUM(qty) as total_qty, SUM(total_price) as total_omset, COUNT(*) as inv_count")
+            ->where(function ($q) {
+                $q->where('order_type', Invoice::ORDER_TYPE_REGULAR)
+                  ->orWhere(function ($sub) {
+                      $sub->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                          ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+                  });
+            })
+            ->selectRaw("{$monthExtractSql}, SUM(qty) as total_qty, SUM(CASE WHEN payment_status = ? THEN total_price ELSE 0 END) as total_omset, COUNT(*) as inv_count", [Invoice::STATUS_PAID])
             ->groupBy('m');
         $applySalesScope($compareMonthlyDataQuery);
         $compareMonthly = $compareMonthlyDataQuery->get()->keyBy('m');
@@ -319,9 +345,16 @@ class InvoiceController extends Controller
             ];
         }
 
-        // Top Varian Terlaris di Periode Terpilih
+        // Top Varian Terlaris di Periode Terpilih (Hanya Transaksi Riil & Omset Lunas)
         $topProductsQuery = Invoice::whereYear($dateCol, $targetYear)
-            ->select('product_id', DB::raw('SUM(qty) as total_sold'), DB::raw('SUM(total_price) as total_omset'))
+            ->where(function ($q) {
+                $q->where('order_type', Invoice::ORDER_TYPE_REGULAR)
+                  ->orWhere(function ($sub) {
+                      $sub->where('order_type', Invoice::ORDER_TYPE_PREORDER)
+                          ->where('po_status', Invoice::PO_STATUS_COMPLETED);
+                  });
+            })
+            ->select('product_id', DB::raw('SUM(qty) as total_sold'), DB::raw('SUM(CASE WHEN payment_status = \'' . Invoice::STATUS_PAID . '\' THEN total_price ELSE 0 END) as total_omset'))
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
             ->with('product');

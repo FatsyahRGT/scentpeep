@@ -183,8 +183,11 @@
                     @if($salesUser && $salesUser->email)
                         <span><i class="bi bi-envelope me-1 text-muted"></i>{{ $salesUser->email }}</span>
                     @endif
-                    <span><i class="bi bi-receipt-cutoff me-1 text-muted"></i><strong>{{ number_format($summary['total_count']) }}</strong> transaksi invoice resmi</span>
+                    <span><i class="bi bi-receipt-cutoff me-1 text-muted"></i><strong>{{ number_format($summary['realized_count']) }}</strong> transaksi riil selesai</span>
                     <span><i class="bi bi-box-seam me-1 text-muted"></i><strong>{{ number_format($summary['total_qty']) }} pcs</strong> total produk terjual</span>
+                    @if($summary['po_pending_count'] > 0)
+                        <span><i class="bi bi-hourglass-split me-1 text-warning-emphasis"></i><strong>{{ number_format($summary['po_pending_count']) }} PO</strong> ({{ number_format($summary['po_pending_qty']) }} pcs) mengantre</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -204,7 +207,7 @@
     </div>
 </div>
 
-<!-- 4 KPI Metrics Card Summary -->
+<!-- 4 KPI Metrics Card Summary (Opsi 1: Kas Murni / Cash Basis) -->
 <div class="row g-2 g-md-3 mb-4">
     <!-- 1. Total Terjual (Pcs) -->
     <div class="col-6 col-xl-3">
@@ -220,63 +223,61 @@
                     {{ number_format($summary['total_qty']) }} <span class="fs-6 font-sans text-muted fw-normal">pcs</span>
                 </div>
                 <div class="text-muted" style="font-size: 0.72rem;">
-                    Dari {{ number_format($summary['total_count']) }} transaksi terbit
+                    Dari {{ number_format($summary['realized_count']) }} transaksi riil diserahkan
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 2. Total Omzet (Rp) -->
+    <!-- 2. Total Omset (Kas Murni: Hanya Lunas dari Transaksi Riil) -->
     <div class="col-6 col-xl-3">
         <div class="card border-0 shadow-sm h-100 sales-show-kpi-card">
             <div class="card-body p-3">
                 <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-muted small fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.04em;">Total Omset</span>
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 34px; height: 34px; background: rgba(43, 123, 91, 0.1); color: #2b7b5b;">
-                        <i class="bi bi-cash-stack fs-6"></i>
-                    </span>
+                    <span class="text-success small fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.04em;"><i class="bi bi-cash-stack me-1"></i>Total Omset (Kas)</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle font-mono" style="font-size: 0.68rem;">{{ $summary['paid_count'] }} lunas</span>
                 </div>
-                <div class="font-serif fw-bold fs-4 text-dark mb-1 text-truncate" title="Rp {{ number_format($summary['total_omset'], 0, ',', '.') }}">
+                <div class="font-serif fw-bold fs-4 text-success mb-1 text-truncate" title="Rp {{ number_format($summary['total_omset'], 0, ',', '.') }}">
                     Rp {{ number_format($summary['total_omset'], 0, ',', '.') }}
                 </div>
                 <div class="text-muted" style="font-size: 0.72rem;">
-                    Akumulasi nilai penjualan
+                    Kas riil diterima (Cash Basis)
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. Status Lunas -->
+    <!-- 3. Piutang Berjalan (Belum Lunas dari Transaksi Riil) -->
     <div class="col-6 col-xl-3">
         <div class="card border-0 shadow-sm h-100 sales-show-kpi-card">
             <div class="card-body p-3">
                 <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-success small fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.04em;"><i class="bi bi-check-circle-fill me-1"></i>Sudah Lunas</span>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle font-mono" style="font-size: 0.68rem;">{{ $summary['paid_count'] }} trx</span>
-                </div>
-                <div class="font-serif fw-bold fs-4 text-success mb-1 text-truncate" title="Rp {{ number_format($summary['paid_omset'], 0, ',', '.') }}">
-                    Rp {{ number_format($summary['paid_omset'], 0, ',', '.') }}
-                </div>
-                <div class="text-muted" style="font-size: 0.72rem;">
-                    Dana kas resmi diterima
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4. Status Belum Lunas (Piutang) -->
-    <div class="col-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100 sales-show-kpi-card">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-semibold text-uppercase" style="color: #d97706 !important; font-size: 0.72rem; letter-spacing: 0.04em;"><i class="bi bi-clock-history me-1"></i>Belum Lunas</span>
+                    <span class="small fw-semibold text-uppercase" style="color: #d97706 !important; font-size: 0.72rem; letter-spacing: 0.04em;"><i class="bi bi-clock-history me-1"></i>Piutang Berjalan</span>
                     <span class="badge bg-warning-subtle text-dark border border-warning-subtle font-mono" style="font-size: 0.68rem;">{{ $summary['unpaid_count'] }} trx</span>
                 </div>
                 <div class="font-serif fw-bold fs-4 mb-1 text-truncate" style="color: #d97706;" title="Rp {{ number_format($summary['unpaid_omset'], 0, ',', '.') }}">
                     Rp {{ number_format($summary['unpaid_omset'], 0, ',', '.') }}
                 </div>
                 <div class="text-muted" style="font-size: 0.72rem;">
-                    Piutang berjalan pelanggan
+                    Barang keluar belum lunas
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Potensi PO / Inden (Pre-Order Pending) -->
+    <div class="col-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100 sales-show-kpi-card">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="small fw-semibold text-uppercase text-primary" style="font-size: 0.72rem; letter-spacing: 0.04em;"><i class="bi bi-hourglass-split me-1"></i>Potensi PO / Inden</span>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-mono" style="font-size: 0.68rem;">{{ $summary['po_pending_count'] }} PO</span>
+                </div>
+                <div class="font-serif fw-bold fs-4 text-primary mb-1 text-truncate" title="Rp {{ number_format($summary['po_pending_omset'], 0, ',', '.') }}">
+                    Rp {{ number_format($summary['po_pending_omset'], 0, ',', '.') }}
+                </div>
+                <div class="text-muted" style="font-size: 0.72rem;">
+                    {{ number_format($summary['po_pending_qty']) }} pcs pesanan mengantre
                 </div>
             </div>
         </div>
