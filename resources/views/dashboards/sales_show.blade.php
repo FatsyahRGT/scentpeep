@@ -15,63 +15,59 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.05);
     }
-    /* Container Tab Status: Mobile scrollable tanpa scrollbar kasar, Desktop melebar mentok ke search bar */
-    .sales-tabs-container {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none; /* Firefox */
-    }
-    .sales-tabs-container::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Edge */
-    }
-
-    .sales-tabs-track {
-        display: inline-flex;
-        flex-wrap: nowrap;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 4px;
-        background-color: #f3f4f6;
-        border: 1px solid #e5e7eb;
-        border-radius: 999px;
-    }
-
-    .sales-tab-pill {
-        border-radius: 999px;
-        padding: 0.35rem 0.85rem;
-        font-size: 0.78rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-    .sales-tab-pill.active {
-        background-color: #2b7b5b !important;
-        color: #ffffff !important;
-    }
-    .sales-tab-pill:not(.active) {
-        background-color: #ffffff;
-        color: #4b5563;
-        border: 1px solid #e5e7eb;
-    }
-    .sales-tab-pill:not(.active):hover {
-        background-color: #f3f4f6;
-        color: #111827;
+    /* Mobile View (< 992px): Scroll ke samping aktif dengan bilah scrollbar ramping dan halus */
+    @media (max-width: 991.98px) {
+        .sales-tabs-container {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 6px;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        .sales-tabs-container::-webkit-scrollbar {
+            height: 4px;
+            display: block;
+        }
+        .sales-tabs-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sales-tabs-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+        .sales-tabs-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .sales-tabs-track {
+            display: inline-flex;
+            flex-wrap: nowrap;
+            width: max-content;
+            min-width: max-content;
+        }
+        .sales-tab-pill {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
     }
 
     /* Desktop View (min-width: 992px): Melebarkan track dekat/mentok ke search bar */
     @media (min-width: 992px) {
         .sales-tabs-container {
+            display: flex;
+            align-items: center;
             overflow: visible;
             flex-grow: 1;
             min-width: 0;
+            padding-bottom: 0;
+            scrollbar-width: none;
+        }
+        .sales-tabs-container::-webkit-scrollbar {
+            display: none;
         }
         .sales-tabs-track {
             display: flex;
@@ -503,3 +499,19 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tabsContainer = document.querySelector('.sales-tabs-container');
+    if (tabsContainer) {
+        tabsContainer.addEventListener('wheel', function (e) {
+            if (window.innerWidth < 992 && e.deltaY !== 0) {
+                e.preventDefault();
+                tabsContainer.scrollLeft += e.deltaY;
+            }
+        }, { passive: false });
+    }
+});
+</script>
+@endpush
