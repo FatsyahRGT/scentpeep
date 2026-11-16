@@ -15,6 +15,30 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.05);
     }
+    /* Container Tab Status: Mobile scrollable tanpa scrollbar kasar, Desktop melebar mentok ke search bar */
+    .sales-tabs-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+    }
+    .sales-tabs-container::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge */
+    }
+
+    .sales-tabs-track {
+        display: inline-flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 4px;
+        background-color: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+    }
+
     .sales-tab-pill {
         border-radius: 999px;
         padding: 0.35rem 0.85rem;
@@ -40,6 +64,26 @@
     .sales-tab-pill:not(.active):hover {
         background-color: #f3f4f6;
         color: #111827;
+    }
+
+    /* Desktop View (min-width: 992px): Melebarkan track dekat/mentok ke search bar */
+    @media (min-width: 992px) {
+        .sales-tabs-container {
+            overflow: visible;
+            flex-grow: 1;
+            min-width: 0;
+        }
+        .sales-tabs-track {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+        }
+        .sales-tab-pill {
+            flex: 1 1 0;
+            justify-content: center;
+            padding: 0.42rem 0.6rem;
+            font-size: 0.8rem;
+        }
     }
 </style>
 
@@ -236,50 +280,52 @@
                 <input type="hidden" name="order_type" value="{{ request('order_type') }}">
             @endif
 
-            <!-- Baris 2: Tab Status (Kiri) + Search Bar & Reset Filter (Kanan) -->
-            <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 mb-3">
-                <!-- Sisi Kiri: Segmented Status Track (Ramping & Flex-Nowrap) -->
+            <!-- Baris 2: Tab Status (Kiri, Melebar di Desktop) + Search Bar & Reset Filter (Kanan) -->
+            <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center justify-content-between gap-3 mb-3">
+                <!-- Sisi Kiri: Segmented Status Track (Melebar Dekat ke Search Bar di Desktop, Scrollable Halus di Mobile) -->
                 @php
                     $currentStatus = request('payment_status');
                     $currentOrderType = request('order_type');
                 @endphp
-                <div class="d-inline-flex flex-nowrap align-items-center gap-1 p-1 rounded-pill bg-light border shadow-2xs overflow-x-auto" style="border-color: #e5e7eb !important; max-width: 100%;">
-                    <!-- 1. Semua Invoice -->
-                    <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
-                       class="sales-tab-pill {{ empty($currentStatus) && empty($currentOrderType) ? 'active' : '' }}">
-                        <i class="bi bi-collection"></i>
-                        <span>Semua Invoice</span>
-                        <span class="badge {{ empty($currentStatus) && empty($currentOrderType) ? 'bg-white text-dark' : 'bg-white text-muted border' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['total_count'] }}</span>
-                    </a>
+                <div class="sales-tabs-container">
+                    <div class="sales-tabs-track shadow-2xs">
+                        <!-- 1. Semua Invoice -->
+                        <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
+                           class="sales-tab-pill {{ empty($currentStatus) && empty($currentOrderType) ? 'active' : '' }}">
+                            <i class="bi bi-collection"></i>
+                            <span>Semua Invoice</span>
+                            <span class="badge {{ empty($currentStatus) && empty($currentOrderType) ? 'bg-white text-dark' : 'bg-white text-muted border' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['total_count'] }}</span>
+                        </a>
 
-                    <!-- 2. Lunas -->
-                    <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'payment_status' => 'LUNAS'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
-                       class="sales-tab-pill {{ $currentStatus === 'LUNAS' ? 'active' : '' }}">
-                        <i class="bi bi-check-circle"></i>
-                        <span>Lunas</span>
-                        <span class="badge {{ $currentStatus === 'LUNAS' ? 'bg-white text-dark' : 'bg-success-subtle text-success border border-success-subtle' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['paid_count'] }}</span>
-                    </a>
+                        <!-- 2. Lunas -->
+                        <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'payment_status' => 'LUNAS'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
+                           class="sales-tab-pill {{ $currentStatus === 'LUNAS' ? 'active' : '' }}">
+                            <i class="bi bi-check-circle"></i>
+                            <span>Lunas</span>
+                            <span class="badge {{ $currentStatus === 'LUNAS' ? 'bg-white text-dark' : 'bg-success-subtle text-success border border-success-subtle' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['paid_count'] }}</span>
+                        </a>
 
-                    <!-- 3. Belum Lunas -->
-                    <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'payment_status' => 'BELUM LUNAS'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
-                       class="sales-tab-pill {{ $currentStatus === 'BELUM LUNAS' ? 'active' : '' }}">
-                        <i class="bi bi-clock-history"></i>
-                        <span>Belum Lunas</span>
-                        <span class="badge {{ $currentStatus === 'BELUM LUNAS' ? 'bg-white text-dark' : 'bg-warning-subtle text-dark border border-warning-subtle' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['unpaid_count'] }}</span>
-                    </a>
+                        <!-- 3. Belum Lunas -->
+                        <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'payment_status' => 'BELUM LUNAS'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
+                           class="sales-tab-pill {{ $currentStatus === 'BELUM LUNAS' ? 'active' : '' }}">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Belum Lunas</span>
+                            <span class="badge {{ $currentStatus === 'BELUM LUNAS' ? 'bg-white text-dark' : 'bg-warning-subtle text-dark border border-warning-subtle' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['unpaid_count'] }}</span>
+                        </a>
 
-                    <!-- 4. Pre-Order -->
-                    <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'order_type' => 'PREORDER'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
-                       class="sales-tab-pill {{ $currentOrderType === 'PREORDER' ? 'active' : '' }}">
-                        <i class="bi bi-hourglass-split"></i>
-                        <span>Pre-Order</span>
-                        <span class="badge {{ $currentOrderType === 'PREORDER' ? 'bg-white text-dark' : 'bg-white text-muted border' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['po_pending_count'] + $summary['po_completed_count'] }}</span>
-                    </a>
+                        <!-- 4. Pre-Order -->
+                        <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'order_type' => 'PREORDER'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
+                           class="sales-tab-pill {{ $currentOrderType === 'PREORDER' ? 'active' : '' }}">
+                            <i class="bi bi-hourglass-split"></i>
+                            <span>Pre-Order</span>
+                            <span class="badge {{ $currentOrderType === 'PREORDER' ? 'bg-white text-dark' : 'bg-white text-muted border' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['po_pending_count'] + $summary['po_completed_count'] }}</span>
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Sisi Kanan: Search Bar (Kiri) & Tombol Reset Filter Tepat di Sebelah Kanannya (Kanan) -->
-                <div class="d-flex align-items-center justify-content-end gap-2 w-100 w-xl-auto ms-xl-auto">
-                    <div class="input-group input-group-sm" style="min-width: 250px; max-width: 320px;">
+                <div class="d-flex align-items-center justify-content-end gap-2 flex-shrink-0 ms-lg-auto">
+                    <div class="input-group input-group-sm" style="min-width: 230px; max-width: 280px;">
                         <span class="input-group-text bg-white border-end-0 text-muted ps-2.5 pe-1"><i class="bi bi-search"></i></span>
                         <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari invoice / customer..." value="{{ request('search') }}" style="font-size: 0.8rem;">
                         <button type="submit" class="btn btn-sm btn-scent px-2.5" title="Cari">
