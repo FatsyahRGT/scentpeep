@@ -299,7 +299,7 @@ class DashboardController extends Controller
             return response()->json($sellerTrendData);
         }
 
-        // 3. Best Sellers Products
+        // 3. Best Sellers Products (Rank 10 Besar Varian Terlaris Tim Sales)
         $bestSellers = Invoice::select(
                 'product_id',
                 DB::raw('SUM(qty) as total_sold'),
@@ -308,7 +308,7 @@ class DashboardController extends Controller
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
             ->with('product')
-            ->take(6)
+            ->take(10)
             ->get();
 
         // 4. Riwayat Invoice Terbaru per Sales

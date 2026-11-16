@@ -317,6 +317,37 @@ class DashboardTest extends TestCase
         $response->assertSee(route('dashboard.sales.show', 'IWAN'));
     }
 
+    public function test_sales_dashboard_displays_top_10_best_selling_products(): void
+    {
+        for ($i = 1; $i <= 12; $i++) {
+            $prod = \App\Models\Product::create([
+                'name' => "Parfum Varian {$i}",
+                'code' => "PV-{$i}",
+                'volume_ml' => 50,
+                'is_active' => true,
+            ]);
+
+            \App\Models\Invoice::create([
+                'invoice_no' => "INV-TOP-{$i}",
+                'sales_name' => 'IWAN',
+                'customer_name' => "Customer {$i}",
+                'product_id' => $prod->id,
+                'qty' => $i * 5,
+                'location_id' => $this->gudang->id,
+                'total_price' => $i * 500000,
+                'payment_status' => 'LUNAS',
+                'tanggal' => now()->toDateString(),
+            ]);
+        }
+
+        $response = $this->actingAs($this->admin)->get(route('dashboard.sales'));
+        $response->assertOk();
+        $response->assertSee('Top 10 Produk');
+        $response->assertViewHas('bestSellers', function ($bestSellers) {
+            return $bestSellers->count() === 10;
+        });
+    }
+
     public function test_admin_and_staff_can_view_sales_show_page_with_filtered_invoices_and_stats(): void
     {
         $invIwan1 = \App\Models\Invoice::create([

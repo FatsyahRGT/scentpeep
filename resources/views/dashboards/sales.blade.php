@@ -239,7 +239,7 @@
                     <i class="bi bi-trophy-fill text-warning fs-5"></i>
                     <h5 class="font-serif card-title mb-0 fw-bold fs-6">Varian Terlaris Tim Sales</h5>
                 </div>
-                <span class="badge bg-light text-muted border">Top Produk</span>
+                <span class="badge bg-light text-muted border">Top 10 Produk</span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
