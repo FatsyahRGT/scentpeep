@@ -217,19 +217,12 @@
     <!-- Varian Parfum Terlaris di Periode Terpilih -->
     <div class="col-lg-4">
         <div class="card h-100 border-0 shadow-sm" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px; background: #ffffff;">
-            <div class="card-header bg-white py-3 border-bottom">
-                <div class="d-flex justify-content-between align-items-center mb-1.5">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-trophy-fill text-warning fs-5"></i>
-                        <h5 class="font-serif card-title mb-0 fw-bold fs-6">
-                            Varian Terlaris ({{ $selectedMonth ? $months[$selectedMonth] . ' ' : 'Tahun ' }}{{ $targetYear }})
-                        </h5>
-                    </div>
-                    <span class="badge bg-light text-muted border font-mono" style="font-size: 0.68rem;">Top Periode</span>
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-trophy-fill text-warning fs-5"></i>
+                    <h5 class="font-serif card-title mb-0 fw-bold fs-6">Varian Terlaris (Tahun {{ $targetYear }})</h5>
                 </div>
-                <div class="text-muted" style="font-size: 0.72rem; line-height: 1.35;">
-                    <i class="bi bi-info-circle text-primary me-1"></i>Peringkat produk terlaris dihitung <strong>khusus berdasarkan periode filter aktif ({{ $selectedMonth ? $months[$selectedMonth] . ' ' : 'Tahun ' }}{{ $targetYear }}{{ $selectedSales ? ' &bull; Sales ' . $selectedSales : '' }})</strong>, bukan akumulasi penjualan sepanjang masa (all-time) seperti pada Dashboard Utama.
-                </div>
+                <span class="badge bg-light text-muted border">Top Produk</span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
