@@ -114,25 +114,23 @@
                     </a>
                 </div>
 
-                <!-- Sisi Kanan: Tombol Reset (Kiri) & Search Bar Pojok Kanan (Kanan) -->
+                <!-- Sisi Kanan: Search Bar (Kiri) & Tombol Reset Filter Tepat di Sebelah Kanannya (Kanan) -->
                 <div class="d-flex align-items-center justify-content-end gap-2 w-100 w-xl-auto ms-xl-auto">
-                    @if(request()->hasAny(['sales_name', 'payment_status', 'location_id', 'customer_name', 'year', 'month', 'search']) || in_array($tab, ['po_pending', 'po_completed', 'regular']))
-                    <a href="{{ route('invoices.index') }}" 
-                       class="btn btn-outline-secondary btn-sm rounded-3 px-2.5 py-1.5 d-inline-flex align-items-center gap-1 text-nowrap flex-shrink-0 shadow-xs" 
-                       style="font-size: 0.78rem; height: 31px;"
-                       title="Reset Semua Filter">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                        <span>Reset</span>
-                    </a>
-                    @endif
-
-                    <div class="input-group input-group-sm" style="min-width: 280px; max-width: 320px;">
+                    <div class="input-group input-group-sm" style="min-width: 260px; max-width: 320px;">
                         <span class="input-group-text bg-white border-end-0 text-muted ps-2.5 pe-1"><i class="bi bi-search"></i></span>
                         <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari no. invoice / customer..." value="{{ request('search') }}" style="font-size: 0.8rem;">
                         <button type="submit" class="btn btn-sm btn-scent px-2.5" title="Cari">
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
+
+                    <a href="{{ route('invoices.index') }}" 
+                       class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-1 text-nowrap flex-shrink-0" 
+                       style="font-size: 0.8rem;"
+                       title="Reset Semua Filter">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>Reset Filter</span>
+                    </a>
                 </div>
             </div>
 
@@ -199,7 +197,7 @@
                                 data-bs-toggle="dropdown" 
                                 data-bs-auto-close="outside"
                                 aria-expanded="false"
-                                style="font-size: 0.84rem; padding-left: 0.65rem; padding-right: 1.75rem; padding-top: 0.25rem; padding-bottom: 0.25rem; cursor: pointer; background-image: none;">
+                                style="font-size: 0.8rem; padding-left: 0.65rem; padding-right: 0.65rem; padding-top: 0.25rem; padding-bottom: 0.25rem; cursor: pointer; background-image: none;">
                             <span id="selectedCustomerLabel" class="text-truncate">{{ request('customer_name') ?: 'Semua Customer' }}</span>
                             <i class="bi bi-chevron-down ms-1 text-muted" style="font-size: 0.7rem; flex-shrink: 0;"></i>
                         </button>
@@ -219,12 +217,11 @@
                             <!-- Sticky In-Menu Search Box (Flexbox Bersih & Anti-Menimpa) -->
                             <div class="p-2 border-bottom bg-white">
                                 <div class="d-flex align-items-center gap-2 border rounded-3 px-2 py-1 bg-white" style="border-color: #2b7b5b !important;">
-                                    <i class="bi bi-search text-muted flex-shrink-0" style="position: static !important; font-size: 0.75rem;"></i>
+                                    <i class="bi bi-search text-muted flex-shrink-0" style="position: static !important;"></i>
                                     <input type="text" 
                                            id="filterCustomerSearchInput" 
                                            class="form-control form-control-sm border-0 shadow-none p-0 bg-transparent" 
                                            placeholder="Cari nama pelanggan..." 
-                                           style="font-size: 0.75rem;" 
                                            autocomplete="off">
                                 </div>
                             </div>
