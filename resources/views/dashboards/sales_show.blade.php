@@ -25,18 +25,20 @@
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
     .sales-tab-pill.active {
         background-color: #2b7b5b !important;
         color: #ffffff !important;
     }
     .sales-tab-pill:not(.active) {
-        background-color: #f3f4f6;
+        background-color: #ffffff;
         color: #4b5563;
         border: 1px solid #e5e7eb;
     }
     .sales-tab-pill:not(.active):hover {
-        background-color: #e5e7eb;
+        background-color: #f3f4f6;
         color: #111827;
     }
 </style>
@@ -207,55 +209,26 @@
 
 <!-- Tabel Rincian Invoice Penjualan Sales -->
 <div class="card border-0 shadow-sm mb-4" style="border: 1px solid var(--color-border, #e8e6e1) !important; border-radius: 12px; background: #ffffff;">
-    <div class="card-header bg-white py-3 border-bottom">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
+    <div class="card-header py-3 bg-white border-bottom d-block">
+        <!-- Baris 1: Judul Header & Total Counter Badge -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
             <div>
-                <h5 class="card-title mb-0 font-serif fw-bold text-dark fs-6">Histori Invoice Penjualan — {{ $salesName }}</h5>
-                <small class="text-muted">Daftar transaksi penjualan resmi, status pembayaran piutang, dan pesanan pre-order.</small>
+                <h5 class="card-title mb-1 font-serif fw-bold text-dark fs-6">Histori Invoice Penjualan — {{ $salesName }}</h5>
+                <small class="text-muted d-block">Daftar transaksi penjualan resmi, status pembayaran piutang, dan pesanan pre-order.</small>
             </div>
-            <div class="badge bg-light text-dark border px-2.5 py-1 font-mono" style="font-size: 0.75rem;">
-                Total: {{ $invoices->total() }} Invoice Terdaftar
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-dark border px-2.5 py-1.5 font-mono" style="font-size: 0.75rem;">
+                    Total: <strong>{{ number_format($invoices->total()) }}</strong> Invoice Terdaftar
+                </span>
             </div>
         </div>
 
-        <!-- Filter Tab Status Pembayaran & PO -->
-        @php
-            $currentStatus = request('payment_status');
-            $currentOrderType = request('order_type');
-            $currentPoStatus = request('po_status');
-        @endphp
-        <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
-            <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
-               class="sales-tab-pill {{ empty($currentStatus) && empty($currentOrderType) ? 'active' : '' }}">
-                <i class="bi bi-collection"></i>
-                <span>Semua Invoice</span>
-                <span class="badge bg-white text-dark border ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['total_count'] }}</span>
-            </a>
+        <!-- Garis Pemisah Visual -->
+        <hr class="my-3 opacity-25">
 
-            <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'payment_status' => 'LUNAS'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
-               class="sales-tab-pill {{ $currentStatus === 'LUNAS' ? 'active' : '' }}">
-                <i class="bi bi-check-circle"></i>
-                <span>Lunas</span>
-                <span class="badge bg-success-subtle text-success border border-success-subtle ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['paid_count'] }}</span>
-            </a>
-
-            <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'payment_status' => 'BELUM LUNAS'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
-               class="sales-tab-pill {{ $currentStatus === 'BELUM LUNAS' ? 'active' : '' }}">
-                <i class="bi bi-clock-history"></i>
-                <span>Belum Lunas</span>
-                <span class="badge bg-warning-subtle text-dark border border-warning-subtle ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['unpaid_count'] }}</span>
-            </a>
-
-            <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'order_type' => 'PREORDER'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
-               class="sales-tab-pill {{ $currentOrderType === 'PREORDER' ? 'active' : '' }}">
-                <i class="bi bi-hourglass-split"></i>
-                <span>Pre-Order</span>
-                <span class="badge bg-white text-dark border ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['po_pending_count'] + $summary['po_completed_count'] }}</span>
-            </a>
-        </div>
-
-        <!-- Filter Dropdown Bar (Tahun, Bulan, Lokasi, Search, Reset) -->
-        <form method="GET" action="{{ route('dashboard.sales.show', $salesName) }}" class="row g-2 align-items-center">
+        <!-- Baris 2 & 3: Form Filter Terpadu -->
+        <form method="GET" action="{{ route('dashboard.sales.show', $salesName) }}" class="m-0" id="filterSalesShowForm">
+            <!-- Hidden inputs untuk menjaga state status & order_type -->
             @if(request('payment_status'))
                 <input type="hidden" name="payment_status" value="{{ request('payment_status') }}">
             @endif
@@ -263,51 +236,98 @@
                 <input type="hidden" name="order_type" value="{{ request('order_type') }}">
             @endif
 
-            <!-- 1. Tahun -->
-            <div class="col-6 col-md-3 col-xl-2">
-                <select name="year" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem;">
-                    <option value="">Semua Tahun</option>
-                    @foreach($availableYears as $y)
-                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <!-- Baris 2: Tab Status (Kiri) + Search Bar & Reset Filter (Kanan) -->
+            <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 mb-3">
+                <!-- Sisi Kiri: Segmented Status Track (Ramping & Flex-Nowrap) -->
+                @php
+                    $currentStatus = request('payment_status');
+                    $currentOrderType = request('order_type');
+                @endphp
+                <div class="d-inline-flex flex-nowrap align-items-center gap-1 p-1 rounded-pill bg-light border shadow-2xs overflow-x-auto" style="border-color: #e5e7eb !important; max-width: 100%;">
+                    <!-- 1. Semua Invoice -->
+                    <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
+                       class="sales-tab-pill {{ empty($currentStatus) && empty($currentOrderType) ? 'active' : '' }}">
+                        <i class="bi bi-collection"></i>
+                        <span>Semua Invoice</span>
+                        <span class="badge {{ empty($currentStatus) && empty($currentOrderType) ? 'bg-white text-dark' : 'bg-white text-muted border' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['total_count'] }}</span>
+                    </a>
 
-            <!-- 2. Bulan -->
-            <div class="col-6 col-md-3 col-xl-2">
-                <select name="month" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem;">
-                    <option value="">Semua Bulan</option>
-                    @foreach($months as $mNum => $mName)
-                        <option value="{{ $mNum }}" {{ request('month') == $mNum ? 'selected' : '' }}>{{ $mName }}</option>
-                    @endforeach
-                </select>
-            </div>
+                    <!-- 2. Lunas -->
+                    <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'payment_status' => 'LUNAS'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
+                       class="sales-tab-pill {{ $currentStatus === 'LUNAS' ? 'active' : '' }}">
+                        <i class="bi bi-check-circle"></i>
+                        <span>Lunas</span>
+                        <span class="badge {{ $currentStatus === 'LUNAS' ? 'bg-white text-dark' : 'bg-success-subtle text-success border border-success-subtle' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['paid_count'] }}</span>
+                    </a>
 
-            <!-- 3. Lokasi Stok -->
-            <div class="col-6 col-md-3 col-xl-2">
-                <select name="location_id" class="form-select form-select-sm" onchange="this.form.submit()" style="font-size: 0.8rem;">
-                    <option value="">Semua Lokasi</option>
-                    @foreach($locations as $loc)
-                        <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
-                    @endforeach
-                </select>
-            </div>
+                    <!-- 3. Belum Lunas -->
+                    <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'payment_status' => 'BELUM LUNAS'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
+                       class="sales-tab-pill {{ $currentStatus === 'BELUM LUNAS' ? 'active' : '' }}">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Belum Lunas</span>
+                        <span class="badge {{ $currentStatus === 'BELUM LUNAS' ? 'bg-white text-dark' : 'bg-warning-subtle text-dark border border-warning-subtle' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['unpaid_count'] }}</span>
+                    </a>
 
-            <!-- 4. Search Box -->
-            <div class="col-12 col-md-5 col-xl-4">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0" placeholder="Cari invoice / customer..." value="{{ request('search') }}" style="font-size: 0.8rem;">
-                    <button class="btn btn-scent" type="submit"><i class="bi bi-arrow-right"></i></button>
+                    <!-- 4. Pre-Order -->
+                    <a href="{{ route('dashboard.sales.show', array_merge(['sales_name' => $salesName, 'order_type' => 'PREORDER'], request()->except(['payment_status', 'order_type', 'po_status', 'page']))) }}" 
+                       class="sales-tab-pill {{ $currentOrderType === 'PREORDER' ? 'active' : '' }}">
+                        <i class="bi bi-hourglass-split"></i>
+                        <span>Pre-Order</span>
+                        <span class="badge {{ $currentOrderType === 'PREORDER' ? 'bg-white text-dark' : 'bg-white text-muted border' }} ms-1 font-mono" style="font-size: 0.68rem;">{{ $summary['po_pending_count'] + $summary['po_completed_count'] }}</span>
+                    </a>
+                </div>
+
+                <!-- Sisi Kanan: Search Bar (Kiri) & Tombol Reset Filter Tepat di Sebelah Kanannya (Kanan) -->
+                <div class="d-flex align-items-center justify-content-end gap-2 w-100 w-xl-auto ms-xl-auto">
+                    <div class="input-group input-group-sm" style="min-width: 250px; max-width: 320px;">
+                        <span class="input-group-text bg-white border-end-0 text-muted ps-2.5 pe-1"><i class="bi bi-search"></i></span>
+                        <input type="search" name="search" class="form-control border-start-0 ps-1" placeholder="Cari invoice / customer..." value="{{ request('search') }}" style="font-size: 0.8rem;">
+                        <button type="submit" class="btn btn-sm btn-scent px-2.5" title="Cari">
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <a href="{{ route('dashboard.sales.show', $salesName) }}" 
+                       class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2 d-inline-flex align-items-center gap-1 text-nowrap flex-shrink-0" 
+                       style="font-size: 0.8rem;"
+                       title="Reset Semua Filter">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>Reset</span>
+                    </a>
                 </div>
             </div>
 
-            <!-- 5. Reset Button -->
-            <div class="col-6 col-md-2 col-xl-2">
-                <a href="{{ route('dashboard.sales.show', $salesName) }}" class="btn btn-outline-secondary btn-sm w-100 rounded-3 d-inline-flex align-items-center justify-content-center gap-1" style="font-size: 0.8rem;">
-                    <i class="bi bi-arrow-counterclockwise"></i>
-                    <span>Reset</span>
-                </a>
+            <!-- Baris 3: Murni Barisan Dropdown Filter Sejajar & Lega -->
+            <div class="row g-2 align-items-center">
+                <!-- 1. Filter Tahun -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <select name="year" class="form-select form-select-sm w-100" onchange="this.form.submit()" style="font-size: 0.8rem;">
+                        <option value="">Semua Tahun</option>
+                        @foreach($availableYears as $y)
+                            <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- 2. Bulan -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <select name="month" class="form-select form-select-sm w-100" onchange="this.form.submit()" style="font-size: 0.8rem;">
+                        <option value="">Semua Bulan</option>
+                        @foreach($months as $mNum => $mName)
+                            <option value="{{ $mNum }}" {{ request('month') == $mNum ? 'selected' : '' }}>{{ $mName }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- 3. Lokasi Stok -->
+                <div class="col-12 col-md-4 col-lg-3">
+                    <select name="location_id" class="form-select form-select-sm w-100" onchange="this.form.submit()" style="font-size: 0.8rem;">
+                        <option value="">Semua Lokasi Asal</option>
+                        @foreach($locations as $loc)
+                            <option value="{{ $loc->id }}" {{ request('location_id') == $loc->id ? 'selected' : '' }}>{{ $loc->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </form>
     </div>

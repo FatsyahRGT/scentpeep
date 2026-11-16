@@ -1020,9 +1020,9 @@
     "semantic_hash": ""
   },
   "resources/views/dashboards/sales_show.blade.php": {
-    "mtime": 1794815122.7438054,
-    "seen": 1794815190.96721,
-    "ast_hash": "f5ced1aa3f608910ed6d30ae074eaa5f",
+    "mtime": 1794816514.2970386,
+    "seen": 1794816590.8464751,
+    "ast_hash": "25a830a21c6ba9caa92ecf34a8d35e87",
     "semantic_hash": ""
   }
 }
