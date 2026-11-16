@@ -398,6 +398,17 @@ class InvoiceAndProcurementTest extends TestCase
         $this->assertEquals(13, Stock::where('product_id', $this->product->id)->where('location_id', $this->rizky->id)->first()->qty);
     }
 
+    public function test_invoice_create_page_renders_with_stock_matrix_and_bidirectional_sync(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('invoices.create', ['sales_name' => 'IWAN']));
+        $response->assertOk();
+        $response->assertViewHas('stockMatrix');
+        $response->assertSee('Potong dari Stok Lokasi');
+        $response->assertSee('Varian Parfum');
+        $response->assertSee('liveStockBox');
+        $response->assertSee('updateBidirectionalSync');
+    }
+
     public function test_admin_can_view_invoice_edit_page(): void
     {
         $invoice = Invoice::create([

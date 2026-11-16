@@ -363,7 +363,35 @@ class InvoiceController extends Controller
             $salesOptions = Invoice::getSalesOptions();
         }
 
-        return view('invoices.create', compact('products', 'locations', 'salesOptions', 'customers'));
+        // Ambil data stok fisik dan jatah reserved PO untuk bidirectional smart sync
+        $stocks = Stock::all();
+        $reservedPoSummary = Invoice::where('order_type', Invoice::ORDER_TYPE_PREORDER)
+            ->where('po_status', Invoice::PO_STATUS_PENDING)
+            ->selectRaw('product_id, location_id, SUM(qty) as total_reserved')
+            ->groupBy('product_id', 'location_id')
+            ->get()
+            ->keyBy(function ($row) {
+                return $row->product_id . '_' . $row->location_id;
+            });
+
+        $stockMatrix = [];
+        foreach ($stocks as $stk) {
+            $key = $stk->product_id . '_' . $stk->location_id;
+            $reserved = isset($reservedPoSummary[$key]) ? (int) $reservedPoSummary[$key]->total_reserved : 0;
+            $physical = (int) $stk->qty;
+            $available = max(0, $physical - $reserved);
+
+            if (!isset($stockMatrix[$stk->product_id])) {
+                $stockMatrix[$stk->product_id] = [];
+            }
+            $stockMatrix[$stk->product_id][$stk->location_id] = [
+                'physical' => $physical,
+                'reserved' => $reserved,
+                'available' => $available,
+            ];
+        }
+
+        return view('invoices.create', compact('products', 'locations', 'salesOptions', 'customers', 'stockMatrix'));
     }
 
     public function store(Request $request): RedirectResponse
