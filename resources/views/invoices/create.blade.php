@@ -224,13 +224,39 @@ function updateBidirectionalSync() {
 
         if (selectedLocId) {
             const info = getStockInfo(pId, selectedLocId);
-            if (info.available > 0) {
-                opt.textContent = `${baseName} - ${priceFormatted} [Ready: ${info.available} pcs]`;
+            if (info.available >= 3) {
+                opt.textContent = `🟢 ${baseName} - ${priceFormatted} [Ready: ${info.available} pcs]`;
+                opt.style.color = '#198754';
+                opt.style.fontWeight = '600';
+            } else if (info.available > 0) {
+                opt.textContent = `🟡 ${baseName} - ${priceFormatted} [Menipis: ${info.available} pcs]`;
+                opt.style.color = '#d97706';
+                opt.style.fontWeight = '600';
             } else {
-                opt.textContent = `${baseName} - ${priceFormatted} [Stok Kosong (0 pcs)]`;
+                opt.textContent = `🔴 ${baseName} - ${priceFormatted} [Stok Kosong (0 pcs)]`;
+                opt.style.color = '#dc3545';
+                opt.style.fontWeight = '600';
             }
         } else {
-            opt.textContent = `${baseName} - ${priceFormatted}`;
+            let totalAvailable = 0;
+            if (stockMatrix[pId]) {
+                Object.values(stockMatrix[pId]).forEach(locData => {
+                    totalAvailable += (locData.available || 0);
+                });
+            }
+            if (totalAvailable >= 3) {
+                opt.textContent = `🟢 ${baseName} - ${priceFormatted} [Total: ${totalAvailable} pcs]`;
+                opt.style.color = '#198754';
+                opt.style.fontWeight = '600';
+            } else if (totalAvailable > 0) {
+                opt.textContent = `🟡 ${baseName} - ${priceFormatted} [Menipis: ${totalAvailable} pcs]`;
+                opt.style.color = '#d97706';
+                opt.style.fontWeight = '600';
+            } else {
+                opt.textContent = `🔴 ${baseName} - ${priceFormatted} [Stok Kosong (0 pcs)]`;
+                opt.style.color = '#dc3545';
+                opt.style.fontWeight = '600';
+            }
         }
     }
 
@@ -242,13 +268,23 @@ function updateBidirectionalSync() {
 
         if (selectedProdId) {
             const info = getStockInfo(selectedProdId, lId);
-            if (info.available > 0) {
-                opt.textContent = `${baseName} — (Tersedia: ${info.available} pcs)`;
+            if (info.available >= 3) {
+                opt.textContent = `🟢 ${baseName} — (Tersedia: ${info.available} pcs)`;
+                opt.style.color = '#198754';
+                opt.style.fontWeight = '600';
+            } else if (info.available > 0) {
+                opt.textContent = `🟡 ${baseName} — (Menipis: ${info.available} pcs)`;
+                opt.style.color = '#d97706';
+                opt.style.fontWeight = '600';
             } else {
-                opt.textContent = `${baseName} — (Habis: 0 pcs)`;
+                opt.textContent = `🔴 ${baseName} — (Habis: 0 pcs)`;
+                opt.style.color = '#dc3545';
+                opt.style.fontWeight = '600';
             }
         } else {
             opt.textContent = baseName;
+            opt.style.color = '';
+            opt.style.fontWeight = '';
         }
     }
 
@@ -302,6 +338,19 @@ function updateBidirectionalSync() {
                         <button type="button" class="btn btn-sm btn-warning fw-semibold rounded-pill px-3 py-1 shadow-2xs text-nowrap" onclick="switchToPreOrder()">
                             <i class="bi bi-hourglass-split me-1"></i> Beralih ke Pre-Order (PO)
                         </button>
+                    </div>
+                `;
+            } else if (info.available < 3) {
+                liveStockBox.innerHTML = `
+                    <div class="alert alert-warning border border-warning-subtle py-2.5 px-3 mb-0 rounded-3 d-flex align-items-center justify-content-between flex-wrap gap-2 shadow-2xs" style="font-size: 0.82rem;">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-triangle-fill fs-5 text-warning-emphasis"></i>
+                            <div>
+                                <strong class="text-warning-emphasis">Peringatan Stok Menipis (&lt; 3 pcs):</strong> Tersedia <strong>${info.available} pcs</strong> di lokasi <strong>${locName}</strong>.
+                                <small class="d-block text-muted font-mono">(Fisik di rak: ${info.physical} pcs &bull; Terkunci jatah PO: ${info.reserved} pcs)</small>
+                            </div>
+                        </div>
+                        <span class="badge bg-warning text-dark px-2.5 py-1.5 rounded-pill font-mono">Stok Menipis</span>
                     </div>
                 `;
             } else {
