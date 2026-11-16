@@ -12,9 +12,9 @@
     "semantic_hash": "25a307335c0719bc9a91b3f7babd186d"
   },
   "app/Http/Controllers/DashboardController.php": {
-    "mtime": 1794036189.991731,
-    "seen": 1794036374.7954812,
-    "ast_hash": "500b786bdad7042033f9c7fae24ee049",
+    "mtime": 1794814640.8595836,
+    "seen": 1794815190.9662185,
+    "ast_hash": "cbd040457bb6e11709b60cf2eee7fd98",
     "semantic_hash": ""
   },
   "app/Http/Controllers/LocationController.php": {
@@ -282,9 +282,9 @@
     "semantic_hash": ""
   },
   "resources/views/dashboard.blade.php": {
-    "mtime": 1794037348.6336658,
-    "seen": 1794037400.9964685,
-    "ast_hash": "26cf2218e572f5f6577b0cf1260ea8fa",
+    "mtime": 1794814732.6288998,
+    "seen": 1794815190.96721,
+    "ast_hash": "441e429387cdbfa77d10b6a99a253d77",
     "semantic_hash": ""
   },
   "resources/views/layouts/app.blade.php": {
@@ -342,9 +342,9 @@
     "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
   },
   "routes/web.php": {
-    "mtime": 1794407236.3856342,
-    "seen": 1794407482.0638144,
-    "ast_hash": "480c101223766ee7740700bd5dada8ba",
+    "mtime": 1794814598.0604272,
+    "seen": 1794815190.96721,
+    "ast_hash": "c25bc88a23a8718b4939b23da27e9cc7",
     "semantic_hash": ""
   },
   "tests/Feature/ExampleTest.php": {
@@ -540,9 +540,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/DashboardTest.php": {
-    "mtime": 1794036316.6127288,
-    "seen": 1794036374.7954812,
-    "ast_hash": "18009504a7f87ac6522de7e4fb08feb2",
+    "mtime": 1794815132.762958,
+    "seen": 1794815190.96721,
+    "ast_hash": "0e9dc471132e650e4ff0a53cac92b2d9",
     "semantic_hash": ""
   },
   "tests/Feature/ExportReportsTest.php": {
@@ -870,9 +870,9 @@
     "semantic_hash": ""
   },
   "resources/views/dashboards/sales.blade.php": {
-    "mtime": 1794036113.4223092,
-    "seen": 1794036374.7954812,
-    "ast_hash": "a2e9ad4f65b72b42f0a818777ee46980",
+    "mtime": 1794814691.0361285,
+    "seen": 1794815190.96721,
+    "ast_hash": "7e4f35ade1310d48d80a20b9647501ad",
     "semantic_hash": ""
   },
   "docs/DFD.md": {
@@ -1017,6 +1017,12 @@
     "mtime": 1794496687.2158525,
     "seen": 1794497074.3017366,
     "ast_hash": "6eec5fa9ede62551daf50664d2664059",
+    "semantic_hash": ""
+  },
+  "resources/views/dashboards/sales_show.blade.php": {
+    "mtime": 1794815122.7438054,
+    "seen": 1794815190.96721,
+    "ast_hash": "f5ced1aa3f608910ed6d30ae074eaa5f",
     "semantic_hash": ""
   }
 }

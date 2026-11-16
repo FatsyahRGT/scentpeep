@@ -296,4 +296,98 @@ class DashboardTest extends TestCase
         $response->assertSee('sellerTrendMonthSelect');
         $response->assertViewHas('sellerTrendData');
     }
+
+    public function test_sales_dashboard_displays_pcs_only_and_detail_button_in_cards(): void
+    {
+        \App\Models\Invoice::create([
+            'invoice_no' => 'INV-TEST-01',
+            'sales_name' => 'IWAN',
+            'customer_name' => 'Budi Santoso',
+            'product_id' => $this->product->id,
+            'qty' => 12,
+            'location_id' => $this->gudang->id,
+            'total_price' => 1500000,
+            'payment_status' => 'LUNAS',
+            'tanggal' => now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('dashboard.sales'));
+        $response->assertOk();
+        $response->assertSee('Detail Penjualan');
+        $response->assertSee(route('dashboard.sales.show', 'IWAN'));
+    }
+
+    public function test_admin_and_staff_can_view_sales_show_page_with_filtered_invoices_and_stats(): void
+    {
+        $invIwan1 = \App\Models\Invoice::create([
+            'invoice_no' => 'INV-IWAN-01',
+            'sales_name' => 'IWAN',
+            'customer_name' => 'Pelanggan A',
+            'product_id' => $this->product->id,
+            'qty' => 5,
+            'location_id' => $this->gudang->id,
+            'total_price' => 500000,
+            'payment_status' => 'LUNAS',
+            'tanggal' => now()->toDateString(),
+        ]);
+
+        $invIwan2 = \App\Models\Invoice::create([
+            'invoice_no' => 'INV-IWAN-02',
+            'sales_name' => 'IWAN',
+            'customer_name' => 'Pelanggan B',
+            'product_id' => $this->product->id,
+            'qty' => 3,
+            'location_id' => $this->gudang->id,
+            'total_price' => 300000,
+            'payment_status' => 'BELUM LUNAS',
+            'tanggal' => now()->toDateString(),
+        ]);
+
+        $invRizky = \App\Models\Invoice::create([
+            'invoice_no' => 'INV-RIZKY-01',
+            'sales_name' => 'RIZKY',
+            'customer_name' => 'Pelanggan C',
+            'product_id' => $this->product->id,
+            'qty' => 10,
+            'location_id' => $this->gudang->id,
+            'total_price' => 1000000,
+            'payment_status' => 'LUNAS',
+            'tanggal' => now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('dashboard.sales.show', 'IWAN'));
+        $response->assertOk();
+        $response->assertSee('Histori Invoice Penjualan — IWAN');
+        $response->assertSee('INV-IWAN-01');
+        $response->assertSee('INV-IWAN-02');
+        $response->assertDontSee('INV-RIZKY-01');
+        $response->assertSee('Pelanggan A');
+        $response->assertSee('Pelanggan B');
+        $response->assertDontSee('Pelanggan C');
+
+        // Stats verification
+        $response->assertViewHas('summary', function ($s) {
+            return $s['total_count'] === 2 
+                && $s['total_qty'] === 8 
+                && $s['paid_count'] === 1 
+                && $s['unpaid_count'] === 1;
+        });
+
+        // Filter by payment_status = LUNAS
+        $paidResponse = $this->actingAs($this->admin)->get(route('dashboard.sales.show', ['sales_name' => 'IWAN', 'payment_status' => 'LUNAS']));
+        $paidResponse->assertOk();
+        $paidResponse->assertSee('INV-IWAN-01');
+        $paidResponse->assertDontSee('INV-IWAN-02');
+    }
+
+    public function test_reseller_cannot_view_other_sales_show_page(): void
+    {
+        // Reseller attempts to access sales detail page (redirected by internal middleware)
+        $response = $this->actingAs($this->reseller)->get(route('dashboard.sales.show', 'IWAN'));
+        $response->assertRedirect(route('stocks.reseller'));
+
+        // JSON request from reseller receives 403 Forbidden
+        $jsonResponse = $this->actingAs($this->reseller)->getJson(route('dashboard.sales.show', 'IWAN'));
+        $jsonResponse->assertForbidden();
+    }
 }

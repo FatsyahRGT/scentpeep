@@ -411,7 +411,7 @@
                     <i class="bi bi-people-fill text-muted fs-5"></i>
                     <h4 class="font-serif card-title mb-0 fw-bold fs-5">Distribusi Penjualan per Sales</h4>
                 </div>
-                <a href="{{ route('invoices.index') }}" class="small text-muted text-decoration-none">Semua Invoice &rarr;</a>
+                <a href="{{ route('dashboard.sales') }}" class="small text-muted text-decoration-none">Kontrol Sales &rarr;</a>
             </div>
             <div class="card-body p-3">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.65rem;">
@@ -440,15 +440,12 @@
                         </div>
                         <div class="my-1">
                             <div class="font-serif fs-4 fw-bold text-truncate" style="color: {{ $spal['text'] }}; line-height: 1.2;">{{ number_format($sales['total_qty']) }} <span class="fs-6 text-muted font-sans fw-normal">pcs</span></div>
-                            <div class="font-mono fw-semibold text-truncate" style="color: {{ $spal['text'] }}; font-size: 0.72rem;">Rp {{ number_format($sales['total_omset'], 0, ',', '.') }}</div>
                         </div>
-                        @if(($sales['invoice_count'] ?? 0) > 0)
-                            <span class="badge bg-white border text-truncate mt-1" style="font-size: 0.65rem; color: {{ $spal['text'] }}; border-color: {{ $spal['border'] }} !important;">
-                                {{ $sales['invoice_count'] }} trx
-                            </span>
-                        @else
-                            <span class="text-muted" style="font-size: 0.65rem;">0 trx</span>
-                        @endif
+                        <div class="mt-1 pt-1 border-top" style="border-color: {{ $spal['border'] }} !important;">
+                            <a href="{{ route('dashboard.sales.show', urlencode($sales['name'])) }}" class="badge bg-white border text-truncate text-decoration-none shadow-2xs py-1 px-2 w-100 d-inline-block" style="font-size: 0.68rem; color: {{ $spal['text'] }}; border-color: {{ $spal['border'] }} !important;" title="Lihat detail penjualan {{ $sales['name'] }}">
+                                Detail &rarr;
+                            </a>
+                        </div>
                     </div>
                     @empty
                     <div class="text-center text-muted py-3">Belum ada data penjualan per sales.</div>

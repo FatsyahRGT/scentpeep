@@ -338,6 +338,159 @@ class DashboardController extends Controller
     }
 
     /**
+     * Tampilkan rincian performa dan daftar invoice lengkap untuk personil sales tertentu.
+     */
+    public function showSales(Request $request, string $sales_name): View
+    {
+        $salesName = trim(urldecode($sales_name));
+        $user = Auth::user();
+
+        // Isolasi role: Reseller hanya bisa melihat performa tokonya sendiri
+        if ($user->isReseller() && strtolower(trim($user->name)) !== strtolower($salesName)) {
+            abort(403, 'Akses ditolak. Anda hanya berhak melihat rincian penjualan toko Anda sendiri.');
+        }
+
+        // Resolusi nama sales yang presisi dari database
+        $exactSalesName = Invoice::whereRaw('LOWER(TRIM(sales_name)) = ?', [strtolower($salesName)])
+            ->value('sales_name') ?? $salesName;
+
+        $salesUser = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($exactSalesName)])->first();
+        $palette = Location::paletteForName($exactSalesName);
+
+        // All-Time Summary Stats
+        $summaryStats = Invoice::where('sales_name', $exactSalesName)
+            ->selectRaw('
+                COUNT(*) as total_count,
+                COALESCE(SUM(qty), 0) as total_qty,
+                COALESCE(SUM(total_price), 0) as total_omset,
+                COALESCE(SUM(CASE WHEN payment_status = ? THEN 1 ELSE 0 END), 0) as paid_count,
+                COALESCE(SUM(CASE WHEN payment_status = ? THEN total_price ELSE 0 END), 0) as paid_omset,
+                COALESCE(SUM(CASE WHEN payment_status = ? THEN 1 ELSE 0 END), 0) as unpaid_count,
+                COALESCE(SUM(CASE WHEN payment_status = ? THEN total_price ELSE 0 END), 0) as unpaid_omset,
+                COALESCE(SUM(CASE WHEN order_type = ? AND po_status = ? THEN 1 ELSE 0 END), 0) as po_pending_count,
+                COALESCE(SUM(CASE WHEN order_type = ? AND po_status = ? THEN 1 ELSE 0 END), 0) as po_completed_count
+            ', [
+                Invoice::STATUS_PAID,
+                Invoice::STATUS_PAID,
+                Invoice::STATUS_UNPAID,
+                Invoice::STATUS_UNPAID,
+                Invoice::ORDER_TYPE_PREORDER,
+                Invoice::PO_STATUS_PENDING,
+                Invoice::ORDER_TYPE_PREORDER,
+                Invoice::PO_STATUS_COMPLETED,
+            ])
+            ->first();
+
+        $summary = [
+            'total_count' => (int) ($summaryStats->total_count ?? 0),
+            'total_qty' => (int) ($summaryStats->total_qty ?? 0),
+            'total_omset' => (float) ($summaryStats->total_omset ?? 0),
+            'paid_count' => (int) ($summaryStats->paid_count ?? 0),
+            'paid_omset' => (float) ($summaryStats->paid_omset ?? 0),
+            'unpaid_count' => (int) ($summaryStats->unpaid_count ?? 0),
+            'unpaid_omset' => (float) ($summaryStats->unpaid_omset ?? 0),
+            'po_pending_count' => (int) ($summaryStats->po_pending_count ?? 0),
+            'po_completed_count' => (int) ($summaryStats->po_completed_count ?? 0),
+        ];
+
+        // Top 5 Varian Terlaris Sales Ini
+        $topVariants = Invoice::where('sales_name', $exactSalesName)
+            ->select('product_id', DB::raw('SUM(qty) as sold_qty'), DB::raw('SUM(total_price) as revenue'))
+            ->groupBy('product_id')
+            ->orderByDesc('sold_qty')
+            ->with('product')
+            ->take(5)
+            ->get();
+
+        // Query Invoices Terfilter
+        $query = Invoice::with(['product', 'location', 'creator'])
+            ->where('sales_name', $exactSalesName)
+            ->orderByDesc(DB::raw('COALESCE(tanggal, DATE(created_at))'))
+            ->orderByDesc('id');
+
+        // Filter Tab Status
+        $statusFilter = $request->get('payment_status');
+        if ($statusFilter && in_array($statusFilter, [Invoice::STATUS_PAID, Invoice::STATUS_UNPAID])) {
+            $query->where('payment_status', $statusFilter);
+        }
+
+        // Filter Tipe Pesanan / PO
+        $orderTypeFilter = $request->get('order_type');
+        if ($orderTypeFilter === 'REGULAR') {
+            $query->where('order_type', Invoice::ORDER_TYPE_REGULAR);
+        } elseif ($orderTypeFilter === 'PREORDER') {
+            $query->where('order_type', Invoice::ORDER_TYPE_PREORDER);
+            if ($request->filled('po_status')) {
+                $query->where('po_status', $request->po_status);
+            }
+        }
+
+        // Filter Tanggal
+        $dateCol = DB::raw('COALESCE(tanggal, DATE(created_at))');
+        if ($request->filled('year')) {
+            $query->whereYear($dateCol, $request->year);
+        }
+        if ($request->filled('month')) {
+            $query->whereMonth($dateCol, $request->month);
+        }
+
+        // Filter Lokasi
+        if ($request->filled('location_id')) {
+            $query->where('location_id', $request->location_id);
+        }
+
+        // Search Box
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_no', 'like', "%{$search}%")
+                  ->orWhere('customer_name', 'like', "%{$search}%");
+            });
+        }
+
+        $invoices = $query->paginate(15)->withQueryString();
+
+        // Opsi Lokasi
+        $locations = Location::orderBy('name')->get();
+
+        // Opsi Tahun
+        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
+        $yearExtractSql = $isSqlite 
+            ? "strftime('%Y', COALESCE(tanggal, created_at)) as y" 
+            : "YEAR(COALESCE(tanggal, created_at)) as y";
+
+        $availableYears = Invoice::where('sales_name', $exactSalesName)
+            ->selectRaw($yearExtractSql)
+            ->distinct()
+            ->pluck('y')
+            ->filter()
+            ->map(fn($y) => (int)$y)
+            ->push((int) Carbon::now()->year)
+            ->unique()
+            ->sortDesc()
+            ->values();
+
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        return view('dashboards.sales_show', compact(
+            'salesName',
+            'exactSalesName',
+            'salesUser',
+            'palette',
+            'summary',
+            'topVariants',
+            'invoices',
+            'locations',
+            'availableYears',
+            'months'
+        ));
+    }
+
+    /**
      * Helper untuk membangun data Tren Penjualan per Seller (1 Tahun Penuh atau Harian untuk Bulan Terpilih).
      */
     protected function getSellerTrendData(Request $request, \Illuminate\Support\Collection $salesDistribution): array

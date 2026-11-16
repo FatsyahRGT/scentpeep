@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/sales', [DashboardController::class, 'sales'])->name('dashboard.sales')->middleware('internal');
+    Route::get('/dashboard/sales/{sales_name}', [DashboardController::class, 'showSales'])->name('dashboard.sales.show')->middleware('internal');
     Route::get('/tutorial', [\App\Http\Controllers\TutorialController::class, 'index'])->name('tutorial');
 
     // 1. Invoices (Penjualan Parfum per Varian - Akses Semua User)

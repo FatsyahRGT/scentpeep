@@ -4,6 +4,17 @@
 @section('page-header', 'Kontrol & Monitoring Tim Sales')
 
 @section('content')
+<style>
+    .sales-detail-btn {
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .sales-detail-btn:hover {
+        background-color: #ffffff !important;
+        filter: brightness(0.97);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
+    }
+</style>
 <!-- Top KPI Cards -->
 <div class="row g-2 g-md-3 mb-4">
     <div class="col-6 col-lg-3">
@@ -114,18 +125,16 @@
                     <div class="font-serif fs-2 fw-bold text-truncate" style="color: {{ $spal['text'] }}; line-height: 1.1;">
                         {{ number_format($sales['total_qty']) }} <span class="fs-6 text-muted font-sans fw-normal">pcs</span>
                     </div>
-                    <div class="font-mono fw-semibold text-truncate mt-1" style="color: {{ $spal['text'] }}; font-size: 0.85rem;">
-                        Rp {{ number_format($sales['total_omset'], 0, ',', '.') }}
-                    </div>
                 </div>
                 <div class="mt-2 pt-2 border-top" style="border-color: {{ $spal['border'] }} !important;">
-                    @if(($sales['invoice_count'] ?? 0) > 0)
-                        <span class="badge bg-white border text-truncate" style="font-size: 0.72rem; color: {{ $spal['text'] }}; border-color: {{ $spal['border'] }} !important;">
-                            {{ $sales['invoice_count'] }} transaksi terbit
-                        </span>
-                    @else
-                        <span class="text-muted small" style="font-size: 0.72rem;">Belum ada invoice</span>
-                    @endif
+                    <a href="{{ route('dashboard.sales.show', urlencode($sales['name'])) }}" 
+                       class="btn btn-sm w-100 rounded-pill fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 shadow-2xs text-decoration-none transition-all py-1.5 sales-detail-btn"
+                       style="background-color: #ffffff; color: {{ $spal['text'] }}; border: 1px solid {{ $spal['border'] }}; font-size: 0.76rem;"
+                       title="Lihat rincian transaksi invoice {{ $sales['name'] }}">
+                        <i class="bi bi-receipt-cutoff" style="font-size: 0.8rem;"></i>
+                        <span>Detail Penjualan</span>
+                        <i class="bi bi-arrow-right ms-0.5" style="font-size: 0.72rem;"></i>
+                    </a>
                 </div>
             </div>
             @empty
