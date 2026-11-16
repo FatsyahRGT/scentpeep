@@ -15,6 +15,68 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.05);
     }
+
+    /* Base styling for status segmented pill tabs */
+    .sales-tabs-track {
+        display: inline-flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 4px;
+        background-color: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+    }
+
+    .sales-tab-pill {
+        border-radius: 999px;
+        padding: 0.38rem 0.85rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+        line-height: 1.2;
+    }
+
+    .sales-tab-pill,
+    .sales-tab-pill:visited,
+    .sales-tab-pill:hover,
+    .sales-tab-pill:active,
+    .sales-tab-pill:focus {
+        text-decoration: none !important;
+    }
+
+    .sales-tab-pill.active {
+        background-color: #2b7b5b !important;
+        color: #ffffff !important;
+        border: 1px solid #2b7b5b !important;
+    }
+
+    .sales-tab-pill.active i {
+        color: #ffffff !important;
+    }
+
+    .sales-tab-pill:not(.active) {
+        background-color: #ffffff !important;
+        color: #4b5563 !important;
+        border: 1px solid #e5e7eb !important;
+    }
+
+    .sales-tab-pill:not(.active):hover {
+        background-color: #f8fafc !important;
+        color: #111827 !important;
+        border-color: #d1d5db !important;
+    }
+
+    .sales-tab-pill .badge {
+        border-radius: 999px;
+    }
+
     /* Mobile View (< 992px): Scroll ke samping aktif dengan bilah scrollbar ramping dan halus */
     @media (max-width: 991.98px) {
         .sales-tabs-container {
@@ -52,6 +114,8 @@
         .sales-tab-pill {
             flex-shrink: 0;
             white-space: nowrap;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.78rem;
         }
     }
 
