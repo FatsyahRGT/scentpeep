@@ -1,6 +1,6 @@
 # Laporan Verifikasi Kriteria Sistem & Pengujian Otomatis — Scentpeep Management System
 
-Dokumentasi komprehensif kepatuhan fungsionalitas sistem, pengujian integritas basis data, dan bukti eksekusi pengujian otomatis (*Automated Test Suite*) berbasis PHPUnit & Laravel TestSuite per rilis **v3.2**.
+Dokumentasi komprehensif kepatuhan fungsionalitas sistem, pengujian integritas basis data, dan bukti eksekusi pengujian otomatis (*Automated Test Suite*) berbasis PHPUnit & Laravel TestSuite per rilis **v3.3**.
 
 ---
 
@@ -21,10 +21,12 @@ Dokumentasi komprehensif kepatuhan fungsionalitas sistem, pengujian integritas b
 | **11** | **Pengadaan Bahan Mentah (Box & Botol) & CRUD Mutasi**: Manajemen kategori material dinamis, pemantauan stok bahan pengemasan, mutasi logistik IN/OUT, dan sinkronisasi kas belanja. | ✅ **LULUS** | [`RawMaterialController.php`](file:///c:/laragon/www/scentpeep-management-system/app/Http/Controllers/RawMaterialController.php)<br>[`RawMaterial.php`](file:///c:/laragon/www/scentpeep-management-system/app/Models/RawMaterial.php) | [`RawMaterialCrudTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/RawMaterialCrudTest.php) |
 | **12** | **Palet Warna Otomatis HSL Golden Angle**: Penentuan warna dinamis terdistribusi matematis tanpa tabrakan warna melintasi spektrum $360^\circ$ dengan standar kontras WCAG AAA. | ✅ **LULUS** | [`Location.php`](file:///c:/laragon/www/scentpeep-management-system/app/Models/Location.php#L35-L95) | [`WebRoutesRenderingTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/WebRoutesRenderingTest.php) |
 | **13** | **Keamanan Role Middleware**: Pembatasan ketat bagi akun staf dan reseller dari menu administratif dan master data. | ✅ **LULUS** | [`RoleMiddleware.php`](file:///c:/laragon/www/scentpeep-management-system/app/Http/Middleware/RoleMiddleware.php) | [`TransactionAndStockTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/TransactionAndStockTest.php) |
-| **14** | **Peta Alur Interaktif & Panduan Sistem (`/tutorial`)**: Diagram alir visual interaktif berbasis Pure SVG + Vanilla JS, multi-filter fokus alur, drag & pan kanvas, simulasi alur transaksi, dan modal riwayat changelog rilis v3.2. | ✅ **LULUS** | [`tutorial.blade.php`](file:///c:/laragon/www/scentpeep-management-system/resources/views/tutorial.blade.php) | [`WebRoutesRenderingTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/WebRoutesRenderingTest.php) |
+| **14** | **Peta Alur Interaktif & Panduan Sistem (`/tutorial`)**: Diagram alir visual interaktif berbasis Pure SVG + Vanilla JS, multi-filter fokus alur, drag & pan kanvas, simulasi alur transaksi, dan modal riwayat changelog rilis v3.3. | ✅ **LULUS** | [`tutorial.blade.php`](file:///c:/laragon/www/scentpeep-management-system/resources/views/tutorial.blade.php) | [`WebRoutesRenderingTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/WebRoutesRenderingTest.php) |
 | **15** | **Custom Combobox Nama Customer (Inline CRUD + Auto-Sort A-Z)**: Pemilihan nama pelanggan tetap & custom terintegrasi via AJAX, auto-sort A-Z (prioritas startsWith), quick suggestion pills, inline CRUD dalam dropdown, dan validasi atomik invoice. | ✅ **LULUS** | [`CustomerController.php`](file:///c:/laragon/www/scentpeep-management-system/app/Http/Controllers/CustomerController.php)<br>[`customer-combobox.blade.php`](file:///c:/laragon/www/scentpeep-management-system/resources/views/components/customer-combobox.blade.php) | [`CustomerComboboxTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/CustomerComboboxTest.php) |
 | **16** | **Koreksi Stok Fisik Multi-Lokasi Cepat (`/stocks/adjust`)**: Modal penyesuaian langsung stok opname fisik gudang (`IWAN` & `RIZKY`) oleh administrator dengan proteksi nilai non-negatif. | ✅ **LULUS** | [`StockController.php`](file:///c:/laragon/www/scentpeep-management-system/app/Http/Controllers/StockController.php)<br>[`stocks/index.blade.php`](file:///c:/laragon/www/scentpeep-management-system/resources/views/stocks/index.blade.php) | [`StockRestockTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/StockRestockTest.php) |
 | **17** | **Toolbar 3-Tier Data Invoice & Perampingan Navigasi**: Navigasi sidebar invoice dirampingkan, toolbar 3-tier dengan segmented status PO toggle-off, search bar kanan didampingi tombol `[ ↺ Reset ]`, dan 6 kolom dropdown rata. | ✅ **LULUS** | [`InvoiceController.php`](file:///c:/laragon/www/scentpeep-management-system/app/Http/Controllers/InvoiceController.php)<br>[`invoices/index.blade.php`](file:///c:/laragon/www/scentpeep-management-system/resources/views/invoices/index.blade.php) | [`InvoiceAndProcurementTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/InvoiceAndProcurementTest.php) |
+| **18** | **Bidirectional Smart Sync Pembuatan Invoice & Live Stock Alert**: Restrukturisasi grid form berdampingan, auto-select sales ke lokasi gudang, sinkronisasi reaktif dua arah tanpa loading (< 2 KB matrix), dan alert status live stock dengan 1-klik switch PO. | ✅ **LULUS** | [`InvoiceController.php`](file:///c:/laragon/www/scentpeep-management-system/app/Http/Controllers/InvoiceController.php)<br>[`invoices/create.blade.php`](file:///c:/laragon/www/scentpeep-management-system/resources/views/invoices/create.blade.php) | [`InvoiceAndProcurementTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/InvoiceAndProcurementTest.php) |
+| **19** | **Kas Murni (*Cash Basis*) Realized Sales & Isolasi PO Pending**: Omset hanya menghitung invoice LUNAS dari transaksi riil (`REGULAR` + `PO COMPLETED`), PO Pending 100% diisolasi dari produk terjual ke metrik Potensi PO, dan Belum Lunas masuk ke Piutang Berjalan. | ✅ **LULUS** | [`DashboardController.php`](file:///c:/laragon/www/scentpeep-management-system/app/Http/Controllers/DashboardController.php)<br>[`dashboards/sales_show.blade.php`](file:///c:/laragon/www/scentpeep-management-system/resources/views/dashboards/sales_show.blade.php) | [`DashboardTest.php`](file:///c:/laragon/www/scentpeep-management-system/tests/Feature/DashboardTest.php) |
 
 ---
 
@@ -34,9 +36,9 @@ Seluruh komponen inti, controller, model, request validation, dan database trans
 
 ```text
 ======================================================================
-PHPUnit Test Execution Summary (v3.2):
-Total Tests:      102 Passed (100%)
-Total Assertions: 596 Passed
+PHPUnit Test Execution Summary (v3.3):
+Total Tests:      108 Passed (100%)
+Total Assertions: 629 Passed
 Errors:           0
 Failures:         0
 Warnings:         0
@@ -45,7 +47,7 @@ Execution Status: GREEN (PASS)
 ```
 
 ### Rincian Test Suite per Modul:
-1. **Tests\Feature\InvoiceAndProcurementTest** (16 test, 126 assertions):
+1. **Tests\Feature\InvoiceAndProcurementTest** (17 test, 131 assertions):
    - `test_can_create_invoice_with_custom_no_and_deducts_stock_automatically`
    - `test_can_create_invoice_with_any_dynamic_user_as_sales`
    - `test_invoice_creation_fails_if_stock_insufficient`
@@ -58,6 +60,7 @@ Execution Status: GREEN (PASS)
    - `test_manual_restock_after_perfume_production`
    - `test_admin_can_view_invoice_edit_page`
    - `test_invoices_index_renders_customer_filter_and_filters_by_customer_name`
+   - `test_invoice_create_page_renders_with_stock_matrix_and_bidirectional_sync`
    - `test_admin_can_update_invoice_and_adjusts_stock_atomically`
    - `test_admin_can_delete_invoice_and_restores_stock`
    - `test_can_create_and_update_invoice_with_custom_tanggal`
@@ -84,8 +87,8 @@ Execution Status: GREEN (PASS)
    - Manajemen kategori bahan dinamis, pengadaan (IN) dengan sinkronisasi kas belanja, pemakaian (OUT), dan penyesuaian saldo fisik.
 6. **Tests\Feature\WebRoutesRenderingTest** (4 test, 62 assertions):
    - Rendering seluruh view blade untuk guest, admin, dan reseller, serta verifikasi palet warna HSL Golden Angle.
-7. **Tests\Feature\DashboardTest** (3 test):
-   - Dashboard kas, stok kritis < 3 pcs, dan isolasi data reseller.
+7. **Tests\Feature\DashboardTest** (15 test, 94 assertions):
+   - Kas murni (*cash basis*), isolasi PO pending dari volume barang terjual dan omset, 4 kartu KPI detail sales, dashboard kas, stok kritis < 3 pcs, evaluasi YoY, tren penjualan multi-seller, dan isolasi data reseller.
 8. **Tests\Feature\ExportReportsTest** (4 test):
    - Ekspor transaksi dan stok format CSV UTF-8 BOM dan PDF.
 9. **Tests\Feature\ResellerLifecycleTest** (4 test):

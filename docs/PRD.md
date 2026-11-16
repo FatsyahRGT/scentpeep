@@ -1,7 +1,7 @@
-# Product Requirements Document (PRD) — Scentpeep Management System
+# Product Requirements Document (PRD) — Scentpeep Management System (v3.3)
 
 ## 1. Ikhtisar Produk (Product Overview)
-**Scentpeep Management System** adalah platform web terpadu untuk tata kelola operasional, rantai pasok multi-lokasi, dan pembukuan keuangan UMKM parfum mewah **Scentpeep**.
+**Scentpeep Management System** adalah platform web terpadu untuk tata kelola operasional, rantai pasok multi-lokasi, dan pembukuan keuangan UMKM parfum mewah **Scentpeep** per rilis **v3.3**.
 
 Sistem ini dirancang untuk mengatasi kompleksitas operasional parfum niche melalui 6 pilar utama:
 1. **Penerbitan Invoice & Penjualan Multi-Sales**: Mengelola transaksi penjualan parfum per varian dengan atribusi sales (`RIZKY`, `IWAN`, `VANNY`), nomor invoice kustom, nominal dinamis/diskon, dan pemotongan stok otomatis secara atomik.
@@ -58,6 +58,20 @@ Sistem mengadopsi kontrol akses berbasis peran (Role-Based Access Control / RBAC
 - **Full Atomicity Edit & Delete Invoice**:
   - *Edit Invoice*: Sistem mengembalikan kuantitas lama ke lokasi asal terlebih dahulu (jika pesanan reguler atau PO yang sudah completed), memverifikasi ketersediaan stok baru di lokasi tujuan yang dipilih, lalu memotong stok baru dan memperbarui rincian invoice.
   - *Hapus Invoice*: Mengembalikan unit stok ke lokasi asal secara aman tanpa mengganggu buku kas manual.
+- **Bidirectional Smart Sync Formulir Pembuatan Invoice (`/invoices/create`)**:
+  - *Tata Letak Ergonomis*: Field `Potong dari Stok Lokasi` ditempatkan berdampingan sejajar dengan `Varian Parfum` untuk efisiensi input kasir/admin.
+  - *Auto-Select Cerdas Sales-Lokasi*: Sistem membaca nama sales yang dipilih (`sales_name`) dan secara otomatis mencocokkan nilai dropdown ke lokasi gudang yang bersesuaian (`IWAN` atau `RIZKY`).
+  - *Dua Arah (Bidirectional Reactive Dropdown)*:
+    1. Memilih Lokasi &rarr; Dropdown Varian Parfum otomatis mengkalkulasi dan memperbarui label sisa stok fisik di cabang tersebut.
+    2. Memilih Varian &rarr; Dropdown Lokasi Stok otomatis menampilkan angka ketersediaan fisik di masing-masing cabang (`IWAN: X pcs`, `RIZKY: Y pcs`).
+    3. Seluruh kalkulasi dieksekusi instan di sisi klien melalui matriks stok JSON tertanam di DOM (`< 2 KB`) tanpa latensi fetch server.
+  - *Live Stock Indicator Card (`#liveStockBox`)*: Komponen alert visual dinamis yang memvalidasi ketersediaan unit real-time. Jika stok ready kosong (0 pcs), card berubah warna menjadi peringatan merah dan menyediakan tombol aksi 1-klik untuk beralih ke mode Pre-Order.
+- **Standar Kas Murni (*Cash Basis*) & Realized Sales**:
+  - *Prinsip Akuntansi Kas Murni*: *"Uang belum diterima di tangan = Bukan Omset."*
+  - *Total Terjual (pcs)*: HANYA mengakumulasikan transaksi penjualan riil yang barangnya telah diserahkan ke pelanggan (`REGULAR` atau `PO COMPLETED`). Pesanan `PO PENDING` 100% diisolasi dan tidak dihitung ke volume barang terjual.
+  - *Total Omset*: HANYA mengakumulasikan transaksi berstatus `payment_status = LUNAS` dari penjualan riil. Transaksi `BELUM LUNAS` dan `PO PENDING` tidak dihitung ke omset.
+  - *Isolasi Piutang Berjalan*: Penjualan barang keluar yang berstatus `BELUM LUNAS` diisolasi ke dalam metrik `Piutang Berjalan`.
+  - *Isolasi Potensi PO (Inden Backlog)*: Pesanan inden yang berstatus `PO PENDING` dicatat secara terpisah sebagai potensi/backlog operasional tanpa mempengaruhi omset kas riil.
 - **Tata Letak Toolbar 3-Tier di Data Invoice Penjualan**:
   - **Tier 1 (Header & Aksi Utama)**: Judul modul di kiri; Tombol Evaluasi Penjualan (YoY), Dropdown Unduh (Excel & PDF), dan `+ Buat Invoice` di kanan.
   - **Tier 2 (Status PO & Search/Reset)**: Segmented track filter status di kiri (`PO Menunggu` badge amber, `PO Selesai` badge toska) dengan kemampuan toggle-off kembali ke seluruh data; Input pencarian responsif `Cari no. invoice / customer...` di kanan yang didampingi tombol `[ ↺ Reset ]` presisi.
@@ -113,8 +127,16 @@ Sistem mengadopsi kontrol akses berbasis peran (Role-Based Access Control / RBAC
 
 ### 3.7 Visualisasi & Dashboard Interaktif (`/dashboard`)
 - **Distribusi Penjualan per Sales**: Kartu metrik distribusi sales dengan styling Luxury Monochrome dan grid anti-overflow.
-- **Tren Penjualan Multi-Seller (Chart.js)**: Grafik garis dinamis 6 bulan terakhir dengan toggle metrik *Volume (Pcs)* vs *Omzet (Rp)*, garis warna khas masing-masing sales, dan ringkasan total omset.
+- **Tren Penjualan Multi-Seller (Chart.js)**: Grafik garis dinamis 6 bulan terakhir dengan toggle metrik *Volume (Pcs)* vs *Omzet (Rp)*, garis warna khas masing-masing sales, dan ringkasan total omset berbasis Kas Murni dan Realized Sales.
 - **Donut Chart Sebaran Stok**: Visualisasi persentase penguasaan stok per lokasi dengan pewarnaan matematis HSL Golden Angle.
+- **Halaman Detail Penjualan Sales (`/dashboard/sales/{sales_name}`)**:
+  - *4 Kartu KPI Finansial & Operasional*:
+    1. **Total Terjual (pcs)**: Kuantitas fisik riil yang sudah keluar toko (`REGULAR` + `PO COMPLETED`). PO pending tidak dihitung.
+    2. **Total Omset (Kas Murni)**: Nilai rupiah transaksi yang sudah berstatus `LUNAS`.
+    3. **Piutang Berjalan**: Nilai rupiah transaksi barang keluar yang berstatus `BELUM LUNAS`.
+    4. **Potensi PO / Inden**: Jumlah botol dan nominal antrean pre-order `PO PENDING` yang menunggu ketersediaan barang.
+  - *Tabel & Leaderboard Best Seller Sales*: Khusus menghitung volume dari transaksi penjualan riil terbit.
+  - *Segmented Status Filter Tabs*: Tab navigasi status invoice luxury pill (`Semua Invoice`, `Lunas`, `Belum Lunas`, `Pre-Order`) dengan tampilan desktop melebar rapi menyatu dengan search bar dan dukungan mobile horizontal scroll yang mulus.
 
 ### 3.8 Pelaporan Resmi & Alat Bantu Administratif
 - **Ekspor Dokumen Excel (.csv)**: Dilengkapi penanda UTF-8 BOM (`\xEF\xBB\xBF`) agar langsung terbaca rapi pada Microsoft Excel tanpa kendala encoding karakter.
@@ -123,7 +145,7 @@ Sistem mengadopsi kontrol akses berbasis peran (Role-Based Access Control / RBAC
 
 ### 3.9 Modul Panduan & Tutorial Alur Operasional (`/tutorial`)
 - **Akses Cepat Tanda Tanya (?)**: Disematkan tombol tanda tanya pada sidebar navigasi (`bi bi-question-circle-fill`) dan topbar header desktop untuk akses instan ke buku panduan sistem.
-- **Modal Changelog Versi Sistem**: Memuat riwayat pembaruan sistem berkala (termasuk rilis v3.2 dengan integrasi PO, smart reserved stock, dan toolbar 3-tier).
+- **Modal Changelog Versi Sistem**: Memuat riwayat pembaruan sistem berkala (termasuk rilis v3.3 dengan Bidirectional Smart Sync formulir invoice, Kas Murni / Cash Basis realized sales, isolasi PO pending, dan redesain KPI detail sales).
 - **Tutorial Interaktif Berbasis Tab**: Panduan komprehensif 7 modul operasional yang memuat:
   1. *Peta Alur Bisnis (End-to-End Workflow)*: Siklus pengadaan bahan baku, produksi/restock, invoice penjualan/PO, hingga pencatatan kas riil.
   2. *Penjualan & Invoice*: Panduan input invoice, kustom tanggal (backdating), pemilihan tipe pesanan (Reguler vs Pre-Order), pemotongan stok otomatis, dan alasan pemisahan kas fisik dari invoice.

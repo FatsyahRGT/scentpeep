@@ -1,6 +1,6 @@
 # Entity-Relationship Diagram (ERD) — Scentpeep Management System
 
-Dokumentasi rancangan basis data relasional Scentpeep Management System yang diturunkan langsung dari skema migrasi database aktual (Laravel 13 / MariaDB / MySQL) per rilis **v3.2**.
+Dokumentasi rancangan basis data relasional Scentpeep Management System yang diturunkan langsung dari skema migrasi database aktual (Laravel 13 / MariaDB / MySQL) per rilis **v3.3**.
 
 ---
 
@@ -227,7 +227,10 @@ Menyimpan transaksi resmi penjualan parfum per varian ke pelanggan, mencakup Pen
 - `notes` (Text, Nullable): Catatan pesanan.
 - `created_by` (BigInt, FK ke `users.id`, Nullable): Pengguna pencatat transaksi.
 
-> **Catatan Pemisahan Kas & Invoice**: Penerbitan atau pelunasan invoice beroperasi terpisah dari kas fisik. Status `LUNAS` dan `BELUM LUNAS` murni berfungsi sebagai penanda operasional piutang penjualan. Nominal uang fisik dicatat manual oleh kasir/admin di modul Buku Kas (`transactions`) saat dana benar-benar masuk.
+> **Catatan Pemisahan Kas & Invoice (Standar Kas Murni v3.3)**:
+> 1. **Pemisahan Kas & Invoice**: Status `LUNAS` dan `BELUM LUNAS` murni berfungsi sebagai penanda operasional piutang penjualan. Nominal uang fisik dicatat manual oleh kasir/admin di modul Buku Kas (`transactions`) saat dana benar-benar masuk ke kas.
+> 2. **Metrik Realized Sales**: `Total Terjual (pcs)` hanya menghitung penjualan riil di mana barang fisik telah keluar dari gudang: `(order_type = 'REGULAR') OR (order_type = 'PREORDER' AND po_status = 'COMPLETED')`. Pesanan inden `po_status = 'PENDING'` 100% dikecualikan dari volume barang terjual.
+> 3. **Kas Murni (*Cash Basis*)**: `Total Omset` pada analitik penjualan hanya mengakumulasikan transaksi yang telah berstatus `payment_status = 'LUNAS'` dari baris penjualan riil. Transaksi yang `BELUM LUNAS` dikelompokkan ke dalam metrik **Piutang Berjalan**, sedangkan antrean `PO PENDING` dikelompokkan ke dalam metrik **Potensi PO / Inden**.
 
 ### 2.6 Entitas Master Pelanggan Tetap (`customers`)
 Menyimpan basis data nama pelanggan tetap untuk mempercepat input form invoice via combobox AJAX.

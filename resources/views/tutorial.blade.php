@@ -21,7 +21,7 @@
                     </div>
                     <button type="button" class="btn btn-sm btn-light border px-3 py-2 font-mono shadow-xs d-inline-flex align-items-center gap-2 text-nowrap rounded-3 text-dark text-decoration-none" data-bs-toggle="modal" data-bs-target="#changelogModal" style="font-size: 0.82rem; cursor: pointer; transition: all 0.2s;" title="Klik untuk melihat Histori Versi &amp; Catatan Rilis">
                         <i class="bi bi-shield-check text-success fs-6"></i>
-                        <span class="fw-semibold">Scentpeep v3.2 Ready</span>
+                        <span class="fw-semibold">Scentpeep v3.3 Ready</span>
                         <span class="badge bg-dark text-white rounded-pill px-2 py-1" style="font-size: 0.65rem;">Histori Versi</span>
                     </button>
                 </div>
@@ -971,16 +971,35 @@
                 <!-- Timeline Container -->
                 <div class="timeline-changelog d-flex flex-column gap-4">
 
-                    <!-- v3.2 (Active Version) -->
+                    <!-- v3.3 (Active Version) -->
                     <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid var(--scent-green, #2b7b5b) !important;">
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge text-white px-2 py-1 font-mono fw-bold" style="background-color: var(--scent-green, #2b7b5b); font-size: 0.8rem;">v3.2</span>
-                                <h6 class="fw-bold text-dark m-0">Integrasi Pre-Order ke Invoice, Smart Reserved Stock, Koreksi Stok Cepat, &amp; Redesain Toolbar 3-Tier</h6>
+                                <span class="badge text-white px-2 py-1 font-mono fw-bold" style="background-color: var(--scent-green, #2b7b5b); font-size: 0.8rem;">v3.3</span>
+                                <h6 class="fw-bold text-dark m-0">Bidirectional Smart Sync Formulir Invoice, Kas Murni (Cash Basis) Realized Sales, Isolasi PO Pending, &amp; Redesain KPI Detail Sales</h6>
                             </div>
                             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill font-mono" style="font-size: 0.72rem;">
                                 <i class="bi bi-check-circle me-1"></i> Versi Aktif
                             </span>
+                        </div>
+                        <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
+                            <li><strong class="text-dark">Bidirectional Smart Sync Pembuatan Invoice</strong>: Restrukturisasi posisi field <code class="font-mono">Potong dari Stok Lokasi</code> sejajar dengan <code class="font-mono">Varian Parfum</code>. Dilengkapi fitur <em>Auto-Select Cerdas</em> nama sales ke lokasi stok, serta dropdown reaktif dua arah (Pilih lokasi &rarr; Varian menampilkan sisa stok; Pilih varian &rarr; Lokasi menampilkan ketersediaan cabang) tanpa jeda loading (<code class="font-mono">&lt; 2 KB</code> matrix).</li>
+                            <li><strong class="text-dark">Live Stock Indicator Card &amp; 1-Click PO Switch</strong>: Kartu status real-time di bawah input varian yang menampilkan stok fisik, kuota reserved PO, dan stok siap jual bebas. Jika kuantitas melebihi stok siap jual pada transaksi reguler, muncul peringatan instan dan tombol 1-klik <code class="font-mono">[ Beralih ke Pre-Order (PO) ]</code>.</li>
+                            <li><strong class="text-dark">Standar Kas Murni (Cash Basis) Realized Sales</strong>: Total Omset pada seluruh dashboard murni hanya mengakui transaksi yang berstatus <code class="font-mono">LUNAS</code> dari barang yang sudah resmi diserahkan (<code class="font-mono">REGULAR</code> atau <code class="font-mono">PO COMPLETED</code>), menghilangkan omset fiktif dari transaksi tempo.</li>
+                            <li><strong class="text-dark">Isolasi Mutlak Pre-Order (PO Pending)</strong>: Pesanan Pre-Order yang masih mengantre (<code class="font-mono">po_status = PENDING</code>) dikeluarkan 100% dari metrik <code class="font-mono">Total Terjual (pcs)</code> dan <code class="font-mono">Total Omset (Rp)</code> agar tidak menggelembungkan data sebelum barang diserahkan ke pelanggan.</li>
+                            <li><strong class="text-dark">Redesain 4 Kartu KPI Detail Penjualan Sales</strong>: Pemisahan transparan: 1) Total Terjual (pcs riil keluar), 2) Total Omset Kas (dana tunai diterima), 3) Piutang Berjalan (barang keluar belum lunas), dan 4) Potensi PO / Inden (pesanan inden mengantre).</li>
+                            <li><strong class="text-dark">Restrukturisasi Toolbar Detail Sales</strong>: Tab status segmented pill dengan kapsul abu-abu <code class="font-mono">#f3f4f6</code> dan state aktif hijau emerald <code class="font-mono">#2b7b5b</code>. Melebar proporsional di desktop (&ge; 992px) mendekati search bar, dan scroll horizontal mulus pada mobile (&lt; 992px).</li>
+                        </ul>
+                    </div>
+
+                    <!-- v3.2 -->
+                    <div class="card border rounded-3 p-3 shadow-xs position-relative" style="border-left: 4px solid #111827 !important;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-dark text-white px-2 py-1 font-mono fw-bold" style="font-size: 0.8rem;">v3.2</span>
+                                <h6 class="fw-bold text-dark m-0">Integrasi Pre-Order ke Invoice, Smart Reserved Stock, Koreksi Stok Cepat, &amp; Redesain Toolbar 3-Tier</h6>
+                            </div>
+                            <span class="badge bg-light text-muted border rounded-pill font-mono" style="font-size: 0.72rem;">Stabil</span>
                         </div>
                         <ul class="small text-muted ps-3 mb-0" style="line-height: 1.8;">
                             <li><strong class="text-dark">Integrasi Pre-Order (PO) ke Modul Invoice Terpadu</strong>: Modul PO disatukan langsung ke formulir Invoice (<code class="font-mono">REGULAR</code> vs <code class="font-mono">PREORDER</code>), menghapus menu terpisah. PO fleksibel dapat dicatat kapan saja meski stok fisik toko sedang kosong (0 pcs).</li>

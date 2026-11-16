@@ -1,17 +1,17 @@
 # Graph Report - scentpeep-management-system  (2026-11-16)
 
 ## Corpus Check
-- 165 files · ~499,994 words
+- 165 files · ~501,340 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: (none) 18, .example 2, .conf 2)
 
 ## Summary
-- 988 nodes · 1658 edges · 118 communities (24 shown, 94 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 37 edges (avg confidence: 0.94)
+- 988 nodes · 1659 edges · 118 communities (24 shown, 94 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 38 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `785113cd`
+- Built from commit: `70cd1acb`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -109,8 +109,8 @@
 2. `Location` - 51 edges
 3. `Invoice` - 38 edges
 4. `Product` - 35 edges
-5. `Transaction` - 31 edges
-6. `Rincian Test Suite per Modul:` - 31 edges
+5. `Rincian Test Suite per Modul:` - 32 edges
+6. `Transaction` - 31 edges
 7. `TestCase` - 28 edges
 8. `Stock` - 25 edges
 9. `InvoiceAndProcurementTest` - 24 edges
@@ -227,11 +227,11 @@ Nodes (8): 1. Diagram Use Case (Mermaid), 2. Definisi Aktor, 3. Matriks Daftar U
 
 ### Community 110 - "Dokumentasi Rekayasa Perangkat Lunak — Scentpeep Management System"
 Cohesion: 0.50
-Nodes (3): Daftar Berkas Dokumentasi, Dokumentasi Rekayasa Perangkat Lunak — Scentpeep Management System, Ringkasan Arsitektur & Teknologi (v3.2)
+Nodes (3): Daftar Berkas Dokumentasi, Dokumentasi Rekayasa Perangkat Lunak — Scentpeep Management System, Ringkasan Arsitektur & Teknologi (v3.3)
 
 ## Knowledge Gaps
 - **33 isolated node(s):** `concurrently`, `tailwindcss`, `@laravel/multiplex`, `layouts.app`, `layouts.app` (+28 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 512 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 511 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **94 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions

@@ -1,7 +1,7 @@
 # Dokumentasi Projek: Scentpeep Management System
 
 ## 1. Ikhtisar Projek (Project Overview)
-**Scentpeep Management System** adalah aplikasi pencatatan keuangan dan manajemen rantai pasok stok multi-lokasi berbasis web untuk UMKM parfum mewah **Scentpeep** per rilis **v3.2**.
+**Scentpeep Management System** adalah aplikasi pencatatan keuangan dan manajemen rantai pasok stok multi-lokasi berbasis web untuk UMKM parfum mewah **Scentpeep** per rilis **v3.3**.
 
 Aplikasi ini mencakup kebutuhan operasional harian:
 1. **Penjualan Parfum (Invoice & Pre-Order)**: Penerbitan invoice penjualan per varian dengan pilihan sales (`RIZKY`, `IWAN`, `VANNY`), nomor invoice custom, nominal custom/diskon, pemilihan tipe pesanan (Penjualan Langsung vs Pre-Order), serta pemotongan stok otomatis dari lokasi terpilih (`IWAN` atau `RIZKY`).
@@ -76,12 +76,33 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 9. **Modul Panduan & Tutorial Alur Operasional (`/tutorial`)**:
    - Menu tanda tanya (`?`) di sidebar dan topbar header desktop.
    - Peta alur visual interaktif SVG + Vanilla JS dengan drag & pan kanvas, filter fokus alur, inspektur kartu, dan simulasi transaksi.
-   - Modal changelog versi sistem (termasuk catatan rilis v3.2).
+   - Modal changelog versi sistem (termasuk catatan rilis v3.3).
 
 10. **Standardisasi Modul Ekspor Laporan Multi-Format (Word, PDF, Excel, & Print)**:
     - Kop surat resmi dengan logo Base64 dan tagline `Authentic Inspired Fragrance - Retail Supply Chain`.
     - Format Word (.doc) A4 portrait 523pt bebas kotoran border, dan Excel modern OpenXML (.xlsx) via PhpSpreadsheet.
     - Pratinjau dan cetak faktur satuan resmi A4 langsung dari baris tabel invoice.
+
+11. **Bidirectional Smart Sync Pembuatan Invoice & Live Stock Alert**:
+    - **Penataan Posisi Field**: Penataan ulang grid formulir di mana field `Potong dari Stok Lokasi` ditempatkan berdampingan sejajar dengan `Varian Parfum` untuk kecepatan input.
+    - **Auto-Select Cerdas Berdasarkan Sales**: Saat user memilih nama sales (`sales_name`), sistem otomatis memilih gudang/lokasi stok yang bersesuaian (`IWAN` atau `RIZKY`).
+    - **Sinkronisasi Dua Arah (*Bidirectional Reactive Dropdown*)**:
+      - Memilih Lokasi &rarr; Dropdown Varian Parfum otomatis mengkalkulasi dan menampilkan sisa stok fisik di cabang tersebut.
+      - Memilih Varian &rarr; Dropdown Lokasi Stok otomatis menampilkan angka ketersediaan fisik di masing-masing cabang (`IWAN: X pcs`, `RIZKY: Y pcs`).
+      - Seluruh interaksi dieksekusi instan di sisi klien melalui payload `< 2 KB` matriks stok tanpa delay fetch server.
+    - **Live Stock Indicator Card (`#liveStockBox`)**: Komponen feedback visual real-time di bawah dropdown; menampilkan status stok ready vs kosong dan menyediakan tombol aksi 1-klik beralih ke mode Pre-Order saat stok habis.
+
+12. **Standar Kas Murni (*Cash Basis*) Realized Sales & Isolasi PO Pending**:
+    - **Prinsip Akuntansi Kas Murni**: *"Uang belum diterima di tangan = Bukan Omset."*
+    - **Total Omset**: HANYA mengakumulasikan transaksi berstatus `LUNAS` dari penjualan riil yang barangnya telah diserahkan (`REGULAR` atau `PO COMPLETED`). Transaksi belum lunas atau PO pending tidak dihitung sebagai omset.
+    - **Isolasi Piutang Berjalan**: Transaksi barang keluar yang belum terbayar diisolasi ke dalam metrik `Piutang Berjalan (BELUM LUNAS)`.
+    - **Isolasi PO Pending (Backlog/Inden)**: Pesanan inden (`order_type = PREORDER` & `po_status = PENDING`) 100% dipisahkan dari barang terjual (`Total Terjual (pcs)`) dan omset, serta masuk ke metrik `Potensi PO / Inden`.
+    - **Redesain 4 Kartu KPI Detail Sales**: 1) Total Terjual (pcs riil), 2) Total Omset Kas (riil lunas), 3) Piutang Berjalan, dan 4) Potensi PO / Inden.
+    - **Konsistensi Lintas Modul**: Seluruh leaderboard best-seller, grafik tren sales, dan laporan evaluasi penjualan YoY diselaraskan ke standar Kas Murni dan Realized Sales.
+
+13. **Toolbar & Status Tab Segmented di Detail Sales**:
+    - Navigasi tab status transaksi berbentuk *luxury segmented pill* (`Semua Invoice`, `Lunas`, `Belum Lunas`, `Pre-Order`).
+    - Desain desktop melebar presisi menyatu dengan search bar, sedangkan tampilan mobile mendukung scroll horizontal sentuh yang halus tanpa visual glitch.
 
 ---
 
@@ -95,7 +116,7 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 - **Backend Framework**: Laravel 13 (13.35.0, PHP 8.3+)
 - **Database**: SQLite / MySQL (PDO)
 - **Frontend**: Blade Views + Bootstrap 5.3.3 (CDN) + AdminLTE 4 Components + Bootstrap Icons + SweetAlert2 (CDN) + Chart.js (CDN)
-- **Testing**: PHPUnit / Laravel TestSuite (100% Passed - 102 tests, 596 assertions)
+- **Testing**: PHPUnit / Laravel TestSuite (100% Passed - 108 tests, 629 assertions)
 - **Default Agent Skills & Memory**:
   - `graphify`: Persistent knowledge graph di `graphify-out/`, auto-update setiap ada perubahan file.
   - `ponytail`: Minimalist & KISS, tanpa dependensi berlebih, solusi native paling sederhana.
@@ -106,11 +127,11 @@ Aplikasi ini mencakup kebutuhan operasional harian:
 ---
 
 ## 6. Indeks Berkas Dokumentasi Tugas (Folder `docs/`)
-Seluruh dokumentasi teknis dan rekayasa perangkat lunak telah disinkronisasikan ke spesifikasi v3.2:
+Seluruh dokumentasi teknis dan rekayasa perangkat lunak telah disinkronisasikan ke spesifikasi v3.3:
 - [`docs/PRD.md`](file:///c:/laragon/www/scentpeep-management-system/docs/PRD.md): Product Requirements Document komprehensif.
 - [`docs/ERD.md`](file:///c:/laragon/www/scentpeep-management-system/docs/ERD.md): Entity-Relationship Diagram visual Mermaid (11 tabel) dan Kamus Data.
 - [`docs/DFD.md`](file:///c:/laragon/www/scentpeep-management-system/docs/DFD.md): Data Flow Diagram Level 0, Level 1, Level 2, dan Kamus Aliran Data.
 - [`docs/USE_CASE.md`](file:///c:/laragon/www/scentpeep-management-system/docs/USE_CASE.md): Use Case Diagram Mermaid, 4 Aktor, 16 Matriks Use Case, dan Skenario.
 - [`docs/ACTIVITY_DIAGRAM.md`](file:///c:/laragon/www/scentpeep-management-system/docs/ACTIVITY_DIAGRAM.md): Diagram Aktivitas swimlane & Sequence Diagram.
-- [`docs/KRITERIA_LULUS.md`](file:///c:/laragon/www/scentpeep-management-system/docs/KRITERIA_LULUS.md): Laporan Kepatuhan Fitur & Hasil Pengujian Otomatis (102 tests passed, 596 assertions).
+- [`docs/KRITERIA_LULUS.md`](file:///c:/laragon/www/scentpeep-management-system/docs/KRITERIA_LULUS.md): Laporan Kepatuhan Fitur & Hasil Pengujian Otomatis (108 tests passed, 629 assertions).
 - [`docs/README.md`](file:///c:/laragon/www/scentpeep-management-system/docs/README.md): Panduan umum berkas dokumentasi tugas.
