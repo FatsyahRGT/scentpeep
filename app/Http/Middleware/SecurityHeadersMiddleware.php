@@ -30,6 +30,10 @@ class SecurityHeadersMiddleware
                "frame-ancestors 'self'; " .
                "form-action 'self';";
 
+        if ($request->isSecure()) {
+            $csp .= ' upgrade-insecure-requests;';
+        }
+
         $response->headers->set('Content-Security-Policy', $csp);
 
         return $response;

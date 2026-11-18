@@ -96,9 +96,9 @@
     "semantic_hash": "a11931fa3cd10b930aca22fedbea8350"
   },
   "app/Providers/AppServiceProvider.php": {
-    "mtime": 1793357884.2843437,
-    "seen": 1793361746.6697118,
-    "ast_hash": "3837969bd908817c2dbffbb59da68fe8",
+    "mtime": 1795005710.4777682,
+    "seen": 1795005922.3499074,
+    "ast_hash": "1900a4fcacd962a3e60af029ac3e009c",
     "semantic_hash": ""
   },
   "artisan": {
@@ -108,9 +108,9 @@
     "semantic_hash": "e66bb13691f6184c762c196427d8e685"
   },
   "bootstrap/app.php": {
-    "mtime": 1793527869.080262,
-    "seen": 1793528738.5202916,
-    "ast_hash": "11e1888b8a5418f4f3a29e586fca4a07",
+    "mtime": 1795005698.064148,
+    "seen": 1795005922.3499074,
+    "ast_hash": "3baed2585ca92d76bed16f3044cf660a",
     "semantic_hash": ""
   },
   "bootstrap/providers.php": {
@@ -582,16 +582,16 @@
     "semantic_hash": ""
   },
   "app/Http/Middleware/SecurityHeadersMiddleware.php": {
-    "mtime": 1792905732.6401236,
-    "seen": 1792905916.028353,
-    "ast_hash": "d70d33cbdba8199c4c1a5232e9ebc968",
-    "semantic_hash": "d70d33cbdba8199c4c1a5232e9ebc968"
+    "mtime": 1795005720.5851254,
+    "seen": 1795005922.3499074,
+    "ast_hash": "42635d98e86f732a546d089798203071",
+    "semantic_hash": ""
   },
   "tests/Feature/SecurityHeadersTest.php": {
-    "mtime": 1792905744.091945,
-    "seen": 1792905916.0594995,
-    "ast_hash": "0ab6b302fce9e1d4b1b770d011f18794",
-    "semantic_hash": "0ab6b302fce9e1d4b1b770d011f18794"
+    "mtime": 1795005780.5028625,
+    "seen": 1795005922.3499074,
+    "ast_hash": "778f7d19bdd52c5597dc6bb5fd3c211d",
+    "semantic_hash": ""
   },
   ".vscode/settings.json": {
     "mtime": 1792908622.447408,
@@ -666,9 +666,9 @@
     "semantic_hash": ""
   },
   "resources/views/invoices/create.blade.php": {
-    "mtime": 1794819263.76866,
-    "seen": 1794819328.2027256,
-    "ast_hash": "9fba0d9239cb9415d8b6c9c5050da421",
+    "mtime": 1794826445.7772217,
+    "seen": 1794826495.2504947,
+    "ast_hash": "8ceffcc6ecfe5400c805d54213d12cf0",
     "semantic_hash": ""
   },
   "resources/views/invoices/edit.blade.php": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1793438598.6165235,
-    "seen": 1793438637.608418,
-    "ast_hash": "189b1b7a2706a16cb8c6965c43470308",
+    "mtime": 1795005741.5294325,
+    "seen": 1795005922.3499074,
+    "ast_hash": "f4fd2f05d588811e47485ecfa2fe7d53",
     "semantic_hash": ""
   },
   "docs/ACTIVITY_DIAGRAM.md": {
